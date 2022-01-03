@@ -18,9 +18,9 @@ const Timer = ({ context }) => {
 		if (timer.isRunning) {
 			const interval = setInterval(() => {
 				setTime(time + 1);
+				dispatch(setTimer({ time: time }));
 			}, 1000);
 
-			dispatch(setTimer({ time: time }));
 			return () => clearInterval(interval);
 		}
 	});
