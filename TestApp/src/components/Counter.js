@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, Pressable } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { resetTimer, setTimer, startTimer } from "../redux/TimerSlice";
-import { useFonts } from "@use-expo/font";
+import { setTimer } from "../redux/TimerSlice";
 import dateParser from "../extras/dateparser";
 
 const Timer = ({ context }) => {
@@ -25,23 +24,8 @@ const Timer = ({ context }) => {
 		}
 	});
 
-	const StartTimer = () => {
-		console.log("timerStarted. timer toggled.");
-		dispatch(startTimer());
-	};
-	const ResetTimer = () => {
-		console.log("timerReset.");
-		dispatch(resetTimer());
-		setTime(0);
-	};
-
 	return (
-		<Pressable
-			style={styles.timeContainer}
-			onPress={() => StartTimer()}
-			onLongPress={() => ResetTimer()}
-			android_ripple={{ color: "grey", borderless: true }}
-		>
+		<View style={styles.rootContainer}>
 			<View>
 				<Text
 					style={[
@@ -64,7 +48,7 @@ const Timer = ({ context }) => {
 			</View>
 			{/* <Button onPress={StartTimer} title="Toggle timer" />
 			<Button onPress={ResetTimer} title="Reset timer" /> */}
-		</Pressable>
+		</View>
 	);
 };
 const styles = StyleSheet.create({
@@ -72,13 +56,10 @@ const styles = StyleSheet.create({
 		fontSize: 50,
 		color: "white",
 	},
-	timeContainer: {
+	rootContainer: {
+		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		zIndex: 2,
-		flex: 2,
-		backgroundColor: "black",
-		margin: 20,
 	},
 });
 export default Timer;

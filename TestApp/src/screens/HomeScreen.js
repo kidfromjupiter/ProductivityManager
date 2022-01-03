@@ -23,8 +23,8 @@ function HomeScreen({ navigation }) {
 				<Square
 					flex={3}
 					text="Timer"
-					startColor="#4b6cb7"
-					endColor="#234697"
+					startColor="#00143D"
+					endColor="#00257A"
 					navigation={navigation}
 				>
 					{isrunning ? <Timer context="home" /> : null}

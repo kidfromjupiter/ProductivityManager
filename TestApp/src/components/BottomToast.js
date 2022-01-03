@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
 	text: {
 		fontSize: 13,
 		color: "white",
+		textAlign: "center",
 	},
 	toastContainer: {
 		flex: 1,
