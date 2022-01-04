@@ -24,8 +24,8 @@ export const TimerSlice = createSlice({
 			state.time = action.payload.time;
 		},
 		resetTimer: (state) => {
-			state.isReset = true;
 			state.time = 0;
+			console.log("timerReset to zero");
 		},
 	},
 });

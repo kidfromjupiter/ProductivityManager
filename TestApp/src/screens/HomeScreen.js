@@ -27,7 +27,7 @@ function HomeScreen({ navigation }) {
 					endColor="#00257A"
 					navigation={navigation}
 				>
-					{isrunning ? <Timer context="home" /> : null}
+					{isrunning ? <Timer context="home" isDisabled /> : null}
 				</Square>
 			</View>
 			<View style={styles.container}>
