@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
 	text: {
 		fontSize: 20,
 		color: "white",
-		fontWeight: "bold",
+		// fontWeight: "bold",
 	},
 	textHolder: {
 		flex: 1,

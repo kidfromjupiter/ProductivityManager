@@ -1,41 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Button } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
 import dateParser from "../extras/dateparser";
 
 const Timer = ({ context, isDisabled }) => {
 	const timer = useSelector((state) => state.time);
-	const [time, setTime] = useState(timer.time);
+	console.log("redux time is: ", timer.time);
+
+	const dispatch = useDispatch();
 
 	const StartTimer = () => {
 		console.log("timerStarted. timer toggled.");
+
 		dispatch(startTimer());
 	};
 	const ResetTimer = () => {
 		console.log("timerReset.");
 		dispatch(resetTimer());
-		setTime(0);
 	};
-	const dispatch = useDispatch();
-
-	let countMin = "1";
 
 	// converting seconds to minutes and seconds
-	const { minutes, seconds } = dateParser(time);
+	const { minutes, seconds } = dateParser(timer.time);
 
 	// running the timer for one sec each render and updating the time. clearing the timer when the timer is finished.
 	useEffect(() => {
-		if (timer.isRunning) {
+		if (timer.time == 0) {
+			console.log("timerFinished.");
+		}
+		if (timer.isRunning && timer.time !== 0) {
 			const interval = setInterval(() => {
-				setTime(time - 1);
-				dispatch(setTimer({ time: time }));
+				let newTime = timer.time - 1;
+				dispatch(setTimer({ time: newTime }));
 			}, 1000);
 
 			return () => clearInterval(interval);
-		}
-		if (minutes == countMin) {
-			console.log("timer finished");
 		}
 	});
 
@@ -67,6 +66,39 @@ const Timer = ({ context, isDisabled }) => {
 					{seconds}
 				</Text>
 			</View>
+			{context !== "home" ? (
+				<View style={{ flex: 1 }}>
+					<Button
+						title="1 min"
+						onPress={() => {
+							ResetTimer(0);
+							dispatch(setTimer({ time: 1 * 60 }));
+						}}
+					/>
+					<Button
+						title="2 min"
+						onPress={() => {
+							ResetTimer(0);
+							dispatch(setTimer({ time: 2 * 60 }));
+						}}
+					/>
+					<Button
+						title="5 min"
+						onPress={() => {
+							ResetTimer(0);
+							dispatch(setTimer({ time: 5 * 60 }));
+						}}
+					/>
+					<Button
+						title="10 min"
+						onPress={() => {
+							ResetTimer(0);
+							dispatch(setTimer({ time: 10 * 60 }));
+						}}
+					/>
+				</View>
+			) : null}
+
 			{/* <Button onPress={StartTimer} title="Toggle timer" />
 			<Button onPress={ResetTimer} title="Reset timer" /> */}
 		</Pressable>
