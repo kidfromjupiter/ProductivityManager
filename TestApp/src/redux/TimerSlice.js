@@ -15,12 +15,18 @@ export const TimerSlice = createSlice({
 		startTimer: (state) => {
 			if (state.isRunning) {
 				state.isRunning = false;
+				state.isFinished = false;
 			} else {
 				state.isRunning = true;
 				state.isStarted = true;
+				state.isFinished = false;
 			}
 		},
 		setTimer: (state, action) => {
+			if (action.payload.time == 0) {
+				state.isRunning = false;
+				state.isFinished = true;
+			}
 			state.time = action.payload.time;
 		},
 		resetTimer: (state) => {
@@ -31,6 +37,7 @@ export const TimerSlice = createSlice({
 });
 
 export const { startTimer } = TimerSlice.actions;
+export const { timerFinished } = TimerSlice.actions;
 export const { setTimer } = TimerSlice.actions;
 export const { resetTimer } = TimerSlice.actions;
 export default TimerSlice.reducer;

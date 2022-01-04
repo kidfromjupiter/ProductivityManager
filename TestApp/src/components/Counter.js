@@ -1,42 +1,76 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, Button } from "react-native";
+import {
+	View,
+	Text,
+	StyleSheet,
+	Pressable,
+	Button,
+	TouchableHighlight,
+	Animated,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
+import {
+	setTimer,
+	resetTimer,
+	startTimer,
+	timerFinished,
+} from "../redux/TimerSlice";
 import dateParser from "../extras/dateparser";
+import { Audio } from "expo-av";
 
 const Timer = ({ context, isDisabled }) => {
 	const timer = useSelector((state) => state.time);
-	console.log("redux time is: ", timer.time);
+
+	const [sound, setSound] = useState();
+
+	async function playSound() {
+		console.log("Loading Sound");
+		const { sound } = await Audio.Sound.createAsync(require("Phobos.mp3"));
+		setSound(sound);
+
+		console.log("Playing Sound");
+		await sound.playAsync();
+	}
 
 	const dispatch = useDispatch();
 
 	const StartTimer = () => {
-		console.log("timerStarted. timer toggled.");
-
-		dispatch(startTimer());
+		if (timer.time !== 0) {
+			dispatch(startTimer());
+		}
 	};
 	const ResetTimer = () => {
-		console.log("timerReset.");
 		dispatch(resetTimer());
 	};
+
+	//playing sounds
 
 	// converting seconds to minutes and seconds
 	const { minutes, seconds } = dateParser(timer.time);
 
 	// running the timer for one sec each render and updating the time. clearing the timer when the timer is finished.
 	useEffect(() => {
-		if (timer.time == 0) {
-			console.log("timerFinished.");
-		}
 		if (timer.isRunning && timer.time !== 0) {
 			const interval = setInterval(() => {
 				let newTime = timer.time - 1;
+				if (newTime == 0) {
+					dispatch(setTimer({ time: newTime }));
+					playSound();
+				}
 				dispatch(setTimer({ time: newTime }));
 			}, 1000);
 
 			return () => clearInterval(interval);
 		}
 	});
+	useEffect(() => {
+		return sound
+			? () => {
+					console.log("Unloading Sound");
+					sound.unloadAsync();
+			  }
+			: undefined;
+	}, [sound]);
 
 	return (
 		<Pressable
@@ -46,61 +80,68 @@ const Timer = ({ context, isDisabled }) => {
 			android_ripple={{ color: "grey", borderless: true }}
 			disabled={isDisabled}
 		>
-			<View>
-				<Text
-					style={[
-						styles.timeStyles,
-						context == "home" ? { fontSize: 50 } : { fontSize: 150 },
-					]}
-				>
-					{minutes}
-				</Text>
-			</View>
-			<View>
-				<Text
-					style={[
-						styles.timeStyles,
-						context == "home" ? { fontSize: 50 } : { fontSize: 150 },
-					]}
-				>
-					{seconds}
-				</Text>
+			<View style={{ flex: 5, justifyContent: "center" }}>
+				<View>
+					<Text
+						style={[
+							styles.timeStyles,
+							context == "home" ? { fontSize: 50 } : { fontSize: 150 },
+						]}
+					>
+						{minutes}
+					</Text>
+				</View>
+				<View>
+					<Text
+						style={[
+							styles.timeStyles,
+							context == "home" ? { fontSize: 50 } : { fontSize: 150 },
+						]}
+					>
+						{seconds}
+					</Text>
+				</View>
 			</View>
 			{context !== "home" ? (
-				<View style={{ flex: 1 }}>
-					<Button
-						title="1 min"
+				<View style={styles.buttonHolder}>
+					<TouchableHighlight
+						style={styles.button}
 						onPress={() => {
 							ResetTimer(0);
 							dispatch(setTimer({ time: 1 * 60 }));
 						}}
-					/>
-					<Button
-						title="2 min"
+					>
+						<Text style={styles.textStyles}>1</Text>
+					</TouchableHighlight>
+					<TouchableHighlight
+						style={styles.button}
 						onPress={() => {
 							ResetTimer(0);
 							dispatch(setTimer({ time: 2 * 60 }));
 						}}
-					/>
-					<Button
-						title="5 min"
+					>
+						<Text style={styles.textStyles}>2</Text>
+					</TouchableHighlight>
+					<TouchableHighlight
+						style={styles.button}
 						onPress={() => {
 							ResetTimer(0);
 							dispatch(setTimer({ time: 5 * 60 }));
 						}}
-					/>
-					<Button
-						title="10 min"
+					>
+						<Text style={styles.textStyles}>5</Text>
+					</TouchableHighlight>
+					<TouchableHighlight
+						style={styles.button}
 						onPress={() => {
 							ResetTimer(0);
 							dispatch(setTimer({ time: 10 * 60 }));
 						}}
-					/>
+					>
+						<Text style={styles.textStyles}>10</Text>
+					</TouchableHighlight>
 				</View>
 			) : null}
-
-			{/* <Button onPress={StartTimer} title="Toggle timer" />
-			<Button onPress={ResetTimer} title="Reset timer" /> */}
 		</Pressable>
 	);
 };
@@ -111,7 +152,7 @@ const styles = StyleSheet.create({
 	},
 	rootContainer: {
 		flex: 1,
-		justifyContent: "center",
+		justifyContent: "space-evenly",
 		alignItems: "center",
 	},
 	timeContainer: {
@@ -121,6 +162,33 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: "black",
 		margin: 20,
+	},
+	buttonHolder: {
+		flex: 3,
+		justifyContent: "space-around",
+		alignItems: "center",
+		flexDirection: "row",
+	},
+	button: {
+		backgroundColor: "#542E0B",
+		height: 70,
+		width: 70,
+		borderRadius: 60,
+		margin: 10,
+		borderColor: "#884500",
+		borderStyle: "solid",
+		borderWidth: 1,
+		textAlign: "center",
+	},
+	textStyles: {
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
+		textAlign: "center",
+		color: "#884500",
+		fontSize: 30,
+		fontWeight: "bold",
+		textAlignVertical: "center",
 	},
 });
 export default Timer;
