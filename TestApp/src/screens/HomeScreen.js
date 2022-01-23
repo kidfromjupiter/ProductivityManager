@@ -3,15 +3,13 @@ import React, { useContext } from "react";
 import { View, Text, Button, Touchable } from "react-native";
 import { StyleSheet } from "react-native";
 import Square from "../components/square";
-import { Theme } from "../components/TopLevelContainer";
 import { useSelector } from "react-redux";
 import Timer from "../components/Counter";
 
 function HomeScreen({ navigation }) {
-	const backgroundColor = useContext(Theme);
 	const isrunning = useSelector((state) => state.time.isRunning);
 	return (
-		<View style={[styles.rootContainer, { backgroundColor: backgroundColor }]}>
+		<View style={[styles.rootContainer]}>
 			<View style={styles.container}>
 				<Square
 					flex={5}
@@ -74,7 +72,7 @@ const styles = StyleSheet.create({
 	},
 	rootContainer: {
 		flex: 1,
-		// backgroundColor: "#000000",
+		backgroundColor: "#000023",
 	},
 });
 export default HomeScreen;

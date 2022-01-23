@@ -8,6 +8,7 @@ import TimerScreen from "./src/screens/TimerScreen";
 import { TopLevelContainer, Theme } from "./src/components/TopLevelContainer";
 import { Provider } from "react-redux";
 import store from "./src/redux/store";
+import ReminderScreen from "./src/screens/ReminderScreen";
 
 function SettingsScreen() {
 	return (
@@ -38,6 +39,11 @@ function StackNav() {
 				component={TimerScreen}
 				options={{ headerShown: false }}
 			/>
+			<Stack.Screen
+				name="Reminders"
+				component={ReminderScreen}
+				options={{ headerShown: false }}
+			/>
 			<Stack.Screen name="Settings" component={SettingsScreen} />
 		</Stack.Navigator>
 	);
@@ -51,6 +57,7 @@ export default function App() {
 					<StackNav />
 				</NavigationContainer>
 			</Provider>
+			<StatusBar style="light" />
 		</TopLevelContainer>
 	);
 }

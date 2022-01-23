@@ -31,13 +31,13 @@ export const TimerSlice = createSlice({
 		},
 		resetTimer: (state) => {
 			state.time = 0;
+			state.isRunning = false;
+			state.isFinished = true;
 			console.log("timerReset to zero");
 		},
 	},
 });
 
-export const { startTimer } = TimerSlice.actions;
-export const { timerFinished } = TimerSlice.actions;
-export const { setTimer } = TimerSlice.actions;
-export const { resetTimer } = TimerSlice.actions;
+export const { startTimer, timerFinished, setTimer, resetTimer } =
+	TimerSlice.actions;
 export default TimerSlice.reducer;

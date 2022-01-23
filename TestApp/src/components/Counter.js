@@ -4,17 +4,10 @@ import {
 	Text,
 	StyleSheet,
 	Pressable,
-	Button,
 	TouchableHighlight,
-	Animated,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import {
-	setTimer,
-	resetTimer,
-	startTimer,
-	timerFinished,
-} from "../redux/TimerSlice";
+import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
 import dateParser from "../extras/dateparser";
 import { Audio } from "expo-av";
 
@@ -25,7 +18,9 @@ const Timer = ({ context, isDisabled }) => {
 
 	async function playSound() {
 		console.log("Loading Sound");
-		const { sound } = await Audio.Sound.createAsync(require("Phobos.mp3"));
+		const { sound } = await Audio.Sound.createAsync(
+			require("../../assets/Phobos.mp3")
+		);
 		setSound(sound);
 
 		console.log("Playing Sound");
@@ -78,9 +73,9 @@ const Timer = ({ context, isDisabled }) => {
 			onPress={() => StartTimer()}
 			onLongPress={() => ResetTimer()}
 			android_ripple={{ color: "grey", borderless: true }}
-			disabled={isDisabled}
+			disabled={isDisabled || timer.time === 0}
 		>
-			<View style={{ flex: 5, justifyContent: "center" }}>
+			<View style={{ flex: 8, justifyContent: "center" }}>
 				<View>
 					<Text
 						style={[
@@ -171,8 +166,8 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		backgroundColor: "#542E0B",
-		height: 70,
-		width: 70,
+		height: 60,
+		width: 60,
 		borderRadius: 60,
 		margin: 10,
 		borderColor: "#884500",
@@ -185,7 +180,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		textAlign: "center",
-		color: "#884500",
+		color: "#9D5912",
 		fontSize: 30,
 		fontWeight: "bold",
 		textAlignVertical: "center",

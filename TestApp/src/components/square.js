@@ -16,9 +16,9 @@ const Square = (props) => {
 
 	const onTouchStart = () => {
 		Animated.spring(animatedButtonScale, {
-			toValue: 0.85,
+			toValue: 0.9,
 			useNativeDriver: false,
-			damping: 10,
+			damping: 6,
 		}).start();
 	};
 
