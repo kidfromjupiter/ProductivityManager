@@ -1,7 +1,22 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet, Dimensions } from "react-native";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
+import {
+	View,
+	Text,
+	FlatList,
+	Platform,
+	UIManager,
+	StyleSheet,
+	Dimensions,
+} from "react-native";
 import ListItem from "./ListItem";
+import { AntDesign } from "@expo/vector-icons";
+
+if (
+	Platform.OS === "android" &&
+	UIManager.setLayoutAnimationEnabledExperimental
+) {
+	UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const ReminderList = ({ DATA }) => {
 	return (
@@ -21,14 +36,11 @@ const ReminderList = ({ DATA }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		// justifyContent: "center",
 		backgroundColor: "#000023",
 		paddingTop: 50,
-		// margin: 10,
-		// alignItems: "center",
 	},
 	list: {
-		flex: 1,
+		flex: 3,
 		alignSelf: "center",
 		height: Dimensions.get("window").height,
 		width: Dimensions.get("window").width,

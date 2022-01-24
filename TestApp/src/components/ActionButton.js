@@ -17,22 +17,6 @@ const ActionButton = ({ text, icon }) => {
 	const dispatch = useDispatch();
 	const animatedScale = new Animated.Value(1);
 
-	const onTouchStart = () => {
-		Animated.spring(animatedScale, {
-			toValue: 0.9,
-			useNativeDriver: true,
-			speed: 30,
-		}).start();
-	};
-
-	const onTouchEnd = () => {
-		Animated.spring(animatedScale, {
-			toValue: 1,
-			useNativeDriver: true,
-			speed: 10,
-		}).start();
-	};
-
 	const add = () => {
 		console.log("Add reminder");
 		const reminder = {
@@ -42,6 +26,23 @@ const ActionButton = ({ text, icon }) => {
 			completed: false,
 		};
 		dispatch(addReminder(reminder));
+	};
+
+	const onTouchStart = () => {
+		Animated.spring(animatedScale, {
+			toValue: 0.9,
+			useNativeDriver: true,
+			friction: 100,
+		}).start(() => onTouchEnd());
+	};
+
+	const onTouchEnd = () => {
+		Animated.spring(animatedScale, {
+			toValue: 1,
+			useNativeDriver: true,
+			friction: 100,
+		}).start(() => add());
+		// add();
 	};
 
 	const animatedScaleStyle = {
@@ -55,8 +56,8 @@ const ActionButton = ({ text, icon }) => {
 				onTouchStart();
 			}}
 			onPressOut={() => {
-				add();
-				onTouchEnd();
+				// onTouchEnd();
+				// add();
 			}}
 		>
 			{icon ? icon : <AntDesign name="plus" size={30} color="white" />}
@@ -76,7 +77,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		borderRadius: 40,
-		borderWidth: 1,
 	},
 });
 export default ActionButton;

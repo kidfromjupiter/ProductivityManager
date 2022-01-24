@@ -17,17 +17,18 @@ const Square = (props) => {
 	const onTouchStart = () => {
 		Animated.spring(animatedButtonScale, {
 			toValue: 0.9,
-			useNativeDriver: false,
-			damping: 6,
+			useNativeDriver: true,
+			damping: 20,
 		}).start();
 	};
 
 	const onTouchEnd = () => {
 		Animated.spring(animatedButtonScale, {
 			toValue: 1,
-			useNativeDriver: false,
+			useNativeDriver: true,
 			damping: 10,
 		}).start();
+		props.navigation.navigate(props.text);
 	};
 
 	const animatedScaleStyle = {
@@ -43,7 +44,6 @@ const Square = (props) => {
 			}}
 			onTouchEnd={() => {
 				onTouchEnd();
-				props.navigation.navigate(props.text);
 			}}
 		>
 			<View>
