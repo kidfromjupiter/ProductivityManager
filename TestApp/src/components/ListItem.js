@@ -7,6 +7,7 @@ import {
 	Pressable,
 	Easing,
 	LayoutAnimation,
+	Text,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useDispatch } from "react-redux";
@@ -22,46 +23,15 @@ UIManager.setLayoutAnimationEnabledExperimental &&
 
 const ListItem = ({ item, index }) => {
 	const animatedValue = new Animated.Value(0);
-	const [height, setHeight] = useState(70);
 
-	let expanded = false;
-
-	const arrowAnimation = () => {
-		if (expanded == false) {
-			Animated.spring(animatedValue, {
-				toValue: 1,
-				useNativeDriver: true,
-				// easing: Easing.quad,
-			}).start();
-			expanded = true;
-			setHeight(height + 20);
-		} else {
-			Animated.spring(animatedValue, {
-				toValue: 0,
-				useNativeDriver: true,
-				// easing: Easing.quad,
-			}).start();
-			expanded = false;
-			setHeight(height - 20);
-		}
-	};
+	const [expanded, setExpanded] = useState(false);
 
 	const dispatch = useDispatch();
 
 	const setComplete = () => {
 		dispatch(editReminder({ index: index }));
+		setExpanded(false);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-	};
-
-	const rotationStyle = {
-		transform: [
-			{
-				rotate: animatedValue.interpolate({
-					inputRange: [0, 1],
-					outputRange: ["0deg", "180deg"],
-				}),
-			},
-		],
 	};
 
 	return (
@@ -72,7 +42,15 @@ const ListItem = ({ item, index }) => {
 			]}
 		>
 			<View style={styles.innerContainer}>
-				<View style={[styles.checkboxHolder, { height: height }]}>
+				<View
+					style={[
+						styles.checkboxHolder,
+						{
+							height: expanded ? null : 70,
+							paddingVertical: expanded ? 15 : null,
+						},
+					]}
+				>
 					<BouncyCheckbox
 						onPress={() => {
 							setComplete();
@@ -84,7 +62,14 @@ const ListItem = ({ item, index }) => {
 						text={item.title}
 						textStyle={styles.text}
 						useNativeDriver
+						onLongPress={() => {
+							setExpanded(!expanded);
+							LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+						}}
 					/>
+					{expanded ? (
+						<Text style={styles.descriptionStyle}>{item.description}</Text>
+					) : null}
 				</View>
 				<View
 					style={styles.expand}
@@ -110,6 +95,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		marginHorizontal: 10,
 		marginBottom: 10,
+		zIndex: 5,
 	},
 	innerContainer: {
 		flex: 1,
@@ -132,6 +118,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		flex: 1,
 		// display: "none",
+	},
+	descriptionStyle: {
+		fontSize: 13,
+		color: "white",
+		paddingVertical: 10,
 	},
 });
 

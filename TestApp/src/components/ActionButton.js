@@ -6,42 +6,32 @@ import {
 	Text,
 	Dimensions,
 	Animated,
+	NativeModules,
+	LayoutAnimation,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
-import { addReminder } from "../redux/ReminderSlice";
+
+import DialogBox from "./DialogBox";
 
 const PressableAnimated = Animated.createAnimatedComponent(Pressable);
 
-const ActionButton = ({ text, icon }) => {
-	const dispatch = useDispatch();
+const ActionButton = ({ text, icon, onPressOut }) => {
 	const animatedScale = new Animated.Value(1);
 
-	const add = () => {
-		console.log("Add reminder");
-		const reminder = {
-			id: new Date().toJSON(),
-			title: "Test",
-			description: "Test",
-			completed: false,
-		};
-		dispatch(addReminder(reminder));
-	};
-
 	const onTouchStart = () => {
-		Animated.spring(animatedScale, {
-			toValue: 0.9,
+		Animated.timing(animatedScale, {
+			toValue: 0.8,
 			useNativeDriver: true,
-			friction: 100,
-		}).start(() => onTouchEnd());
+			duration: 100,
+		}).start();
 	};
 
 	const onTouchEnd = () => {
-		Animated.spring(animatedScale, {
+		Animated.timing(animatedScale, {
 			toValue: 1,
 			useNativeDriver: true,
-			friction: 100,
-		}).start(() => add());
+			duration: 100,
+		}).start(() => onPressOut());
 		// add();
 	};
 
@@ -56,7 +46,7 @@ const ActionButton = ({ text, icon }) => {
 				onTouchStart();
 			}}
 			onPressOut={() => {
-				// onTouchEnd();
+				onTouchEnd();
 				// add();
 			}}
 		>
