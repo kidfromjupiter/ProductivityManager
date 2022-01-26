@@ -13,6 +13,7 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useDispatch } from "react-redux";
 import { editReminder, deleteReminder } from "../redux/ReminderSlice";
 import { AntDesign } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 
 const { UIManager } = NativeModules;
 
@@ -22,6 +23,7 @@ UIManager.setLayoutAnimationEnabledExperimental &&
 // const Vector
 
 const ListItem = ({ item, index }) => {
+	const colors = useSelector((state) => state.colors);
 	const animatedValue = new Animated.Value(0);
 
 	const [expanded, setExpanded] = useState(false);
@@ -38,7 +40,7 @@ const ListItem = ({ item, index }) => {
 		<Pressable
 			style={[
 				styles.outerContainer,
-				{ backgroundColor: item.completed ? "#6B6B6B" : "#130039" },
+				{ backgroundColor: item.completed ? "#6B6B6B" : colors.levelOne },
 			]}
 		>
 			<View style={styles.innerContainer}>
@@ -62,6 +64,7 @@ const ListItem = ({ item, index }) => {
 						text={item.title}
 						textStyle={styles.text}
 						useNativeDriver
+						fillColor={colors.accentColor}
 						onLongPress={() => {
 							setExpanded(!expanded);
 							LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);

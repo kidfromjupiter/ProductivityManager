@@ -1,34 +1,22 @@
 import React, { useRef } from "react";
-import {
-	StyleSheet,
-	View,
-	Text,
-	Pressable,
-	TouchableWithoutFeedback,
-	Animated,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-
-const Gradient = Animated.createAnimatedComponent(LinearGradient);
-
+import { StyleSheet, View, Text, Animated } from "react-native";
 const Square = (props) => {
 	const animatedButtonScale = new Animated.Value(1);
 
 	const onTouchStart = () => {
 		Animated.spring(animatedButtonScale, {
-			toValue: 0.9,
+			toValue: 0.8,
 			useNativeDriver: true,
-			damping: 20,
+			damping: 8,
 		}).start();
 	};
 
 	const onTouchEnd = () => {
-		Animated.spring(animatedButtonScale, {
+		Animated.timing(animatedButtonScale, {
 			toValue: 1,
 			useNativeDriver: true,
-			damping: 10,
-		}).start();
-		props.navigation.navigate(props.text);
+			duration: 100,
+		}).start(() => props.navigation.navigate(props.text));
 	};
 
 	const animatedScaleStyle = {
@@ -36,8 +24,8 @@ const Square = (props) => {
 	};
 
 	return (
-		<Gradient
-			colors={[props.startColor, props.endColor]}
+		<Animated.View
+			// colors={[props.startColor, props.endColor]}
 			style={[styles.container, { flex: props.flex }, animatedScaleStyle]}
 			onTouchStart={() => {
 				onTouchStart();
@@ -46,36 +34,49 @@ const Square = (props) => {
 				onTouchEnd();
 			}}
 		>
-			<View>
-				{!props.children ? <Text style={styles.text}>{props.text}</Text> : null}
-
+			<View style={styles.childrenContainer}>
+				{props.showTitle ? <Text style={styles.text}>{props.text}</Text> : null}
 				{props.children}
 			</View>
-		</Gradient>
+		</Animated.View>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		borderRadius: 10,
-		width: 100,
-		margin: 10,
-		alignItems: "center",
-		justifyContent: "center",
+		borderRadius: 20,
+		margin: 6,
+		backgroundColor: "#2B3748",
+		shadowColor: "black",
+		shadowRadius: 2,
+		shadowOffset: {
+			width: 2,
+			height: 3,
+		},
+		shadowOpacity: 0.27,
+		shadowRadius: 4.65,
+		elevation: 8,
+
+		// backgroundColor: "white",
 	},
 	rootContainer: {
 		flex: 1,
 	},
 	text: {
 		fontSize: 20,
-		color: "white",
-		// fontWeight: "bold",
+		color: "#00D34B",
+		fontWeight: "bold",
+		padding: 12,
 	},
 	textHolder: {
 		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
+	},
+	childrenContainer: {
+		flex: 1,
+		flexDirection: "column",
 	},
 });
 

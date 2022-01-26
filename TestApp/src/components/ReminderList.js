@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import ListItem from "./ListItem";
 import { AntDesign } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 
 if (
 	Platform.OS === "android" &&
@@ -19,14 +20,15 @@ if (
 }
 
 const ReminderList = ({ DATA }) => {
+	const Color = useSelector((state) => state.colors);
 	return (
-		<View style={styles.container}>
+		<View
+			style={[styles.container, { backgroundColor: Color.backgroundColor }]}
+		>
 			<FlatList
 				style={styles.list}
 				data={DATA}
-				renderItem={({ item, index }) => (
-					<ListItem text={item} index={index} item={item} />
-				)}
+				renderItem={({ item, index }) => <ListItem index={index} item={item} />}
 				keyExtractor={(item) => item.id}
 			/>
 		</View>

@@ -12,10 +12,12 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 
 import DialogBox from "./DialogBox";
+import { useSelector } from "react-redux";
 
 const PressableAnimated = Animated.createAnimatedComponent(Pressable);
 
 const ActionButton = ({ text, icon, onPressOut }) => {
+	const colors = useSelector((state) => state.colors);
 	const animatedScale = new Animated.Value(1);
 
 	const onTouchStart = () => {
@@ -41,7 +43,11 @@ const ActionButton = ({ text, icon, onPressOut }) => {
 
 	return (
 		<PressableAnimated
-			style={[styles.actionbutton, animatedScaleStyle]}
+			style={[
+				styles.actionbutton,
+				animatedScaleStyle,
+				{ backgroundColor: colors.accentColor },
+			]}
 			onPressIn={() => {
 				onTouchStart();
 			}}

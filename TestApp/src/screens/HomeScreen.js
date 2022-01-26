@@ -5,9 +5,11 @@ import { StyleSheet } from "react-native";
 import Square from "../components/square";
 import { useSelector } from "react-redux";
 import Timer from "../components/Counter";
+import MiniReminderView from "../components/MiniReminderView";
 
 function HomeScreen({ navigation }) {
 	const isrunning = useSelector((state) => state.time.isRunning);
+	const [DialogBoxShow, setDialogBoxShow] = React.useState(false);
 	return (
 		<View style={[styles.rootContainer]}>
 			<View style={styles.container}>
@@ -17,6 +19,7 @@ function HomeScreen({ navigation }) {
 					startColor="#9D50BB"
 					endColor="#6E48AA"
 					navigation={navigation}
+					showTitle
 				/>
 				<Square
 					flex={3}
@@ -25,24 +28,18 @@ function HomeScreen({ navigation }) {
 					endColor="#00257A"
 					navigation={navigation}
 				>
-					{isrunning ? <Timer context="home" isDisabled /> : null}
+					<Timer context="home" timeSize={65} isDisabled />
 				</Square>
 			</View>
 			<View style={styles.container}>
 				<View>
 					<Square
 						flex={1}
-						text="Todo"
-						startColor="#B993D6"
-						endColor="#8CA6DB"
-						navigation={navigation}
-					/>
-					<Square
-						flex={1}
 						text="Settings"
 						startColor="#5BD5F0"
 						endColor="#3a7bd5"
 						navigation={navigation}
+						showTitle
 					/>
 				</View>
 				<Square
@@ -51,6 +48,7 @@ function HomeScreen({ navigation }) {
 					endColor="#ff5858"
 					startColor="#D33E30"
 					navigation={navigation}
+					showTitle
 				/>
 			</View>
 			<View style={styles.container}>
@@ -60,7 +58,11 @@ function HomeScreen({ navigation }) {
 					endColor="#00BFB6"
 					startColor="#0055BF"
 					navigation={navigation}
-				/>
+					showTitle
+					iconName="pluscircle"
+				>
+					<MiniReminderView />
+				</Square>
 			</View>
 		</View>
 	);
@@ -72,7 +74,7 @@ const styles = StyleSheet.create({
 	},
 	rootContainer: {
 		flex: 1,
-		backgroundColor: "#000023",
+		backgroundColor: "#191F2C",
 	},
 });
 export default HomeScreen;

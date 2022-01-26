@@ -15,18 +15,32 @@ const { UIManager } = NativeModules;
 UIManager.setLayoutAnimationEnabledExperimental &&
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 
-const DialogBox = ({ onChangeText, onSubmit, onCancel, isDescription }) => {
+const DialogBox = ({
+	onChangeText,
+	onSubmit,
+	onCancel,
+	isDescription,
+	color,
+}) => {
 	let text;
 	let description;
 	return (
 		<View style={styles.OuterContainer}>
 			<View style={styles.Overlay}></View>
-			<View style={styles.container}>
+			<View
+				style={[
+					styles.container,
+					{ backgroundColor: color ? color.levelOne : null },
+				]}
+			>
 				<View style={styles.InputHolder}>
 					<Text style={styles.titleTexts}>Title</Text>
 					<TextInput
-						style={styles.input}
-						placeholder="Reminder"
+						style={[
+							styles.input,
+							{ backgroundColor: color ? color.levelTwo : null },
+						]}
+						autoFocus
 						onChangeText={(input) => (text = input)}
 						value={text}
 					/>
@@ -34,8 +48,11 @@ const DialogBox = ({ onChangeText, onSubmit, onCancel, isDescription }) => {
 					{isDescription ? (
 						<TextInput
 							multiline={true}
-							style={[styles.input, styles.description]}
-							placeholder="Reminder"
+							style={[
+								styles.input,
+								styles.description,
+								{ backgroundColor: color ? color.levelTwo : null },
+							]}
 							onChangeText={(input) => (description = input)}
 							value={text}
 						/>
@@ -101,20 +118,17 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		borderRadius: 30,
-		// maxHeight: 400,
-		// maxWidth: 300,
 		height: "auto",
 		width: "auto",
 	},
 	input: {
 		width: 250,
-		borderWidth: 1,
 		borderRadius: 10,
 		marginBottom: 10,
 		padding: 10,
-		borderColor: "#CCCCCC",
-		color: "#FFFFFF",
-		backgroundColor: "#0F0021",
+		borderBottomColor: "#909090",
+		backgroundColor: "#252525",
+		color: "white",
 	},
 	buttonContainer: {
 		flex: 1,
@@ -128,7 +142,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		borderTopWidth: 1,
-		borderTopColor: "#CCCCCC",
 		fontSize: 17,
 	},
 	text: {

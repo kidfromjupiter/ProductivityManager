@@ -21,6 +21,7 @@ UIManager.setLayoutAnimationEnabledExperimental &&
 export const ReminderScreen = () => {
 	const dispatch = useDispatch();
 	const reminderList = useSelector((state) => state.reminders);
+	const colors = useSelector((state) => state.colors);
 	const [DialogBoxShow, setDialogBoxShow] = React.useState(false);
 
 	const add = (text) => {
@@ -47,6 +48,7 @@ export const ReminderScreen = () => {
 					onCancel={setDialogBoxShow}
 					onSubmit={submit}
 					isDescription
+					color={colors}
 				/>
 			) : null}
 			{DialogBoxShow ? null : <ActionButton text="Hello" onPressOut={add} />}

@@ -22,7 +22,6 @@ const TimerScreen = () => {
 const styles = StyleSheet.create({
 	rootContainer: {
 		flex: 1,
-		backgroundColor: "black",
 	},
 });
 export default TimerScreen;
