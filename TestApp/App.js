@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
-import { Text, View, Button } from "react-native";
+import { Text, View, Button, NativeModules } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
@@ -9,6 +9,12 @@ import { TopLevelContainer, Theme } from "./src/components/TopLevelContainer";
 import { Provider } from "react-redux";
 import store from "./src/redux/store";
 import ReminderScreen from "./src/screens/ReminderScreen";
+import Pomodoro from "./src/screens/PomodoroScreen";
+
+const { UIManager } = NativeModules;
+
+UIManager.setLayoutAnimationEnabledExperimental &&
+	UIManager.setLayoutAnimationEnabledExperimental(true);
 
 function SettingsScreen() {
 	return (
@@ -20,30 +26,31 @@ function SettingsScreen() {
 
 const Stack = createNativeStackNavigator();
 
+const animation = "default";
+
 function StackNav() {
 	return (
-		<Stack.Navigator initialRouteName="Home">
+		<Stack.Navigator
+			initialRouteName="Home"
+			screenOptions={{
+				headerShown: false,
+				animation: animation,
+				presentation: "card",
+				orientation: "portrait",
+				contentStyle: { backgroundColor: "white" },
+			}}
+		>
 			<Stack.Screen
 				name="Home"
 				component={HomeScreen}
 				options={{
 					title: "Productivity Manager",
-					headerStyle: { backgroundColor: "#323232" },
-					headerTitleAlign: "center",
-					headerTitleStyle: { color: "white" },
 				}}
 			/>
 
-			<Stack.Screen
-				name="Timer"
-				component={TimerScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Reminders"
-				component={ReminderScreen}
-				options={{ headerShown: false }}
-			/>
+			<Stack.Screen name="Timer" component={TimerScreen} />
+			<Stack.Screen name="Pomodoro" component={Pomodoro} />
+			<Stack.Screen name="Reminders" component={ReminderScreen} />
 			<Stack.Screen name="Settings" component={SettingsScreen} />
 		</Stack.Navigator>
 	);

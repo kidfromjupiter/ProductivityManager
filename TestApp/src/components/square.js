@@ -1,22 +1,51 @@
 import React, { useRef } from "react";
-import { StyleSheet, View, Text, Animated } from "react-native";
-const Square = (props) => {
+import {
+	StyleSheet,
+	View,
+	Text,
+	Animated,
+	Pressable,
+	LayoutAnimation,
+} from "react-native";
+
+const PressableAnimated = Animated.createAnimatedComponent(Pressable);
+
+const Square = ({
+	text,
+	flex,
+	showTitle,
+	children,
+	navigation,
+	customStyles,
+	scaleDown,
+	scaleUp,
+	holdToExpand,
+	expandSize,
+	parentSetStateCallback,
+}) => {
 	const animatedButtonScale = new Animated.Value(1);
+	const [expanded, setExpanded] = React.useState(false);
 
 	const onTouchStart = () => {
-		Animated.spring(animatedButtonScale, {
-			toValue: 0.8,
+		Animated.timing(animatedButtonScale, {
+			toValue: scaleDown ? scaleDown : 0.8,
 			useNativeDriver: true,
-			damping: 8,
-		}).start();
+			duration: 200,
+		}).start(() => onTouchEnd());
 	};
 
 	const onTouchEnd = () => {
 		Animated.timing(animatedButtonScale, {
-			toValue: 1,
+			toValue: scaleUp ? scaleUp : 1,
 			useNativeDriver: true,
-			duration: 100,
-		}).start(() => props.navigation.navigate(props.text));
+			duration: 200,
+		}).start(() =>
+			navigation ? navigation.navigate(text) : TouchEndCallback()
+		);
+	};
+
+	const TouchEndCallback = () => {
+		return;
 	};
 
 	const animatedScaleStyle = {
@@ -24,21 +53,37 @@ const Square = (props) => {
 	};
 
 	return (
-		<Animated.View
+		<PressableAnimated
 			// colors={[props.startColor, props.endColor]}
-			style={[styles.container, { flex: props.flex }, animatedScaleStyle]}
+			delayLongPress={250}
+			style={[
+				styles.container,
+				customStyles,
+				holdToExpand && expandSize && expanded ? expandSize : null,
+				{ flex: flex },
+				animatedScaleStyle,
+			]}
 			onTouchStart={() => {
 				onTouchStart();
 			}}
 			onTouchEnd={() => {
 				onTouchEnd();
 			}}
+			onLongPress={
+				holdToExpand
+					? () => {
+							LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+
+							setExpanded(!expanded);
+					  }
+					: null
+			}
 		>
 			<View style={styles.childrenContainer}>
-				{props.showTitle ? <Text style={styles.text}>{props.text}</Text> : null}
-				{props.children}
+				{showTitle ? <Text style={styles.text}>{text}</Text> : null}
+				{children}
 			</View>
-		</Animated.View>
+		</PressableAnimated>
 	);
 };
 

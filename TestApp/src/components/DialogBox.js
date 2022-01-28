@@ -6,14 +6,8 @@ import {
 	Text,
 	Dimensions,
 	TouchableOpacity,
-	NativeModules,
 	LayoutAnimation,
 } from "react-native";
-
-const { UIManager } = NativeModules;
-
-UIManager.setLayoutAnimationEnabledExperimental &&
-	UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const DialogBox = ({
 	onChangeText,

@@ -1,6 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+	View,
+	Text,
+	StyleSheet,
+	Pressable,
+	LayoutAnimation,
+	TouchableNativeFeedback,
+} from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { useState } from "react";
 
 const ListItemGeneric = ({
 	text,
@@ -10,14 +18,32 @@ const ListItemGeneric = ({
 	index,
 	onCheck,
 	isCompleted,
+	textColor,
+	expandOnLongPress,
+	expandHeight,
+	height,
+	children,
+	listItemStyle,
+	flex,
 }) => {
+	const [expanded, setExpanded] = React.useState(false);
+
 	return (
 		<View
 			style={[
 				styles.container,
+				{ backgroundColor: isCompleted ? "#6B6B6B" : undefined },
+				listItemStyle,
 				{
-					backgroundColor: isCompleted ? "#6B6B6B" : null,
-					opacity: isCompleted ? 0.3 : null,
+					opacity: isCompleted ? 0.5 : null,
+					height:
+						expanded && expandOnLongPress
+							? expandHeight
+							: height
+							? height
+							: flex
+							? null
+							: 50,
 				},
 			]}
 		>
@@ -32,7 +58,22 @@ const ListItemGeneric = ({
 					useNativeDriver
 				/>
 			) : (
-				<Text>{text}</Text>
+				<Pressable
+					delayLongPress={300}
+					hitSlop={2}
+					onLongPress={
+						expandOnLongPress
+							? () => {
+									LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+									console.log("expanded");
+									setExpanded(!expanded);
+							  }
+							: null
+					}
+				>
+					<Text style={(styles.textStyle, { color: textColor })}>{text}</Text>
+					{children}
+				</Pressable>
 			)}
 		</View>
 	);
@@ -47,6 +88,11 @@ const styles = StyleSheet.create({
 		borderBottomColor: "#8091B0",
 		borderBottomWidth: 1,
 		paddingLeft: 8,
+	},
+	textStyle: {
+		color: "white",
+		backgroundColor: "red",
+		flex: 1,
 	},
 });
 

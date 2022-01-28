@@ -5,7 +5,8 @@ import { StyleSheet } from "react-native";
 import Square from "../components/square";
 import { useSelector } from "react-redux";
 import Timer from "../components/Counter";
-import MiniReminderView from "../components/MiniReminderView";
+import { MiniReminderView } from "../components/MiniReminderView";
+import Pomodoro from "./PomodoroScreen";
 
 function HomeScreen({ navigation }) {
 	const isrunning = useSelector((state) => state.time.isRunning);
@@ -75,6 +76,7 @@ const styles = StyleSheet.create({
 	rootContainer: {
 		flex: 1,
 		backgroundColor: "#191F2C",
+		paddingTop: 30,
 	},
 });
 export default HomeScreen;

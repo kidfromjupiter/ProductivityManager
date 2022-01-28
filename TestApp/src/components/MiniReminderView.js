@@ -5,16 +5,26 @@ import {
 	Text,
 	Animated,
 	LayoutAnimation,
-	NativeModules,
 	FlatList,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import ListItemGeneric from "./ListItemGeneric";
 import { editReminder } from "../redux/ReminderSlice";
-const { UIManager } = NativeModules;
 
-UIManager.setLayoutAnimationEnabledExperimental &&
-	UIManager.setLayoutAnimationEnabledExperimental(true);
+const ListEmpty = ({ emptyText, colors }) => {
+	return (
+		<View style={styles.emptyContainer}>
+			<Text
+				style={[
+					styles.emptyText,
+					{ color: colors ? colors.textColor : "white" },
+				]}
+			>
+				{emptyText}
+			</Text>
+		</View>
+	);
+};
 
 const MiniReminderView = () => {
 	const reminders = useSelector((state) => state.reminders);
@@ -25,6 +35,17 @@ const MiniReminderView = () => {
 		dispatch(editReminder({ index: index }));
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 	};
+	const renderItem = ({ item, index }) => (
+		<ListItemGeneric
+			Checkbox
+			checkboxColor={colors.accentColor}
+			text={item.title}
+			checkboxTextColor={colors.textColor}
+			onCheck={setComplete}
+			index={index}
+			isCompleted={item.completed}
+		/>
+	);
 
 	return (
 		<View
@@ -34,44 +55,37 @@ const MiniReminderView = () => {
 		>
 			<View style={[styles.innerContainer]}>
 				{/* <Text>This is text</Text> */}
-				{reminders.reminders.length > 0 ? (
-					<FlatList
-						style={styles.listStyle}
-						extraData={reminders}
-						data={reminders.reminders}
-						renderItem={({ item, index }) => (
-							<ListItemGeneric
-								Checkbox
-								checkboxColor={colors.accentColor}
-								text={item.title}
-								checkboxTextColor={colors.textColor}
-								onCheck={setComplete}
-								index={index}
-								isCompleted={item.completed}
-							/>
-						)}
-						keyExtractor={(item) => item.id}
-						showsVerticalScrollIndicator={false}
-					/>
-				) : (
-					<Text
-						style={{
-							textAlign: "center",
-							textAlignVertical: "center",
-							padding: 30,
-							color: colors.textColor,
-							fontSize: 19,
-						}}
-					>
-						All completed
-					</Text>
-				)}
+				<FlatList
+					style={styles.listStyle}
+					extraData={reminders}
+					ListEmptyComponent={() => (
+						<ListEmpty colors={colors} emptyText="No reminders" />
+					)}
+					data={reminders.reminders}
+					maxToRenderPerBatch={5}
+					initialNumToRender={7}
+					renderItem={renderItem}
+					keyExtractor={(item) => item.id}
+					showsVerticalScrollIndicator={false}
+				/>
 			</View>
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
+	emptyContainer: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	emptyText: {
+		textAlign: "center",
+		textAlignVertical: "center",
+		padding: 30,
+
+		fontSize: 19,
+	},
 	OuterContainer: {
 		flex: 1,
 		borderRadius: 20,
@@ -86,4 +100,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default MiniReminderView;
+export { ListEmpty, MiniReminderView };

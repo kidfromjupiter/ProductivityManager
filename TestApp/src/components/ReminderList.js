@@ -11,6 +11,7 @@ import {
 import ListItem from "./ListItem";
 import { AntDesign } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
+import { ListEmpty } from "./MiniReminderView";
 
 if (
 	Platform.OS === "android" &&
@@ -20,6 +21,9 @@ if (
 }
 
 const ReminderList = ({ DATA }) => {
+	const renderItem = ({ item, index }) => (
+		<ListItem index={index} item={item} />
+	);
 	const Color = useSelector((state) => state.colors);
 	return (
 		<View
@@ -28,8 +32,11 @@ const ReminderList = ({ DATA }) => {
 			<FlatList
 				style={styles.list}
 				data={DATA}
-				renderItem={({ item, index }) => <ListItem index={index} item={item} />}
+				renderItem={renderItem}
 				keyExtractor={(item) => item.id}
+				ListEmptyComponent={() => (
+					<ListEmpty colors={Color} emptyText="All done! Add a new reminder." />
+				)}
 			/>
 		</View>
 	);

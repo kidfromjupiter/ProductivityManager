@@ -1,22 +1,11 @@
 import React from "react";
-import {
-	View,
-	Text,
-	StyleSheet,
-	LayoutAnimation,
-	NativeModules,
-} from "react-native";
+import { View, Text, StyleSheet, LayoutAnimation } from "react-native";
 import { useDispatch } from "react-redux";
 import { addReminder } from "../redux/ReminderSlice";
 import ReminderList from "../components/ReminderList";
 import ActionButton from "../components/ActionButton";
 import { useSelector } from "react-redux";
 import DialogBox from "../components/DialogBox";
-
-const { UIManager } = NativeModules;
-
-UIManager.setLayoutAnimationEnabledExperimental &&
-	UIManager.setLayoutAnimationEnabledExperimental(true);
 
 export const ReminderScreen = () => {
 	const dispatch = useDispatch();
@@ -35,7 +24,7 @@ export const ReminderScreen = () => {
 			description: description,
 			completed: false,
 		};
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 		dispatch(addReminder(reminder));
 		setDialogBoxShow(false);
 	};

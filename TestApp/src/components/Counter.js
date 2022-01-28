@@ -10,11 +10,64 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
 import dateParser from "../extras/dateparser";
 import { Audio } from "expo-av";
-import ColorSlice from "../redux/ColorSlice";
+
+const Presets = ({ colors, resetTimer, dispatch }) => {
+	const buttonColor = {
+		backgroundColor: colors.accentColor,
+	};
+	const buttonTextColor = {
+		color: "white",
+	};
+	const textColor = {
+		color: "#D7D7D7",
+	};
+	return (
+		<>
+			<View style={styles.buttonHolder}>
+				<TouchableHighlight
+					style={[styles.button, buttonColor]}
+					onPress={() => {
+						resetTimer(0);
+						dispatch(setTimer({ time: 1 * 60 }));
+					}}
+				>
+					<Text style={[styles.textStyles, buttonTextColor]}>1</Text>
+				</TouchableHighlight>
+				<TouchableHighlight
+					style={[styles.button, buttonColor]}
+					onPress={() => {
+						resetTimer(0);
+						dispatch(setTimer({ time: 2 * 60 }));
+					}}
+				>
+					<Text style={[styles.textStyles, buttonTextColor]}>2</Text>
+				</TouchableHighlight>
+				<TouchableHighlight
+					style={[styles.button, buttonColor]}
+					onPress={() => {
+						resetTimer(0);
+						dispatch(setTimer({ time: 5 * 60 }));
+					}}
+				>
+					<Text style={[styles.textStyles, buttonTextColor]}>5</Text>
+				</TouchableHighlight>
+				<TouchableHighlight
+					style={[styles.button, buttonColor]}
+					onPress={() => {
+						resetTimer(0);
+						dispatch(setTimer({ time: 10 * 60 }));
+					}}
+				>
+					<Text style={[styles.textStyles, buttonTextColor]}>10</Text>
+				</TouchableHighlight>
+			</View>
+		</>
+	);
+};
 
 const Timer = ({ context, isDisabled, timeSize }) => {
-	const timer = useSelector((state) => state.time);
 	const colors = useSelector((state) => state.colors);
+	const timer = useSelector((state) => state.time);
 
 	const [sound, setSound] = useState();
 
@@ -69,20 +122,11 @@ const Timer = ({ context, isDisabled, timeSize }) => {
 			: undefined;
 	}, [sound]);
 
-	const buttonColor = {
-		backgroundColor: colors.accentColor,
-	};
-	const buttonTextColor = {
-		color: "white",
-	};
-	const textColor = {
-		color: "#D7D7D7",
-	};
 	return (
 		<Pressable
 			style={[
 				styles.timeContainer,
-				{ backgroundColor: context == "home" ? null : colors.backgroundColor },
+				// { backgroundColor: context == "home" ? null : colors.backgroundColor },
 			]}
 			onPress={() => StartTimer()}
 			onLongPress={() => ResetTimer()}
@@ -94,7 +138,7 @@ const Timer = ({ context, isDisabled, timeSize }) => {
 					<Text
 						style={[
 							styles.timeStyles,
-							context == "home" ? { fontSize: timeSize } : { fontSize: 150 },
+							context ? { fontSize: timeSize } : { fontSize: 150 },
 						]}
 					>
 						{minutes}
@@ -104,52 +148,15 @@ const Timer = ({ context, isDisabled, timeSize }) => {
 					<Text
 						style={[
 							styles.timeStyles,
-							context == "home" ? { fontSize: timeSize } : { fontSize: 150 },
+							context ? { fontSize: timeSize } : { fontSize: 150 },
 						]}
 					>
 						{seconds}
 					</Text>
 				</View>
 			</View>
-			{context !== "home" ? (
-				<View style={styles.buttonHolder}>
-					<TouchableHighlight
-						style={[styles.button, buttonColor]}
-						onPress={() => {
-							ResetTimer(0);
-							dispatch(setTimer({ time: 1 * 60 }));
-						}}
-					>
-						<Text style={[styles.textStyles, buttonTextColor]}>1</Text>
-					</TouchableHighlight>
-					<TouchableHighlight
-						style={[styles.button, buttonColor]}
-						onPress={() => {
-							ResetTimer(0);
-							dispatch(setTimer({ time: 2 * 60 }));
-						}}
-					>
-						<Text style={[styles.textStyles, buttonTextColor]}>2</Text>
-					</TouchableHighlight>
-					<TouchableHighlight
-						style={[styles.button, buttonColor]}
-						onPress={() => {
-							ResetTimer(0);
-							dispatch(setTimer({ time: 5 * 60 }));
-						}}
-					>
-						<Text style={[styles.textStyles, buttonTextColor]}>5</Text>
-					</TouchableHighlight>
-					<TouchableHighlight
-						style={[styles.button, buttonColor]}
-						onPress={() => {
-							ResetTimer(0);
-							dispatch(setTimer({ time: 10 * 60 }));
-						}}
-					>
-						<Text style={[styles.textStyles, buttonTextColor]}>10</Text>
-					</TouchableHighlight>
-				</View>
+			{context == "timer" ? (
+				<Presets colors={colors} dispatch={dispatch} resetTimer={ResetTimer} />
 			) : null}
 		</Pressable>
 	);
@@ -158,6 +165,7 @@ const styles = StyleSheet.create({
 	timeStyles: {
 		fontSize: 50,
 		color: "white",
+		zIndex: 1000,
 	},
 	rootContainer: {
 		flex: 1,
@@ -169,7 +177,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		zIndex: 2,
 		flex: 1,
-		backgroundColor: "black",
+		// backgroundColor: "black",
 	},
 	buttonHolder: {
 		flex: 3,

@@ -6,7 +6,6 @@ import {
 	Text,
 	Dimensions,
 	Animated,
-	NativeModules,
 	LayoutAnimation,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";

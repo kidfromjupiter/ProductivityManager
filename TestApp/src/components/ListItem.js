@@ -3,7 +3,6 @@ import {
 	View,
 	Animated,
 	StyleSheet,
-	NativeModules,
 	Pressable,
 	Easing,
 	LayoutAnimation,
@@ -14,11 +13,6 @@ import { useDispatch } from "react-redux";
 import { editReminder, deleteReminder } from "../redux/ReminderSlice";
 import { AntDesign } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
-
-const { UIManager } = NativeModules;
-
-UIManager.setLayoutAnimationEnabledExperimental &&
-	UIManager.setLayoutAnimationEnabledExperimental(true);
 
 // const Vector
 
