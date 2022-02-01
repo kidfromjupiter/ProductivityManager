@@ -12,6 +12,9 @@ class PomodoroClass {
 		// console.log(JSON.stringify(this));
 		return JSON.stringify(this);
 	}
+	objectify() {
+		return JSON.parse(this.stringify());
+	}
 }
 
 export { PomodoroClass };

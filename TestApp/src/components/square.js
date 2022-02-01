@@ -14,6 +14,7 @@ const Square = ({
 	text,
 	flex,
 	showTitle,
+	enableLongPress,
 	children,
 	navigation,
 	customStyles,
@@ -21,10 +22,11 @@ const Square = ({
 	scaleUp,
 	holdToExpand,
 	expandSize,
-	parentSetStateCallback,
+	expanded,
+	ParentTouchEndCallback,
 }) => {
+	// const [expanded, setExpanded] = React.useState(false);
 	const animatedButtonScale = new Animated.Value(1);
-	const [expanded, setExpanded] = React.useState(false);
 
 	const onTouchStart = () => {
 		Animated.timing(animatedButtonScale, {
@@ -70,11 +72,11 @@ const Square = ({
 				onTouchEnd();
 			}}
 			onLongPress={
-				holdToExpand
+				enableLongPress
 					? () => {
 							LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
-							setExpanded(!expanded);
+							ParentTouchEndCallback();
 					  }
 					: null
 			}

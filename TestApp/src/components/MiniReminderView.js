@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
 	StyleSheet,
 	View,
@@ -31,6 +31,9 @@ const MiniReminderView = () => {
 	const colors = useSelector((state) => state.colors);
 	const dispatch = useDispatch();
 
+	//re-renders component if data is changed
+	useEffect(() => {}, [reminders.reminders]);
+
 	const setComplete = (index) => {
 		dispatch(editReminder({ index: index }));
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -57,7 +60,7 @@ const MiniReminderView = () => {
 				{/* <Text>This is text</Text> */}
 				<FlatList
 					style={styles.listStyle}
-					extraData={reminders}
+					extradata={reminders.reminders}
 					ListEmptyComponent={() => (
 						<ListEmpty colors={colors} emptyText="No reminders" />
 					)}

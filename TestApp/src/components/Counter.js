@@ -7,11 +7,9 @@ import {
 	TouchableHighlight,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
-import dateParser from "../extras/dateparser";
 import { Audio } from "expo-av";
 
-const Presets = ({ colors, resetTimer, dispatch }) => {
+const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 	const buttonColor = {
 		backgroundColor: colors.accentColor,
 	};
@@ -28,7 +26,7 @@ const Presets = ({ colors, resetTimer, dispatch }) => {
 					style={[styles.button, buttonColor]}
 					onPress={() => {
 						resetTimer(0);
-						dispatch(setTimer({ time: 1 * 60 }));
+						setTimer({ time: 1 * 60 });
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>1</Text>
@@ -37,7 +35,7 @@ const Presets = ({ colors, resetTimer, dispatch }) => {
 					style={[styles.button, buttonColor]}
 					onPress={() => {
 						resetTimer(0);
-						dispatch(setTimer({ time: 2 * 60 }));
+						setTimer({ time: 2 * 60 });
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>2</Text>
@@ -46,7 +44,7 @@ const Presets = ({ colors, resetTimer, dispatch }) => {
 					style={[styles.button, buttonColor]}
 					onPress={() => {
 						resetTimer(0);
-						dispatch(setTimer({ time: 5 * 60 }));
+						setTimer({ time: 5 * 60 });
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>5</Text>
@@ -55,7 +53,7 @@ const Presets = ({ colors, resetTimer, dispatch }) => {
 					style={[styles.button, buttonColor]}
 					onPress={() => {
 						resetTimer(0);
-						dispatch(setTimer({ time: 10 * 60 }));
+						setTimer({ time: 10 * 60 });
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>10</Text>
@@ -65,12 +63,34 @@ const Presets = ({ colors, resetTimer, dispatch }) => {
 	);
 };
 
-const Timer = ({ context, isDisabled, timeSize }) => {
+const Timer = ({
+	context,
+	isDisabled,
+	timeSize,
+	StartTimer,
+	ResetTimer,
+	minutes,
+	seconds,
+	timer,
+	setTimer,
+}) => {
 	const colors = useSelector((state) => state.colors);
-	const timer = useSelector((state) => state.time);
-
 	const [sound, setSound] = useState();
 
+	useEffect(() => {
+		if (timer && timer.isRunning && timer.time !== 0) {
+			const interval = setInterval(() => {
+				let newTime = timer.time - 1;
+				if (newTime == 0) {
+					setTimer({ time: newTime });
+					playSound();
+				}
+				setTimer({ time: newTime });
+			}, 1000);
+
+			return () => clearInterval(interval);
+		}
+	});
 	async function playSound() {
 		console.log("Loading Sound");
 		const { sound } = await Audio.Sound.createAsync(
@@ -81,38 +101,6 @@ const Timer = ({ context, isDisabled, timeSize }) => {
 		console.log("Playing Sound");
 		await sound.playAsync();
 	}
-
-	const dispatch = useDispatch();
-
-	const StartTimer = () => {
-		if (timer.time !== 0) {
-			dispatch(startTimer());
-		}
-	};
-	const ResetTimer = () => {
-		dispatch(resetTimer());
-	};
-
-	//playing sounds
-
-	// converting seconds to minutes and seconds
-	const { minutes, seconds } = dateParser(timer.time);
-
-	// running the timer for one sec each render and updating the time. clearing the timer when the timer is finished.
-	useEffect(() => {
-		if (timer.isRunning && timer.time !== 0) {
-			const interval = setInterval(() => {
-				let newTime = timer.time - 1;
-				if (newTime == 0) {
-					dispatch(setTimer({ time: newTime }));
-					playSound();
-				}
-				dispatch(setTimer({ time: newTime }));
-			}, 1000);
-
-			return () => clearInterval(interval);
-		}
-	});
 	useEffect(() => {
 		return sound
 			? () => {
@@ -156,7 +144,7 @@ const Timer = ({ context, isDisabled, timeSize }) => {
 				</View>
 			</View>
 			{context == "timer" ? (
-				<Presets colors={colors} dispatch={dispatch} resetTimer={ResetTimer} />
+				<Presets colors={colors} resetTimer={ResetTimer} setTimer={setTimer} />
 			) : null}
 		</Pressable>
 	);

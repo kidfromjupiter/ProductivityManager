@@ -1,16 +1,32 @@
-import { NavigationContainer } from "@react-navigation/native";
-import React, { useContext } from "react";
-import { View, Text, Button, Touchable } from "react-native";
+import React from "react";
+import { useDispatch } from "react-redux";
+import dateParser from "../extras/dateparser";
+import { View } from "react-native";
 import { StyleSheet } from "react-native";
 import Square from "../components/square";
 import { useSelector } from "react-redux";
 import Timer from "../components/Counter";
 import { MiniReminderView } from "../components/MiniReminderView";
-import Pomodoro from "./PomodoroScreen";
+import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
 
 function HomeScreen({ navigation }) {
-	const isrunning = useSelector((state) => state.time.isRunning);
-	const [DialogBoxShow, setDialogBoxShow] = React.useState(false);
+	const timer = useSelector((state) => state.time);
+
+	const dispatch = useDispatch();
+
+	const StartTimer = () => {
+		if (timer.time !== 0) {
+			dispatch(startTimer());
+		}
+	};
+	const ResetTimer = () => {
+		dispatch(resetTimer());
+	};
+	const SetTimer = (value) => {
+		dispatch(setTimer(value));
+	};
+
+	const { minutes, seconds } = dateParser(timer.time);
 	return (
 		<View style={[styles.rootContainer]}>
 			<View style={styles.container}>
@@ -29,7 +45,17 @@ function HomeScreen({ navigation }) {
 					endColor="#00257A"
 					navigation={navigation}
 				>
-					<Timer context="home" timeSize={65} isDisabled />
+					<Timer
+						context="home"
+						timeSize={65}
+						isDisabled
+						StartTimer={StartTimer}
+						ResetTimer={ResetTimer}
+						timer={timer}
+						minutes={minutes}
+						seconds={seconds}
+						setTimer={SetTimer}
+					/>
 				</Square>
 			</View>
 			<View style={styles.container}>
