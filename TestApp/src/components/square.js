@@ -23,7 +23,8 @@ const Square = ({
 	holdToExpand,
 	expandSize,
 	expanded,
-	ParentTouchEndCallback,
+	ParentHoldCallback,
+	touchEndCallback,
 }) => {
 	// const [expanded, setExpanded] = React.useState(false);
 	const animatedButtonScale = new Animated.Value(1);
@@ -47,7 +48,7 @@ const Square = ({
 	};
 
 	const TouchEndCallback = () => {
-		return;
+		return touchEndCallback ? touchEndCallback() : null;
 	};
 
 	const animatedScaleStyle = {
@@ -76,7 +77,7 @@ const Square = ({
 					? () => {
 							LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
-							ParentTouchEndCallback();
+							ParentHoldCallback();
 					  }
 					: null
 			}

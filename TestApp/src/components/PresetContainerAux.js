@@ -5,7 +5,6 @@ import {
 	StyleSheet,
 	Dimensions,
 	TextInput,
-	TouchableHighlight,
 	TouchableOpacity,
 } from "react-native";
 import Square from "./square";
@@ -20,6 +19,7 @@ import {
 	setTitle,
 } from "../redux/PomodoroSlice";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import sessionArrayGen from "../extras/sessionArrayGen";
 
 const PresetContainerDetails = ({ details, showDetailsSetter }) => {
 	const index = details.index;
@@ -156,7 +156,7 @@ const SliderHolder = ({
 		<View style={styles.SliderHolder}>
 			<Slider
 				style={{ height: 40 }}
-				minimumValue={min}
+				minimumValue={1} //change back to min
 				maximumValue={max}
 				value={value}
 				minimumTrackTintColor={colors.levelOne}
@@ -175,8 +175,9 @@ const SliderHolder = ({
 const PresetContainerCondensed = ({
 	itemObject,
 	colors,
-	ParentTouchEndCallback,
+	ParentHoldCallback,
 	index,
+	touchEndCallback,
 }) => {
 	// console.log(index);
 	return (
@@ -186,7 +187,7 @@ const PresetContainerCondensed = ({
 				flex={1}
 				customStyles={[styles.listItem, { backgroundColor: colors.levelTwo }]}
 				scaleDown={0.96}
-				ParentTouchEndCallback={() => ParentTouchEndCallback(itemObject, index)}
+				ParentHoldCallback={() => ParentHoldCallback(itemObject, index)}
 				enableLongPress
 			>
 				<PomodoroPresetContainer
@@ -196,6 +197,15 @@ const PresetContainerCondensed = ({
 					totalTime={itemObject.totalTime}
 					title={itemObject.title}
 					numOfSessions={itemObject.numOfSessions}
+					touchEndCallback={() => {
+						touchEndCallback(
+							sessionArrayGen(
+								itemObject.sessionTime,
+								itemObject.breakTime,
+								itemObject.numOfSessions
+							)
+						);
+					}}
 				/>
 			</Square>
 		</>

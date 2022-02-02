@@ -2,7 +2,7 @@ import React from "react";
 import { Animated, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
 
-export const AnimatedRing = ({ children, flex }) => {
+const AnimatedRing = ({ children, flex, animated }) => {
 	const animateValue = new Animated.Value(0);
 	const colors = useSelector((state) => state.colors);
 	const ringColor = colors.accentColor;
@@ -13,7 +13,6 @@ export const AnimatedRing = ({ children, flex }) => {
 			useNativeDriver: true,
 		}).start(() => {
 			animateValue.setValue(0);
-			fadeOutScaleUp();
 		});
 	};
 	const animationStyles = {
@@ -30,7 +29,7 @@ export const AnimatedRing = ({ children, flex }) => {
 			},
 		],
 	};
-	// fadeOutScaleUp();
+	animated ? fadeOutScaleUp() : null;
 	return (
 		<View style={[styles.childrenContainer, { flex: flex }]}>
 			<View
@@ -77,3 +76,5 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 });
+
+export default React.memo(AnimatedRing);

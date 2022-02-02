@@ -9,9 +9,10 @@ const PomodoroPresetContainer = ({
 	breakTime,
 	title,
 	numOfSessions,
+	touchEndCallback,
 }) => {
 	return (
-		<View style={styles.PresetInfoContainer}>
+		<View style={styles.PresetInfoContainer} onTouchStart={touchEndCallback}>
 			<View
 				style={[
 					styles.Presets,
