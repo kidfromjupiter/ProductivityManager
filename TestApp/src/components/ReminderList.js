@@ -38,6 +38,13 @@ const ReminderList = ({ DATA }) => {
 					<ListEmpty colors={Color} emptyText="All done! Add a new reminder." />
 				)}
 			/>
+			{DATA.length > 0 ? (
+				<Text
+					style={{ textAlign: "center", color: Color.textColor, padding: 6 }}
+				>
+					Press and hold reminder to see more detials
+				</Text>
+			) : null}
 		</View>
 	);
 };

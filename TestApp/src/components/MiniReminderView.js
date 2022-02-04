@@ -31,9 +31,6 @@ const MiniReminderView = () => {
 	const colors = useSelector((state) => state.colors);
 	const dispatch = useDispatch();
 
-	//re-renders component if data is changed
-	useEffect(() => {}, [reminders.reminders]);
-
 	const setComplete = (index) => {
 		dispatch(editReminder({ index: index }));
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

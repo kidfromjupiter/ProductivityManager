@@ -6,55 +6,82 @@ import {
 	Dimensions,
 	TextInput,
 	TouchableOpacity,
+	LayoutAnimation,
 } from "react-native";
 import Square from "./square";
 import PomodoroPresetContainer from "./PomodoroPresetContainer";
 import { useDispatch, useSelector } from "react-redux";
 import Slider from "@react-native-community/slider";
-import {
-	setNumOfSessions,
-	setBreakTime,
-	setSessionTime,
-	deletePreset,
-	setTitle,
-} from "../redux/PomodoroSlice";
+
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import sessionArrayGen from "../extras/sessionArrayGen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PomodoroClass } from "../extras/PomodoroCreator";
+import { incrementNumOfPresets } from "../redux/PomodoroSlice";
 
 const PresetContainerDetails = ({ details, showDetailsSetter }) => {
-	const index = details.index;
 	const colors = useSelector((state) => state.colors);
-	const pomodoro = useSelector((state) => state.pomodoro.sessionData[index]);
-	const [title, setTitle_local] = useState(pomodoro.title);
+	const [detailsObjectSD, setDetailsObjectSD] = useState(details.sessionTime);
+	const [detailsObjectBD, setDetailsObjectBD] = useState(details.breakTime);
+	const [detailsObjectNOS, setDetailsObjectNOS] = useState(
+		details.numOfSessions
+	);
+	const [detailsObjectT, setDetailsObjectT] = useState(details.title);
 
 	const dispatch = useDispatch();
-	const _setSessionDuration = (value, index) => {
-		dispatch(setSessionTime({ time: value, index: index }));
+	const SaveToStorage = async () => {
+		const pomodoroNew = new PomodoroClass(
+			detailsObjectT,
+			detailsObjectNOS,
+			detailsObjectSD,
+			detailsObjectBD,
+			details.id
+		);
+		await AsyncStorage.mergeItem(details.id, pomodoroNew.stringify(), (value) =>
+			value
+				? console.log("there was an error", value)
+				: dispatch(incrementNumOfPresets({ number: 1 }))
+		);
+
+		console.log("Done.");
 	};
-	const _setBreakDuration = (value, index) => {
-		dispatch(setBreakTime({ time: value, index: index }));
+
+	const _setSessionDuration = (value) => {
+		setDetailsObjectSD(value);
 	};
-	const _setNumOfSessions = (value, index) => {
-		dispatch(setNumOfSessions({ number: value, index: index }));
+	const _setBreakDuration = (value) => {
+		setDetailsObjectBD(value);
 	};
-	const _deletePreset = (index) => {
-		dispatch(deletePreset({ index: index }));
+	const _setNumOfSessions = (value) => {
+		setDetailsObjectNOS(value);
 	};
-	const _setTitle = (value, index) => {
-		dispatch(setTitle({ title: value, index: index }));
+	const _deletePreset = () => {
+		// setDetailsObject((detailsObject.sessionTime = value));
+		let removeValue = async (key) => {
+			await AsyncStorage.removeItem(key, () =>
+				dispatch(incrementNumOfPresets({ number: -1 }))
+			);
+		};
+
+		removeValue(details.id)
+			.then((value) => console.log(value))
+			.catch((value) => console.log(value));
+		// console.log("deleted");
+	};
+	const _setTitle = (value) => {
+		setDetailsObjectT(value);
 	};
 	return (
 		<View style={[styles.container, { backgroundColor: colors.levelFour }]}>
 			<View style={[styles.rows, styles.headerContainer]}>
 				<TextInput
-					value={title}
+					value={detailsObjectT}
 					style={[
 						styles.text,
 						styles.headerText,
 						{ borderBottomColor: colors.levelThree },
 					]}
-					onChangeText={(value) => setTitle_local(value)}
-					autoFocus={details.id == undefined ? true : false}
+					onChangeText={(value) => _setTitle(value)}
 				/>
 				<Ionicons
 					name="ios-trash-outline"
@@ -62,7 +89,7 @@ const PresetContainerDetails = ({ details, showDetailsSetter }) => {
 					color="white"
 					style={[styles.iconStyle]}
 					onPress={() => {
-						_deletePreset(index);
+						_deletePreset();
 						showDetailsSetter();
 					}}
 				/>
@@ -70,13 +97,13 @@ const PresetContainerDetails = ({ details, showDetailsSetter }) => {
 			<View style={styles.rows}>
 				<View style={styles.textHolder}>
 					<Text style={styles.text}>Session duration</Text>
-					<Text style={styles.text}>{pomodoro.sessionTime} min</Text>
+					<Text style={styles.text}>{detailsObjectSD} min</Text>
 				</View>
 				<SliderHolder
 					value={100}
 					colors={colors}
-					parentCallback={(value) => _setSessionDuration(value, index)}
-					value={pomodoro.sessionTime}
+					parentCallback={(value) => _setSessionDuration(value)}
+					value={detailsObjectSD}
 					min={10}
 					max={45}
 				/>
@@ -84,13 +111,13 @@ const PresetContainerDetails = ({ details, showDetailsSetter }) => {
 			<View style={styles.rows}>
 				<View style={styles.textHolder}>
 					<Text style={styles.text}>Number of sessions</Text>
-					<Text style={styles.text}>{pomodoro.numOfSessions}</Text>
+					<Text style={styles.text}>{detailsObjectNOS}</Text>
 				</View>
 				<SliderHolder
 					value={100}
 					colors={colors}
-					parentCallback={(value) => _setNumOfSessions(value, index)}
-					value={pomodoro.numOfSessions}
+					parentCallback={(value) => _setNumOfSessions(value)}
+					value={detailsObjectNOS}
 					min={2}
 					max={10}
 				/>
@@ -98,13 +125,13 @@ const PresetContainerDetails = ({ details, showDetailsSetter }) => {
 			<View style={styles.rows}>
 				<View style={styles.textHolder}>
 					<Text style={styles.text}>Break duration</Text>
-					<Text style={styles.text}>{pomodoro.breakTime} min</Text>
+					<Text style={styles.text}>{detailsObjectBD} min</Text>
 				</View>
 				<SliderHolder
 					value={100}
 					colors={colors}
-					parentCallback={(value) => _setBreakDuration(value, index)}
-					value={pomodoro.breakTime}
+					parentCallback={(value) => _setBreakDuration(value)}
+					value={detailsObjectBD}
 					min={5}
 					max={20}
 				/>
@@ -125,7 +152,7 @@ const PresetContainerDetails = ({ details, showDetailsSetter }) => {
 				</TouchableOpacity>
 				<TouchableOpacity
 					onPress={() => {
-						_setTitle(title, index);
+						SaveToStorage().finally((value) => console.log(value));
 						showDetailsSetter();
 					}}
 					style={{
@@ -152,19 +179,47 @@ const SliderHolder = ({
 	max,
 	parentCallback,
 }) => {
+	const [_slidervalue, _setSliderValue] = useState(value);
+	const [_sliding, _setSliding] = useState(false);
 	return (
 		<View style={styles.SliderHolder}>
+			{_sliding ? (
+				<View
+					style={{
+						flex: 1,
+						position: "absolute",
+						left: Dimensions.get("window").width / 2,
+						backgroundColor: "white",
+						elevation: 5,
+						padding: 12,
+						bottom: 45,
+						borderRadius: 15,
+					}}
+				>
+					<Text style={{ fontWeight: "bold" }}>{_slidervalue}</Text>
+				</View>
+			) : null}
+
 			<Slider
 				style={{ height: 40 }}
 				minimumValue={1} //change back to min
 				maximumValue={max}
-				value={value}
+				value={_slidervalue}
 				minimumTrackTintColor={colors.levelOne}
 				maximumTrackTintColor={colors.levelTwo}
 				thumbTintColor={colors.accentColor}
+				onSlidingStart={() => {
+					LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+					_setSliding(true);
+				}}
 				onValueChange={(Slidervalue) => {
-					parentCallback(Math.round(Slidervalue));
+					_setSliderValue(Math.round(Slidervalue));
 					// value = 0;
+				}}
+				onSlidingComplete={() => {
+					LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+					_setSliding(false);
+					parentCallback(_slidervalue);
 				}}
 				// step={min - max}
 			/>
@@ -197,6 +252,8 @@ const PresetContainerCondensed = ({
 					totalTime={itemObject.totalTime}
 					title={itemObject.title}
 					numOfSessions={itemObject.numOfSessions}
+					holdCallback={() => ParentHoldCallback(itemObject, index)}
+					holdDelay={150}
 					touchEndCallback={() => {
 						touchEndCallback(
 							sessionArrayGen(
@@ -237,7 +294,7 @@ const styles = StyleSheet.create({
 		left: 5,
 		right: 5,
 		borderRadius: 15,
-		elevation: 10,
+		// zIndex: 100,
 		overflow: "hidden",
 	},
 	rows: {
@@ -264,9 +321,6 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 	},
 	headerText: {
-		// textDecorationStyle: "dotted",
-		// textDecorationColor: "black",
-		// textDecorationLine: "underline",
 		borderBottomColor: "grey",
 		borderBottomWidth: 2,
 		padding: 10,

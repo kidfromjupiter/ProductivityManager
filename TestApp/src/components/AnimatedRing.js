@@ -2,10 +2,10 @@ import React from "react";
 import { Animated, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
 
-const AnimatedRing = ({ children, flex, animated }) => {
+const AnimatedRing = ({ children, flex, animated, ringColor }) => {
 	const animateValue = new Animated.Value(0);
 	const colors = useSelector((state) => state.colors);
-	const ringColor = colors.accentColor;
+	// const ringColor = colors.accentColor;
 	const fadeOutScaleUp = () => {
 		Animated.timing(animateValue, {
 			toValue: 1,

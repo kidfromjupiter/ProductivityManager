@@ -4,6 +4,7 @@ import {
 	Text,
 	StyleSheet,
 	Pressable,
+	Vibration,
 	TouchableHighlight,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,7 +27,7 @@ const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 					style={[styles.button, buttonColor]}
 					onPress={() => {
 						resetTimer(0);
-						setTimer({ time: 1 * 60 });
+						setTimer({ time: 1 * 6 });
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>1</Text>
@@ -91,6 +92,7 @@ const Timer = ({
 			return () => clearInterval(interval);
 		}
 	});
+
 	async function playSound() {
 		console.log("Loading Sound");
 		const { sound } = await Audio.Sound.createAsync(
@@ -116,8 +118,22 @@ const Timer = ({
 				styles.timeContainer,
 				// { backgroundColor: context == "home" ? null : colors.backgroundColor },
 			]}
-			onPress={() => StartTimer()}
-			onLongPress={() => ResetTimer()}
+			onPress={() => {
+				StartTimer();
+				if (Platform.OS == "android") {
+					Vibration.vibrate(70);
+				} else {
+					Vibration.vibrate([70]);
+				}
+			}}
+			onLongPress={() => {
+				ResetTimer();
+				if (Platform.OS == "android") {
+					Vibration.vibrate(100);
+				} else {
+					Vibration.vibrate([100]);
+				}
+			}}
 			android_ripple={{ color: "grey", borderless: true }}
 			disabled={isDisabled || timer.time === 0}
 		>

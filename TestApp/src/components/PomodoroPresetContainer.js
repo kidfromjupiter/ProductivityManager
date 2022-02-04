@@ -1,6 +1,7 @@
 import React from "react";
 import InfoCircle from "./Circle";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import * as Haptics from "expo-haptics";
 
 const PomodoroPresetContainer = ({
 	colors,
@@ -10,9 +11,19 @@ const PomodoroPresetContainer = ({
 	title,
 	numOfSessions,
 	touchEndCallback,
+	holdCallback,
+	holdDelay,
 }) => {
 	return (
-		<View style={styles.PresetInfoContainer} onTouchStart={touchEndCallback}>
+		<Pressable
+			style={styles.PresetInfoContainer}
+			onPress={touchEndCallback}
+			onLongPress={() => {
+				holdCallback();
+				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+			}}
+			delayLongPress={holdDelay}
+		>
 			<View
 				style={[
 					styles.Presets,
@@ -99,7 +110,7 @@ const PomodoroPresetContainer = ({
 					</Text>
 				</View>
 			</View>
-		</View>
+		</Pressable>
 	);
 };
 

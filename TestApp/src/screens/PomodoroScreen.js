@@ -1,96 +1,156 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, LayoutAnimation } from "react-native";
+import {
+	View,
+	StyleSheet,
+	FlatList,
+	LayoutAnimation,
+	Text,
+	Alert,
+	Vibration,
+	Platform,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import dateParser from "../extras/dateparser";
+import storeData from "../extras/saveData";
 import Timer from "../components/Counter";
 import ListHeader from "../components/ListHeader";
 import {
-	setSessionData,
-	setCurrentSessionArray,
-	toggleTimer,
-	setTimer,
 	resetTimer,
-	decrementCurrentSessionArrayAndStart,
+	setTime,
+	toggleTimer,
+	incrementNumOfPresets,
+	setNewCycle,
+	setCycleData,
+	exitCleanup,
 } from "../redux/PomodoroSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PomodoroClass } from "../extras/PomodoroCreator";
 import AnimatedRing from "../components/AnimatedRing";
 import {
 	PresetContainerCondensed,
 	PresetContainerDetails,
 } from "../components/PresetContainerAux";
+import InfoBar from "../components/InfoBar";
 
-const Pomodoro = ({}) => {
-	const pomodoro = useSelector((state) => state.pomodoro);
+const Pomodoro = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
 	const [showDetails, setShowDetails] = useState(null);
-
-	// console.log(sessionArrayGen(30, 10, 5));
+	const pomodoro = useSelector((state) => state.pomodoro);
+	const [pomodoroPresetsList, setPomodoroPresetsList] = useState([]);
+	const [FlatlistSize, setFlatlistSize] = useState(0);
+	const animation = LayoutAnimation.create(
+		175,
+		LayoutAnimation.Types.easeInEaseOut,
+		LayoutAnimation.Properties.scaleXY
+	);
+	LayoutAnimation.configureNext(animation);
 
 	const dispatch = useDispatch();
-
-	//toggles isRunning and isPaused if time != 0
-	const StartTimer = () => {
-		if (pomodoro.time !== 0) {
-			dispatch(toggleTimer());
-		}
+	const _SETTIME = (value) => {
+		Vibration.vibrate(50);
+		dispatch(setTime({ time: value.time }));
 	};
-	const ResetTimer = () => {
+	const _RESETTIME = () => {
 		dispatch(resetTimer());
 	};
-	const SetTimer = (value) => {
-		if (value.time == 0) {
-			const setValue = Object.assign({ session: false }, value);
-			dispatch(setTimer(setValue));
-			// dispatch(toggleTimerFinished());
-		} else {
-			dispatch(setTimer(value));
-		}
+	const _TOGGLETIMER = () => {
+		dispatch(toggleTimer());
 	};
-
-	//sets the timer details in the redux and toggles isRunning and Ispaused
-	const setTimerDetails = (details) => {
-		ResetTimer();
-		SetTimer({ time: details.time * 60 });
+	const _INCREMENETPRESETNUMBER = (value) => {
+		dispatch(incrementNumOfPresets({ number: value }));
 	};
-
-	const _setCurrentSessionArray = (value) => {
-		console.log("current session array funct ", value);
-		dispatch(setCurrentSessionArray({ array: value }));
+	const _SETCYCLEDATA = (value) => {
+		dispatch(setCycleData({ array: value }));
 	};
+	const _SETNEWCYCLE = () => {
+		dispatch(setNewCycle());
+	};
+	const _CLEANUP = () => {
+		dispatch(exitCleanup());
+	};
+	useEffect(
+		() =>
+			navigation.addListener("beforeRemove", (e) => {
+				e.preventDefault();
+				Alert.alert(
+					"Leave?",
+					"This will reset the pomodoro. Do you still want to leave?",
+					[
+						{ text: "No", style: "cancel", onPress: () => {} },
+						{
+							text: "Yes",
+							style: "destructive",
+							onPress: () => {
+								navigation.dispatch(e.data.action);
+							},
+						},
+					]
+				);
+			}),
+		[]
+	);
 
-	const { minutes, seconds } = dateParser(pomodoro.time);
+	useEffect(() => {
+		return () => {
+			console.log("running cleanup");
+			_CLEANUP();
+		};
+	}, []);
+
 	const renderItem = ({ item, index }) => {
-		// console.log(,index);
+		const itemObject = JSON.parse(item);
 		return (
 			<PresetContainerCondensed
-				itemObject={item}
+				itemObject={itemObject}
 				colors={colors}
 				ParentHoldCallback={toggleDetails}
 				index={index}
-				// touchEndCallback={(value) => {
-				// 	_setCurrentSessionArray(value);
-				// 	setTimerDetails({ time: pomodoro.currentSessionArray[0] });
-				// }}
-				touchEndCallback={_setCurrentSessionArray}
+				touchEndCallback={(value) => _SETCYCLEDATA(value)}
 			/>
 		);
 	};
-	if (
-		pomodoro.time == 0 &&
-		pomodoro.isRunning &&
-		pomodoro.currentSessionArray.length !== 0
-	) {
-		dispatch(decrementCurrentSessionArrayAndStart());
-	}
+	const clearAll = async () => {
+		try {
+			await AsyncStorage.clear();
+		} catch (e) {
+			// clear error
+		}
+
+		console.log("Done.");
+	};
+	useEffect(() => {
+		if (pomodoro.isRunning && !pomodoro.isFinished) {
+			_SETNEWCYCLE();
+		}
+	}, [pomodoro.isSession]);
 
 	useEffect(() => {
-		if (
-			pomodoro.currentSessionArray.length >= 0 &&
-			pomodoro.currentSessionArray[0]
-		) {
-			setTimerDetails({ time: pomodoro.currentSessionArray[0] });
-		}
-	}, [pomodoro.currentSessionArray]);
+		const getallObjects = async () => {
+			let keys = [];
+			let values = [];
+			try {
+				keys = await AsyncStorage.getAllKeys();
+			} catch (e) {
+				console.log(e);
+			}
+			try {
+				let [...values] = await AsyncStorage.multiGet(keys);
+				let newValues = [];
+				values.forEach((item) => {
+					newValues.unshift(item[1]);
+				});
+				setPomodoroPresetsList(newValues);
+			} catch (e) {
+				console.log(e);
+			}
+		};
+		getallObjects();
+	}, [pomodoro.numOfPresets]);
+
+	// nuke everything
+	// clearAll();
+
+	// console.log(pomodoro);
 
 	const createPomodoro = () => {
 		let numOfSessions = 3;
@@ -104,21 +164,23 @@ const Pomodoro = ({}) => {
 			breakTime
 		);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-		dispatch(setSessionData(pomodoro.objectify()));
-		toggleDetails({}, 0);
+		storeData(pomodoro.id, pomodoro.stringify());
+		console.log("created and saved");
+		_INCREMENETPRESETNUMBER(1);
+		// toggleDetails({}, 0);
 	};
 
-	const toggleDetails = (details, index) => {
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+	const toggleDetails = (details) => {
 		if (details) {
-			const indexDetails = { index: index };
-			let detailsToShow = { ...details };
-			const newDetails = Object.assign(detailsToShow, indexDetails);
-			setShowDetails(newDetails);
+			setShowDetails(details);
 		} else {
 			setShowDetails(null);
 		}
 	};
+
+	const { minutes, seconds } = dateParser(pomodoro.time);
+
+	// console.log(pomodoro.cycleData.length);
 
 	return (
 		<View
@@ -129,30 +191,60 @@ const Pomodoro = ({}) => {
 				},
 			]}
 		>
-			<AnimatedRing flex={8} animated={pomodoro.isRunning ? true : false}>
+			<AnimatedRing
+				flex={8}
+				animated={pomodoro.isRunning ? true : false}
+				ringColor={
+					!pomodoro.isFinished
+						? pomodoro.isRunning
+							? colors.accentColor
+							: "red"
+						: "orange"
+				}
+			>
 				<Timer
-					// isDisabled
 					timeSize={70}
 					context="pomodoro"
-					ResetTimer={() => {
-						ResetTimer();
-					}}
-					StartTimer={StartTimer}
-					setTimer={SetTimer}
+					setTimer={_SETTIME}
+					StartTimer={_TOGGLETIMER}
 					timer={pomodoro}
+					ResetTimer={_RESETTIME}
 					minutes={minutes}
 					seconds={seconds}
 				/>
 			</AnimatedRing>
-			{/* <View
-				style={{ flex: 1, backgroundColor: "red" }}
-				onTouchEnd={() =>
-					pomodoro.currentSessionArray[0]
-						? setTimerDetails({ time: pomodoro.currentSessionArray[0] })
-						: null
-				}
-			></View> */}
-			<View style={styles.listContainer}>
+			{!showDetails ? (
+				<View style={[styles.infobarHolder, { bottom: FlatlistSize + 10 }]}>
+					{!pomodoro.isSession ? (
+						<InfoBar
+							customstyles={[
+								styles.infobar,
+								// { bottom: FlatlistSize + 10, zIndex: 2 },
+							]}
+							info="Break"
+						></InfoBar>
+					) : null}
+					{pomodoro.cycleData.length > 0 ? (
+						<InfoBar
+							customstyles={[
+								styles.infobar,
+								// { bottom: FlatlistSize + 50, zIndex: 2 },
+							]}
+							info={
+								Math.round(pomodoro.cycleData.length / 2) + " sessions left"
+							}
+						></InfoBar>
+					) : null}
+				</View>
+			) : null}
+
+			<View
+				style={styles.listContainer}
+				onLayout={(e) => {
+					const { height } = e.nativeEvent.layout;
+					setFlatlistSize(height);
+				}}
+			>
 				<ListHeader
 					extraStyle={{
 						padding: 10,
@@ -164,10 +256,14 @@ const Pomodoro = ({}) => {
 					text="Presets"
 				/>
 				<FlatList
-					data={pomodoro.sessionData}
+					extraData={pomodoroPresetsList}
+					data={pomodoroPresetsList}
 					style={[styles.list, { backgroundColor: colors.levelOne }]}
 					renderItem={(item) => renderItem(item)}
-					keyExtractor={(item) => item.id}
+					keyExtractor={(item) => {
+						const itemObject = JSON.parse(item);
+						return itemObject.id;
+					}}
 					horizontal
 					showsHorizontalScrollIndicator={false}
 				/>
@@ -191,6 +287,18 @@ const styles = StyleSheet.create({
 
 	listContainer: {
 		flex: 5,
+	},
+	infobar: {
+		// width: 50,
+		// flex: 1,
+		borderRadius: 10,
+	},
+	infobarHolder: {
+		flex: 1,
+		flexDirection: "row",
+		bottom: 0,
+		right: 10,
+		position: "absolute",
 	},
 });
 

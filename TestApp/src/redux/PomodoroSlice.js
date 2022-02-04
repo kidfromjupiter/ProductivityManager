@@ -6,82 +6,82 @@ export const PomodoroSlice = createSlice({
 		time: 0,
 		isRunning: false,
 		isPaused: false,
-		isReset: false,
-		isStopped: false,
-		isStarted: false,
+		isSession: true,
 		isFinished: false,
-		sessionData: [],
-		currentSessionArray: [],
+		numOfPresets: 0,
+		cycleData: [],
 	},
 	reducers: {
-		setSessionData: (state, action) => {
-			state.sessionData.unshift(action.payload);
-		},
-		setSessionTime: (state, action) => {
-			let stateCopy = JSON.parse(JSON.stringify(state));
-
-			stateCopy.sessionData[action.payload.index].sessionTime =
-				action.payload.time;
-			return stateCopy;
-		},
-		setBreakTime: (state, action) => {
-			let stateCopy = JSON.parse(JSON.stringify(state));
-			stateCopy.sessionData[action.payload.index].breakTime =
-				action.payload.time;
-			return stateCopy;
-		},
-		setNumOfSessions: (state, action) => {
-			let stateCopy = JSON.parse(JSON.stringify(state));
-			stateCopy.sessionData[action.payload.index].numOfSessions =
-				action.payload.number;
-			return stateCopy;
-		},
-		deletePreset: (state, action) => {
-			let stateCopy = JSON.parse(JSON.stringify(state));
-			stateCopy.sessionData.splice(action.payload.index, 1);
-			// stateCopy.sessionData = { ...newList };
-			return stateCopy;
-		},
-		setTitle: (state, action) => {
-			let stateCopy = JSON.parse(JSON.stringify(state));
-			stateCopy.sessionData[action.payload.index].title = action.payload.title;
-			return stateCopy;
-		},
-		toggleTimer: (state) => {
-			state.isRunning = !state.isRunning;
-			state.isPaused = !state.isPaused;
-			state.isFinished = false;
-		},
-		setTimer: (state, action) => {
-			if (action.payload.time == 0) {
-				// state.isRunning = false;
-				state.isFinished = true;
-				state.isSession = action.payload.session;
-			}
-			state.time = action.payload.time;
-		},
-		resetTimer: (state) => {
-			state.time = 0;
-			state.isRunning = false;
-		},
-		setCurrentSessionArray: (state, action) => {
+		setTime: (state, action) => {
 			let localState = JSON.parse(JSON.stringify(state));
-			localState.currentSessionArray = action.payload.array;
+			if (action.payload.time == 0) {
+				localState.isSession = !localState.isSession;
+			}
+			localState.time = action.payload.time;
 			return localState;
 		},
-		decrementCurrentSessionArrayAndStart: (state) => {
+		resetTimer: (state) => {
 			let localState = JSON.parse(JSON.stringify(state));
-			const newArray = localState.currentSessionArray.slice(
-				1,
-				localState.currentSessionArray.length
-			);
-			localState.currentSessionArray = newArray;
+			localState.time = 0;
+			localState.isRunning = false;
+			localState.isSession = true;
+			localState.cycleData = [];
+			return localState;
+		},
+		toggleTimer: (state) => {
+			let localState = JSON.parse(JSON.stringify(state));
 			localState.isRunning = !localState.isRunning;
 			localState.isPaused = !localState.isPaused;
+			return localState;
+		},
+		incrementNumOfPresets: (state, action) => {
+			let localState = JSON.parse(JSON.stringify(state));
+			localState.numOfPresets = localState.numOfPresets + action.payload.number;
+			console.log("ran incrementNumOfPresets");
+			return localState;
+		},
+		setCycleData: (state, action) => {
+			let localState = JSON.parse(JSON.stringify(state));
+			localState.cycleData = action.payload.array;
+			localState.isFinished = false;
+			console.log("ran setCycleData slice");
+			const time = localState.cycleData.shift();
+			localState.time = time * 60;
+			return localState;
+		},
+		setNewCycle: (state) => {
+			let localState = JSON.parse(JSON.stringify(state));
+			const time = localState.cycleData.shift();
+			// console.log(time)
+			if (localState.cycleData.length == 0) {
+				localState.isFinished = true;
+			}
+			localState.isRunning = false;
+			localState.isSession = !localState.isSession;
+			localState.time = time * 60;
+			console.log(localState);
+			return localState;
+		},
+		exitCleanup: (state) => {
+			let localState = JSON.parse(JSON.stringify(state));
+			localState.cycleData = [];
+			localState.isRunning = false;
+			localState.isPaused = false;
+			localState.time = 0;
+			localState.isSession = true;
+			localState.numOfPresets = 0;
 			localState.isFinished = false;
 			return localState;
 		},
 	},
 });
-export const {} = PomodoroSlice.actions;
+export const {
+	setTime,
+	resetTimer,
+	toggleTimer,
+	incrementNumOfPresets,
+	setNewCycle,
+	setCycleData,
+	exitCleanup,
+} = PomodoroSlice.actions;
 export default PomodoroSlice.reducer;

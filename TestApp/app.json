@@ -1,8 +1,8 @@
 {
 	"expo": {
-		"name": "TestApp",
-		"slug": "TestApp",
-		"version": "1.0.0",
+		"name": "GetItDone",
+		"slug": "GetItDone",
+		"version": "1.1.0",
 		"orientation": "portrait",
 		"icon": "./assets/icon.png",
 		"splash": {
@@ -15,7 +15,7 @@
 		},
 		"assetBundlePatterns": ["**/*"],
 		"ios": {
-			"supportsTablet": true
+			"supportsTablet": false
 		},
 		"android": {
 			"adaptiveIcon": {

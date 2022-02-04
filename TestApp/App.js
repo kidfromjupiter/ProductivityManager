@@ -1,6 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
-import { Text, View, Button, NativeModules } from "react-native";
+import {
+	Text,
+	View,
+	Button,
+	NativeModules,
+	LayoutAnimation,
+} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
@@ -16,6 +22,8 @@ const { UIManager } = NativeModules;
 UIManager.setLayoutAnimationEnabledExperimental &&
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 
+// LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
 function SettingsScreen() {
 	return (
 		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -26,7 +34,7 @@ function SettingsScreen() {
 
 const Stack = createNativeStackNavigator();
 
-const animation = "default";
+const animation = "fade";
 
 function StackNav() {
 	return (

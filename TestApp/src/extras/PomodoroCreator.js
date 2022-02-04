@@ -1,6 +1,6 @@
 class PomodoroClass {
-	constructor(title, numOfSessions, sessionTime, breakTime) {
-		this.id = Date.now();
+	constructor(title, numOfSessions, sessionTime, breakTime, id) {
+		id ? (this.id = id) : (this.id = Date.now().toString());
 		this.numOfSessions = numOfSessions;
 		this.sessionTime = sessionTime;
 		this.breakTime = breakTime;

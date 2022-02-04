@@ -24,7 +24,7 @@ const ListHeader = ({ extraStyle, text, onPressCallback }) => {
 			useNativeDriver: true,
 			// damping: 10,
 			// mass: 1,
-		}).start(() => onPressCallback());
+		}).start();
 	};
 	return (
 		<View style={[styles.container, extraStyle]}>
@@ -46,6 +46,7 @@ const ListHeader = ({ extraStyle, text, onPressCallback }) => {
 					}}
 					onPressOut={() => {
 						onTouchEnd();
+						onPressCallback();
 					}}
 				>
 					<AnimatedIcon
