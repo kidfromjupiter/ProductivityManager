@@ -40,7 +40,7 @@ const MiniReminderView = () => {
 			Checkbox
 			checkboxColor={colors.accentColor}
 			text={item.title}
-			checkboxTextColor={colors.textColor}
+			checkboxTextColor={colors.textColorTwo}
 			onCheck={setComplete}
 			index={index}
 			isCompleted={item.completed}
@@ -49,11 +49,13 @@ const MiniReminderView = () => {
 
 	return (
 		<View
-			style={styles.OuterContainer}
+			style={[styles.OuterContainer]}
 			onTouchEnd={(event) => event.stopPropagation()}
 			onTouchStart={(event) => event.stopPropagation()}
 		>
-			<View style={[styles.innerContainer]}>
+			<View
+				style={[styles.innerContainer, { backgroundColor: colors.levelTwo }]}
+			>
 				{/* <Text>This is text</Text> */}
 				<FlatList
 					style={styles.listStyle}

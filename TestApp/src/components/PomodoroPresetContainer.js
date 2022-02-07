@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import InfoCircle from "./Circle";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import * as Haptics from "expo-haptics";
@@ -20,7 +20,7 @@ const PomodoroPresetContainer = ({
 			onPress={touchEndCallback}
 			onLongPress={() => {
 				holdCallback();
-				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 			}}
 			delayLongPress={holdDelay}
 		>
@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
 	},
 	titleText: {
 		fontSize: 25,
-		fontWeight: "bold",
 	},
 	BottomBottomText: {
 		textAlign: "left",

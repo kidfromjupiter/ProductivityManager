@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import dateParser from "../extras/dateparser";
 import { View } from "react-native";
@@ -11,6 +11,7 @@ import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
 
 function HomeScreen({ navigation }) {
 	const timer = useSelector((state) => state.time);
+	const color = useSelector((state) => state.colors);
 
 	const dispatch = useDispatch();
 
@@ -28,7 +29,9 @@ function HomeScreen({ navigation }) {
 
 	const { minutes, seconds } = dateParser(timer.time);
 	return (
-		<View style={[styles.rootContainer]}>
+		<View
+			style={[styles.rootContainer, { backgroundColor: color.backgroundColor }]}
+		>
 			<View style={styles.container}>
 				<Square
 					flex={5}
@@ -37,6 +40,8 @@ function HomeScreen({ navigation }) {
 					endColor="#6E48AA"
 					navigation={navigation}
 					showTitle
+					customStyles={{ backgroundColor: color.levelOne }}
+					titleStyle={{ color: color.accentColor }}
 				/>
 				<Square
 					flex={3}
@@ -44,6 +49,8 @@ function HomeScreen({ navigation }) {
 					startColor="#00143D"
 					endColor="#00257A"
 					navigation={navigation}
+					customStyles={{ backgroundColor: color.levelOne }}
+					titleStyle={{ color: color.accentColor }}
 				>
 					<Timer
 						context="home"
@@ -67,6 +74,8 @@ function HomeScreen({ navigation }) {
 						endColor="#3a7bd5"
 						navigation={navigation}
 						showTitle
+						customStyles={{ backgroundColor: color.levelOne }}
+						titleStyle={{ color: color.accentColor }}
 					/>
 				</View>
 				<Square
@@ -76,6 +85,8 @@ function HomeScreen({ navigation }) {
 					startColor="#D33E30"
 					navigation={navigation}
 					showTitle
+					customStyles={{ backgroundColor: color.levelOne }}
+					titleStyle={{ color: color.accentColor }}
 				/>
 			</View>
 			<View style={styles.container}>
@@ -86,6 +97,8 @@ function HomeScreen({ navigation }) {
 					startColor="#0055BF"
 					navigation={navigation}
 					showTitle
+					customStyles={{ backgroundColor: color.levelOne }}
+					titleStyle={{ color: color.accentColor }}
 					iconName="pluscircle"
 				>
 					<MiniReminderView />

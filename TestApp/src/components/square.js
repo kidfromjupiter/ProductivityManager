@@ -25,6 +25,7 @@ const Square = ({
 	expanded,
 	ParentHoldCallback,
 	touchEndCallback,
+	titleStyle,
 }) => {
 	// const [expanded, setExpanded] = React.useState(false);
 	const animatedButtonScale = new Animated.Value(1);
@@ -83,7 +84,9 @@ const Square = ({
 			}
 		>
 			<View style={styles.childrenContainer}>
-				{showTitle ? <Text style={styles.text}>{text}</Text> : null}
+				{showTitle ? (
+					<Text style={[styles.text, titleStyle]}>{text}</Text>
+				) : null}
 				{children}
 			</View>
 		</PressableAnimated>

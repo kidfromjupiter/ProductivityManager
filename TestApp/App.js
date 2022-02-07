@@ -12,22 +12,25 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
 import TimerScreen from "./src/screens/TimerScreen";
 import { TopLevelContainer, Theme } from "./src/components/TopLevelContainer";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import store from "./src/redux/store";
 import ReminderScreen from "./src/screens/ReminderScreen";
 import Pomodoro from "./src/screens/PomodoroScreen";
+import ColorPickerScreen from "./src/screens/ColorPickerScreen";
+import ListItemGeneric from "./src/components/ListItemGeneric";
 
 const { UIManager } = NativeModules;
 
 UIManager.setLayoutAnimationEnabledExperimental &&
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 
-// LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-
-function SettingsScreen() {
+function SettingsScreen({ navigation }) {
 	return (
 		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-			<Text>Settings!</Text>
+			<Button
+				title="Colors"
+				onPress={() => navigation.navigate("ColorPicker")}
+			/>
 		</View>
 	);
 }
@@ -42,6 +45,7 @@ function StackNav() {
 			initialRouteName="Home"
 			screenOptions={{
 				headerShown: false,
+				gestureEnabled: false,
 				animation: animation,
 				presentation: "card",
 				orientation: "portrait",
@@ -57,6 +61,7 @@ function StackNav() {
 			/>
 
 			<Stack.Screen name="Timer" component={TimerScreen} />
+			<Stack.Screen name="ColorPicker" component={ColorPickerScreen} />
 			<Stack.Screen name="Pomodoro" component={Pomodoro} />
 			<Stack.Screen name="Reminders" component={ReminderScreen} />
 			<Stack.Screen name="Settings" component={SettingsScreen} />

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Audio } from "expo-av";
+import * as Haptics from "expo-haptics";
 
 const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 	const buttonColor = {
@@ -104,12 +105,14 @@ const Timer = ({
 		await sound.playAsync();
 	}
 	useEffect(() => {
-		return sound
-			? () => {
-					console.log("Unloading Sound");
-					sound.unloadAsync();
-			  }
-			: undefined;
+		return () => {
+			sound
+				? () => {
+						console.log("Unloading Sound");
+						sound.unloadAsync();
+				  }
+				: undefined;
+		};
 	}, [sound]);
 
 	return (
@@ -119,20 +122,12 @@ const Timer = ({
 				// { backgroundColor: context == "home" ? null : colors.backgroundColor },
 			]}
 			onPress={() => {
+				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 				StartTimer();
-				if (Platform.OS == "android") {
-					Vibration.vibrate(70);
-				} else {
-					Vibration.vibrate([70]);
-				}
 			}}
 			onLongPress={() => {
+				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 				ResetTimer();
-				if (Platform.OS == "android") {
-					Vibration.vibrate(100);
-				} else {
-					Vibration.vibrate([100]);
-				}
 			}}
 			android_ripple={{ color: "grey", borderless: true }}
 			disabled={isDisabled || timer.time === 0}

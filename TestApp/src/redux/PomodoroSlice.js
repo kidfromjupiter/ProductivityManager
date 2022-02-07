@@ -51,7 +51,10 @@ export const PomodoroSlice = createSlice({
 		},
 		setNewCycle: (state) => {
 			let localState = JSON.parse(JSON.stringify(state));
-			const time = localState.cycleData.shift();
+			const time = 0;
+			if (localState.cycleData.length > 0) {
+				time = localState.cycleData.shift();
+			}
 			// console.log(time)
 			if (localState.cycleData.length == 0) {
 				localState.isFinished = true;

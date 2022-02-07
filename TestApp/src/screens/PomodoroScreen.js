@@ -31,6 +31,8 @@ import {
 	PresetContainerDetails,
 } from "../components/PresetContainerAux";
 import InfoBar from "../components/InfoBar";
+import * as Haptics from "expo-haptics";
+import BackButton from "../components/backButtonComponent";
 
 const Pomodoro = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
@@ -38,16 +40,16 @@ const Pomodoro = ({ navigation }) => {
 	const pomodoro = useSelector((state) => state.pomodoro);
 	const [pomodoroPresetsList, setPomodoroPresetsList] = useState([]);
 	const [FlatlistSize, setFlatlistSize] = useState(0);
+
 	const animation = LayoutAnimation.create(
 		175,
 		LayoutAnimation.Types.easeInEaseOut,
 		LayoutAnimation.Properties.scaleXY
 	);
 	LayoutAnimation.configureNext(animation);
-
 	const dispatch = useDispatch();
 	const _SETTIME = (value) => {
-		Vibration.vibrate(50);
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		dispatch(setTime({ time: value.time }));
 	};
 	const _RESETTIME = () => {
@@ -70,23 +72,25 @@ const Pomodoro = ({ navigation }) => {
 	};
 	useEffect(
 		() =>
-			navigation.addListener("beforeRemove", (e) => {
-				e.preventDefault();
-				Alert.alert(
-					"Leave?",
-					"This will reset the pomodoro. Do you still want to leave?",
-					[
-						{ text: "No", style: "cancel", onPress: () => {} },
-						{
-							text: "Yes",
-							style: "destructive",
-							onPress: () => {
-								navigation.dispatch(e.data.action);
-							},
-						},
-					]
-				);
-			}),
+			navigation
+				? navigation.addListener("beforeRemove", (e) => {
+						e.preventDefault();
+						Alert.alert(
+							"Leave?",
+							"This will reset the pomodoro. Do you still want to leave?",
+							[
+								{ text: "No", style: "cancel", onPress: () => {} },
+								{
+									text: "Yes",
+									style: "destructive",
+									onPress: () => {
+										navigation.dispatch(e.data.action);
+									},
+								},
+							]
+						);
+				  })
+				: null,
 		[]
 	);
 
@@ -163,7 +167,6 @@ const Pomodoro = ({ navigation }) => {
 			sessionTime,
 			breakTime
 		);
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 		storeData(pomodoro.id, pomodoro.stringify());
 		console.log("created and saved");
 		_INCREMENETPRESETNUMBER(1);
@@ -172,8 +175,10 @@ const Pomodoro = ({ navigation }) => {
 
 	const toggleDetails = (details) => {
 		if (details) {
+			LayoutAnimation.configureNext(animation);
 			setShowDetails(details);
 		} else {
+			LayoutAnimation.configureNext(animation);
 			setShowDetails(null);
 		}
 	};
@@ -191,6 +196,7 @@ const Pomodoro = ({ navigation }) => {
 				},
 			]}
 		>
+			<BackButton navigation={navigation} color={colors} />
 			<AnimatedRing
 				flex={8}
 				animated={pomodoro.isRunning ? true : false}
@@ -198,7 +204,7 @@ const Pomodoro = ({ navigation }) => {
 					!pomodoro.isFinished
 						? pomodoro.isRunning
 							? colors.accentColor
-							: "red"
+							: colors.backgroundColor
 						: "orange"
 				}
 			>

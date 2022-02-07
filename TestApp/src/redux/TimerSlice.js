@@ -32,7 +32,7 @@ export const TimerSlice = createSlice({
 		resetTimer: (state) => {
 			state.time = 0;
 			state.isRunning = false;
-			state.isFinished = true;
+			state.isFinished = false;
 			console.log("timerReset to zero");
 		},
 	},
