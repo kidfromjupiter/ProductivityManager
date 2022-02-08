@@ -1,23 +1,19 @@
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
-import {
-	Text,
-	View,
-	Button,
-	NativeModules,
-	LayoutAnimation,
-} from "react-native";
+import { useEffect } from "react";
+import { View, Button, NativeModules } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
 import TimerScreen from "./src/screens/TimerScreen";
 import { TopLevelContainer, Theme } from "./src/components/TopLevelContainer";
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 import store from "./src/redux/store";
 import ReminderScreen from "./src/screens/ReminderScreen";
 import Pomodoro from "./src/screens/PomodoroScreen";
 import ColorPickerScreen from "./src/screens/ColorPickerScreen";
-import ListItemGeneric from "./src/components/ListItemGeneric";
+import { batchAdd } from "./src/redux/ReminderSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { UIManager } = NativeModules;
 
@@ -70,6 +66,19 @@ function StackNav() {
 }
 
 export default function App() {
+	useEffect(() => {
+		console.log("running app effect");
+		async function grab() {
+			try {
+				const reminders = await AsyncStorage.getItem("reminders");
+				const parsed = JSON.parse(reminders);
+				store.dispatch(batchAdd({ data: parsed }));
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		grab();
+	}, []);
 	return (
 		<TopLevelContainer>
 			<Provider store={store}>

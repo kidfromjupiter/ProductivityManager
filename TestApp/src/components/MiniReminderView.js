@@ -10,6 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import ListItemGeneric from "./ListItemGeneric";
 import { editReminder } from "../redux/ReminderSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ListEmpty = ({ emptyText, colors }) => {
 	return (
@@ -35,6 +36,22 @@ const MiniReminderView = () => {
 		dispatch(editReminder({ index: index }));
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 	};
+	useEffect(() => {
+		return () => {
+			console.log("running mini reminder cleanup");
+			async function store() {
+				try {
+					await AsyncStorage.setItem(
+						"reminders",
+						JSON.stringify(reminders.reminders)
+					);
+				} catch (error) {
+					console.log(error);
+				}
+			}
+			store();
+		};
+	}, []);
 	const renderItem = ({ item, index }) => (
 		<ListItemGeneric
 			Checkbox

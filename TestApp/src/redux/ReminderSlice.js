@@ -32,9 +32,14 @@ export const RemiderSlice = createSlice({
 		deleteReminder: (state, action) => {
 			state.reminders.splice(action.payload.index, 1);
 		},
+		batchAdd: (state, action) => {
+			let localstate = JSON.parse(JSON.stringify(state));
+			localstate.reminders = action.payload.data;
+			return localstate;
+		},
 	},
 });
 
-export const { addReminder, editReminder, deleteReminder } =
+export const { addReminder, editReminder, deleteReminder, batchAdd } =
 	RemiderSlice.actions;
 export default RemiderSlice.reducer;

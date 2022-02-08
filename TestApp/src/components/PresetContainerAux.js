@@ -7,6 +7,7 @@ import {
 	TextInput,
 	TouchableOpacity,
 	LayoutAnimation,
+	Alert,
 } from "react-native";
 import Square from "./square";
 import PomodoroPresetContainer from "./PomodoroPresetContainer";

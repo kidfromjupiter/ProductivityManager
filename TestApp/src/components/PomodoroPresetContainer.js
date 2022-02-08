@@ -14,6 +14,7 @@ const PomodoroPresetContainer = ({
 	holdCallback,
 	holdDelay,
 }) => {
+	// const title = "hello";
 	return (
 		<Pressable
 			style={styles.PresetInfoContainer}

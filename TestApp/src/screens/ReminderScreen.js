@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, LayoutAnimation } from "react-native";
 import { useDispatch } from "react-redux";
 import { addReminder } from "../redux/ReminderSlice";
@@ -6,6 +6,8 @@ import ReminderList from "../components/ReminderList";
 import ActionButton from "../components/ActionButton";
 import { useSelector } from "react-redux";
 import DialogBox from "../components/DialogBox";
+import { ReminderClass } from "../extras/ReminderClass";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const ReminderScreen = () => {
 	const dispatch = useDispatch();
@@ -18,16 +20,27 @@ export const ReminderScreen = () => {
 		setDialogBoxShow(true);
 	};
 	const submit = (text, description) => {
-		const reminder = {
-			id: new Date().toJSON(),
-			title: text,
-			description: description,
-			completed: false,
-		};
+		const reminder = new ReminderClass(text, description);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-		dispatch(addReminder(reminder));
+		dispatch(addReminder(reminder.objectify()));
 		setDialogBoxShow(false);
 	};
+	useEffect(() => {
+		return () => {
+			console.log("running reminder cleanup");
+			async function store() {
+				try {
+					await AsyncStorage.setItem(
+						"reminders",
+						JSON.stringify(reminderList.reminders)
+					);
+				} catch (error) {
+					console.log(error);
+				}
+			}
+			store();
+		};
+	}, []);
 
 	return (
 		<View style={styles.container}>

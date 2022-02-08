@@ -4,10 +4,7 @@ import {
 	StyleSheet,
 	FlatList,
 	LayoutAnimation,
-	Text,
 	Alert,
-	Vibration,
-	Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import dateParser from "../extras/dateparser";
@@ -141,7 +138,7 @@ const Pomodoro = ({ navigation }) => {
 				let [...values] = await AsyncStorage.multiGet(keys);
 				let newValues = [];
 				values.forEach((item) => {
-					newValues.unshift(item[1]);
+					item[0] == "reminders" ? null : newValues.unshift(item[1]);
 				});
 				setPomodoroPresetsList(newValues);
 			} catch (e) {
@@ -222,20 +219,11 @@ const Pomodoro = ({ navigation }) => {
 			{!showDetails ? (
 				<View style={[styles.infobarHolder, { bottom: FlatlistSize + 10 }]}>
 					{!pomodoro.isSession ? (
-						<InfoBar
-							customstyles={[
-								styles.infobar,
-								// { bottom: FlatlistSize + 10, zIndex: 2 },
-							]}
-							info="Break"
-						></InfoBar>
+						<InfoBar customstyles={[styles.infobar]} info="Break"></InfoBar>
 					) : null}
 					{pomodoro.cycleData.length > 0 ? (
 						<InfoBar
-							customstyles={[
-								styles.infobar,
-								// { bottom: FlatlistSize + 50, zIndex: 2 },
-							]}
+							customstyles={[styles.infobar]}
 							info={
 								Math.round(pomodoro.cycleData.length / 2) + " sessions left"
 							}
