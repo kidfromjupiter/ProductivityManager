@@ -32,8 +32,10 @@ export const ReminderScreen = () => {
 				try {
 					await AsyncStorage.setItem(
 						"reminders",
-						JSON.stringify(reminderList.reminders)
+						JSON.stringify(reminderList.reminders),
+						(error) => console.log(error)
 					);
+					console.log("reminderscreen storage item set");
 				} catch (error) {
 					console.log(error);
 				}

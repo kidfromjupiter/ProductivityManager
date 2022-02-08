@@ -14,6 +14,7 @@ import Pomodoro from "./src/screens/PomodoroScreen";
 import ColorPickerScreen from "./src/screens/ColorPickerScreen";
 import { batchAdd } from "./src/redux/ReminderSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AppLoading from "expo-app-loading";
 
 const { UIManager } = NativeModules;
 
@@ -66,12 +67,16 @@ function StackNav() {
 }
 
 export default function App() {
+	const [loaded, setLoaded] = React.useState(false);
 	useEffect(() => {
 		console.log("running app effect");
 		async function grab() {
 			try {
-				const reminders = await AsyncStorage.getItem("reminders");
+				const reminders = await AsyncStorage.getItem("reminders", () =>
+					setLoaded(true)
+				);
 				const parsed = JSON.parse(reminders);
+				console.log(parsed);
 				store.dispatch(batchAdd({ data: parsed }));
 			} catch (error) {
 				console.log(error);
@@ -79,6 +84,9 @@ export default function App() {
 		}
 		grab();
 	}, []);
+	if (!loaded) {
+		return <AppLoading />;
+	}
 	return (
 		<TopLevelContainer>
 			<Provider store={store}>

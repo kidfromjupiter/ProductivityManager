@@ -37,20 +37,18 @@ const MiniReminderView = () => {
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 	};
 	useEffect(() => {
-		return () => {
-			console.log("running mini reminder cleanup");
-			async function store() {
-				try {
-					await AsyncStorage.setItem(
-						"reminders",
-						JSON.stringify(reminders.reminders)
-					);
-				} catch (error) {
-					console.log(error);
-				}
+		console.log("running mini reminder cleanup");
+		async function store() {
+			try {
+				await AsyncStorage.setItem(
+					"reminders",
+					JSON.stringify(reminders.reminders)
+				);
+			} catch (error) {
+				console.log(error);
 			}
-			store();
-		};
+		}
+		store();
 	}, []);
 	const renderItem = ({ item, index }) => (
 		<ListItemGeneric
