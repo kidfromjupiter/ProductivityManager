@@ -51,7 +51,7 @@ export const PomodoroSlice = createSlice({
 		},
 		setNewCycle: (state) => {
 			let localState = JSON.parse(JSON.stringify(state));
-			const time = 0;
+			let time = 0;
 			if (localState.cycleData.length > 0) {
 				time = localState.cycleData.shift();
 			}

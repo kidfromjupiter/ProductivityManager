@@ -6,6 +6,7 @@ import {
 	Pressable,
 	Vibration,
 	TouchableHighlight,
+	LayoutAnimation,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Audio } from "expo-av";
@@ -75,6 +76,7 @@ const Timer = ({
 	seconds,
 	timer,
 	setTimer,
+	layoutanimation,
 }) => {
 	const colors = useSelector((state) => state.colors);
 	const [sound, setSound] = useState();
@@ -123,13 +125,15 @@ const Timer = ({
 			]}
 			onPress={() => {
 				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+				LayoutAnimation.configureNext(layoutanimation);
 				StartTimer();
 			}}
 			onLongPress={() => {
 				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+				LayoutAnimation.configureNext(layoutanimation);
 				ResetTimer();
 			}}
-			android_ripple={{ color: "grey", borderless: true }}
+			// android_ripple={{ color: "grey", borderless: true }}
 			disabled={isDisabled || timer.time === 0}
 		>
 			<View style={{ flex: 8, justifyContent: "center" }}>

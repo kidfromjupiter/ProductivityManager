@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import {
 	View,
 	StyleSheet,
 	FlatList,
 	LayoutAnimation,
 	Alert,
+	Text,
+	Button,
+	Pressable,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import dateParser from "../extras/dateparser";
@@ -36,14 +40,15 @@ const Pomodoro = ({ navigation }) => {
 	const [showDetails, setShowDetails] = useState(null);
 	const pomodoro = useSelector((state) => state.pomodoro);
 	const [pomodoroPresetsList, setPomodoroPresetsList] = useState([]);
-	const [FlatlistSize, setFlatlistSize] = useState(0);
+	const [isAod, setisAod] = useState(false);
 
 	const animation = LayoutAnimation.create(
+		// 175,
 		175,
 		LayoutAnimation.Types.easeInEaseOut,
 		LayoutAnimation.Properties.scaleXY
 	);
-	LayoutAnimation.configureNext(animation);
+	// LayoutAnimation.configureNext(animation);
 	const dispatch = useDispatch();
 	const _SETTIME = (value) => {
 		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -106,7 +111,10 @@ const Pomodoro = ({ navigation }) => {
 				colors={colors}
 				ParentHoldCallback={toggleDetails}
 				index={index}
-				touchEndCallback={(value) => _SETCYCLEDATA(value)}
+				touchEndCallback={(value) => {
+					LayoutAnimation.configureNext(animation);
+					_SETCYCLEDATA(value);
+				}}
 			/>
 		);
 	};
@@ -167,7 +175,6 @@ const Pomodoro = ({ navigation }) => {
 		storeData(pomodoro.id, pomodoro.stringify());
 		console.log("created and saved");
 		_INCREMENETPRESETNUMBER(1);
-		// toggleDetails({}, 0);
 	};
 
 	const toggleDetails = (details) => {
@@ -183,41 +190,77 @@ const Pomodoro = ({ navigation }) => {
 	const { minutes, seconds } = dateParser(pomodoro.time);
 
 	// console.log(pomodoro.cycleData.length);
-
 	return (
 		<View
 			style={[
 				styles.container,
 				{
-					backgroundColor: colors.backgroundColor,
+					backgroundColor: !isAod ? colors.backgroundColor : "#000000",
 				},
 			]}
 		>
 			<BackButton navigation={navigation} color={colors} />
-			<AnimatedRing
-				flex={8}
-				animated={pomodoro.isRunning ? true : false}
-				ringColor={
-					!pomodoro.isFinished
-						? pomodoro.isRunning
-							? colors.accentColor
-							: colors.backgroundColor
-						: "orange"
-				}
+			<View
+				style={[
+					styles.infobarHolder,
+					{ position: "absolute", right: 10, top: 40 },
+				]}
 			>
+				{pomodoro.isRunning ? (
+					<Pressable
+						onPress={() => {
+							isAod ? deactivateKeepAwake() : activateKeepAwake();
+
+							setisAod(!isAod);
+						}}
+						style={[styles.buttonStyles, { zIndex: 1000 }]}
+					>
+						<Text style={{ textAlign: "center", textAlignVertical: "bottom" }}>
+							Always on display
+						</Text>
+					</Pressable>
+				) : null}
+			</View>
+			{!isAod ? (
+				<AnimatedRing
+					flex={9}
+					animated={pomodoro.isRunning ? true : false}
+					ringColor={
+						!pomodoro.isFinished
+							? pomodoro.isRunning
+								? colors.accentColor
+								: colors.backgroundColor
+							: "orange"
+					}
+				>
+					<Timer
+						timeSize={70}
+						context="pomodoro"
+						setTimer={_SETTIME}
+						StartTimer={_TOGGLETIMER}
+						timer={pomodoro}
+						ResetTimer={_RESETTIME}
+						minutes={minutes}
+						seconds={seconds}
+						layoutanimation={animation}
+					/>
+				</AnimatedRing>
+			) : (
 				<Timer
-					timeSize={70}
+					timeSize={90}
 					context="pomodoro"
 					setTimer={_SETTIME}
 					StartTimer={_TOGGLETIMER}
 					timer={pomodoro}
 					ResetTimer={_RESETTIME}
+					isDisabled
 					minutes={minutes}
 					seconds={seconds}
 				/>
-			</AnimatedRing>
+			)}
+
 			{!showDetails ? (
-				<View style={[styles.infobarHolder, { bottom: FlatlistSize + 10 }]}>
+				<View style={[styles.infobarHolder]}>
 					{!pomodoro.isSession ? (
 						<InfoBar customstyles={[styles.infobar]} info="Break"></InfoBar>
 					) : null}
@@ -232,36 +275,32 @@ const Pomodoro = ({ navigation }) => {
 				</View>
 			) : null}
 
-			<View
-				style={styles.listContainer}
-				onLayout={(e) => {
-					const { height } = e.nativeEvent.layout;
-					setFlatlistSize(height);
-				}}
-			>
-				<ListHeader
-					extraStyle={{
-						padding: 10,
-						backgroundColor: colors.levelOne,
-						borderTopRightRadius: 15,
-						borderTopLeftRadius: 15,
-					}}
-					onPressCallback={createPomodoro}
-					text="Presets"
-				/>
-				<FlatList
-					extraData={pomodoroPresetsList}
-					data={pomodoroPresetsList}
-					style={[styles.list, { backgroundColor: colors.levelOne }]}
-					renderItem={(item) => renderItem(item)}
-					keyExtractor={(item) => {
-						const itemObject = JSON.parse(item);
-						return itemObject.id;
-					}}
-					horizontal
-					showsHorizontalScrollIndicator={false}
-				/>
-			</View>
+			{!isAod ? (
+				<View style={styles.listContainer}>
+					<ListHeader
+						extraStyle={{
+							padding: 10,
+							backgroundColor: colors.levelOne,
+							borderTopRightRadius: 15,
+							borderTopLeftRadius: 15,
+						}}
+						onPressCallback={createPomodoro}
+						text="Presets"
+					/>
+					<FlatList
+						extraData={pomodoroPresetsList}
+						data={pomodoroPresetsList}
+						style={[styles.list, { backgroundColor: colors.levelOne }]}
+						renderItem={(item) => renderItem(item)}
+						keyExtractor={(item) => {
+							const itemObject = JSON.parse(item);
+							return itemObject.id;
+						}}
+						horizontal
+						showsHorizontalScrollIndicator={false}
+					/>
+				</View>
+			) : null}
 			{showDetails ? (
 				<PresetContainerDetails
 					details={showDetails}
@@ -283,16 +322,21 @@ const styles = StyleSheet.create({
 		flex: 5,
 	},
 	infobar: {
-		// width: 50,
-		// flex: 1,
 		borderRadius: 10,
 	},
 	infobarHolder: {
-		flex: 1,
+		zIndex: 100,
 		flexDirection: "row",
-		bottom: 0,
-		right: 10,
-		position: "absolute",
+		justifyContent: "flex-end",
+	},
+	buttonStyles: {
+		backgroundColor: "white",
+		paddingHorizontal: 10,
+		margin: 5,
+		padding: 20,
+		paddingVertical: 8,
+		borderRadius: 25,
+		justifyContent: "center",
 	},
 });
 

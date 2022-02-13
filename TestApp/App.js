@@ -72,9 +72,7 @@ export default function App() {
 		console.log("running app effect");
 		async function grab() {
 			try {
-				const reminders = await AsyncStorage.getItem("reminders", () =>
-					setLoaded(true)
-				);
+				const reminders = await AsyncStorage.getItem("reminders");
 				const parsed = JSON.parse(reminders);
 				console.log(parsed);
 				store.dispatch(batchAdd({ data: parsed }));
@@ -82,7 +80,7 @@ export default function App() {
 				console.log(error);
 			}
 		}
-		grab();
+		grab().then(() => setLoaded(true));
 	}, []);
 	if (!loaded) {
 		return <AppLoading />;
