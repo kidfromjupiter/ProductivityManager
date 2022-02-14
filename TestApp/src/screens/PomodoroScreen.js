@@ -34,6 +34,7 @@ import {
 import InfoBar from "../components/InfoBar";
 import * as Haptics from "expo-haptics";
 import BackButton from "../components/backButtonComponent";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const Pomodoro = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
@@ -48,7 +49,7 @@ const Pomodoro = ({ navigation }) => {
 		LayoutAnimation.Types.easeInEaseOut,
 		LayoutAnimation.Properties.scaleXY
 	);
-	// LayoutAnimation.configureNext(animation);
+
 	const dispatch = useDispatch();
 	const _SETTIME = (value) => {
 		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -213,11 +214,17 @@ const Pomodoro = ({ navigation }) => {
 
 							setisAod(!isAod);
 						}}
-						style={[styles.buttonStyles, { zIndex: 1000 }]}
+						style={[
+							styles.buttonStyles,
+							{ zIndex: 1000 },
+							{ backgroundColor: isAod ? "black" : "white" },
+						]}
 					>
-						<Text style={{ textAlign: "center", textAlignVertical: "bottom" }}>
-							Always on display
-						</Text>
+						<MaterialIcons
+							name="settings-display"
+							size={30}
+							color={!isAod ? "black" : "white"}
+						/>
 					</Pressable>
 				) : null}
 			</View>
@@ -253,7 +260,7 @@ const Pomodoro = ({ navigation }) => {
 					StartTimer={_TOGGLETIMER}
 					timer={pomodoro}
 					ResetTimer={_RESETTIME}
-					isDisabled
+					isDisabled={pomodoro.isRunning ? true : false}
 					minutes={minutes}
 					seconds={seconds}
 				/>
@@ -286,6 +293,7 @@ const Pomodoro = ({ navigation }) => {
 						}}
 						onPressCallback={createPomodoro}
 						text="Presets"
+						animation={animation}
 					/>
 					<FlatList
 						extraData={pomodoroPresetsList}
@@ -305,6 +313,7 @@ const Pomodoro = ({ navigation }) => {
 				<PresetContainerDetails
 					details={showDetails}
 					showDetailsSetter={toggleDetails}
+					animation={animation}
 				/>
 			) : null}
 		</View>
@@ -331,10 +340,10 @@ const styles = StyleSheet.create({
 	},
 	buttonStyles: {
 		backgroundColor: "white",
-		paddingHorizontal: 10,
+		// paddingHorizontal: 10,
 		margin: 5,
-		padding: 20,
-		paddingVertical: 8,
+		padding: 10,
+		// paddingVertical: 8,
 		borderRadius: 25,
 		justifyContent: "center",
 	},

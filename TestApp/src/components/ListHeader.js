@@ -1,15 +1,22 @@
 import React from "react";
-import { Text, View, StyleSheet, Animated, Pressable } from "react-native";
+import {
+	Text,
+	View,
+	StyleSheet,
+	Animated,
+	Pressable,
+	LayoutAnimation,
+} from "react-native";
 import { useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 
 const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
 
-const ListHeader = ({ extraStyle, text, onPressCallback }) => {
+const ListHeader = ({ extraStyle, text, onPressCallback, animation }) => {
 	const animatedValue = new Animated.Value(1);
 
 	const colors = useSelector((state) => state.colors);
-
+	LayoutAnimation.configureNext(animation);
 	const onTouchStart = () => {
 		Animated.spring(animatedValue, {
 			toValue: 0.8,
@@ -26,6 +33,7 @@ const ListHeader = ({ extraStyle, text, onPressCallback }) => {
 			// mass: 1,
 		}).start();
 	};
+	console.log("rendered");
 	return (
 		<View style={[styles.container, extraStyle]}>
 			<Text

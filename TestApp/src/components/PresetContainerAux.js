@@ -20,7 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PomodoroClass } from "../extras/PomodoroCreator";
 import { incrementNumOfPresets } from "../redux/PomodoroSlice";
 
-const PresetContainerDetails = ({ details, showDetailsSetter }) => {
+const PresetContainerDetails = ({ details, showDetailsSetter, animation }) => {
 	const colors = useSelector((state) => state.colors);
 	const [detailsObjectSD, setDetailsObjectSD] = useState(details.sessionTime);
 	const [detailsObjectBD, setDetailsObjectBD] = useState(details.breakTime);
@@ -58,6 +58,7 @@ const PresetContainerDetails = ({ details, showDetailsSetter }) => {
 	};
 	const _deletePreset = () => {
 		// setDetailsObject((detailsObject.sessionTime = value));
+
 		let removeValue = async (key) => {
 			await AsyncStorage.removeItem(key, () =>
 				dispatch(incrementNumOfPresets({ number: -1 }))
@@ -90,6 +91,9 @@ const PresetContainerDetails = ({ details, showDetailsSetter }) => {
 					color="white"
 					style={[styles.iconStyle]}
 					onPress={() => {
+						LayoutAnimation.configureNext(
+							LayoutAnimation.Presets.easeInEaseOut
+						);
 						_deletePreset();
 						showDetailsSetter();
 					}}
