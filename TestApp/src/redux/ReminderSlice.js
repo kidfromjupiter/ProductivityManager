@@ -34,6 +34,10 @@ export const RemiderSlice = createSlice({
 		},
 		batchAdd: (state, action) => {
 			let localstate = JSON.parse(JSON.stringify(state));
+			if (!action.payload.data) {
+				localstate.reminders = [];
+				return localstate;
+			}
 			localstate.reminders = action.payload.data;
 			return localstate;
 		},

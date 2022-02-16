@@ -45,7 +45,7 @@ const Pomodoro = ({ navigation }) => {
 
 	const animation = LayoutAnimation.create(
 		// 175,
-		175,
+		190,
 		LayoutAnimation.Types.easeInEaseOut,
 		LayoutAnimation.Properties.scaleXY
 	);
@@ -147,7 +147,9 @@ const Pomodoro = ({ navigation }) => {
 				let [...values] = await AsyncStorage.multiGet(keys);
 				let newValues = [];
 				values.forEach((item) => {
-					item[0] == "reminders" ? null : newValues.unshift(item[1]);
+					item[0] == "reminders" || item[0] == "persist:root"
+						? null
+						: newValues.unshift(item[1]);
 				});
 				setPomodoroPresetsList(newValues);
 			} catch (e) {

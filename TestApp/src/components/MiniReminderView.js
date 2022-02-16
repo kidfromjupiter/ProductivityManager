@@ -36,31 +36,44 @@ const MiniReminderView = () => {
 		dispatch(editReminder({ index: index }));
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 	};
-	useEffect(() => {
-		console.log("running mini reminder cleanup");
-		async function store() {
-			try {
-				await AsyncStorage.setItem(
-					"reminders",
-					JSON.stringify(reminders.reminders)
-				);
-			} catch (error) {
-				console.log(error);
-			}
+	// useEffect(() => {
+	// 	console.log("running mini reminder cleanup");
+	// 	async function store() {
+	// 		try {
+	// 			await AsyncStorage.setItem(
+	// 				"reminders",
+	// 				JSON.stringify(reminders.reminders)
+	// 			);
+	// 		} catch (error) {
+	// 			console.log(error);
+	// 		}
+	// 	}
+	// 	store();
+	// }, []);
+	console.log("reminders from multireminderview ", reminders);
+	const renderItem = ({ item, index }) => {
+		return (
+			<ListItemGeneric
+				Checkbox
+				checkboxColor={colors.accentColor}
+				text={item.title}
+				checkboxTextColor={colors.textColorTwo}
+				onCheck={setComplete}
+				index={index}
+				isCompleted={item.completed}
+			/>
+		);
+	};
+	const clearAll = async () => {
+		try {
+			await AsyncStorage.clear();
+		} catch (e) {
+			// clear error
 		}
-		store();
-	}, []);
-	const renderItem = ({ item, index }) => (
-		<ListItemGeneric
-			Checkbox
-			checkboxColor={colors.accentColor}
-			text={item.title}
-			checkboxTextColor={colors.textColorTwo}
-			onCheck={setComplete}
-			index={index}
-			isCompleted={item.completed}
-		/>
-	);
+
+		console.log("Done.");
+	};
+	// clearAll();
 
 	return (
 		<View
@@ -78,7 +91,7 @@ const MiniReminderView = () => {
 					ListEmptyComponent={() => (
 						<ListEmpty colors={colors} emptyText="No reminders" />
 					)}
-					data={reminders.reminders}
+					data={reminders.reminders ? reminders.reminders : null}
 					maxToRenderPerBatch={5}
 					initialNumToRender={7}
 					renderItem={renderItem}
