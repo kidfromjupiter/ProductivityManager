@@ -56,6 +56,7 @@ const ListItemGeneric = ({
 					disableBuiltInState
 					onPress={() => onCheck(index)}
 					useNativeDriver
+					style={{ flex: 1 }}
 				/>
 			) : (
 				<Pressable

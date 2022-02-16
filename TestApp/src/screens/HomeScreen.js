@@ -6,7 +6,7 @@ import { StyleSheet } from "react-native";
 import Square from "../components/square";
 import { useSelector } from "react-redux";
 import Timer from "../components/Counter";
-import { MiniReminderView } from "../components/MiniReminderView";
+import MiniReminderView from "../components/MiniReminderView";
 import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
 
 function HomeScreen({ navigation }) {

@@ -36,20 +36,6 @@ const MiniReminderView = () => {
 		dispatch(editReminder({ index: index }));
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 	};
-	// useEffect(() => {
-	// 	console.log("running mini reminder cleanup");
-	// 	async function store() {
-	// 		try {
-	// 			await AsyncStorage.setItem(
-	// 				"reminders",
-	// 				JSON.stringify(reminders.reminders)
-	// 			);
-	// 		} catch (error) {
-	// 			console.log(error);
-	// 		}
-	// 	}
-	// 	store();
-	// }, []);
 	console.log("reminders from multireminderview ", reminders);
 	const renderItem = ({ item, index }) => {
 		return (
@@ -87,7 +73,7 @@ const MiniReminderView = () => {
 				{/* <Text>This is text</Text> */}
 				<FlatList
 					style={styles.listStyle}
-					extradata={reminders.reminders}
+					// extradata={reminders.reminders}
 					ListEmptyComponent={() => (
 						<ListEmpty colors={colors} emptyText="No reminders" />
 					)}
@@ -130,4 +116,5 @@ const styles = StyleSheet.create({
 	},
 });
 
-export { ListEmpty, MiniReminderView };
+export { ListEmpty };
+export default React.memo(MiniReminderView);

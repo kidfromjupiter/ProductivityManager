@@ -7,7 +7,6 @@ import ActionButton from "../components/ActionButton";
 import { useSelector } from "react-redux";
 import DialogBox from "../components/DialogBox";
 import { ReminderClass } from "../extras/ReminderClass";
-import updateAsyncStorageArray from "../extras/updateAsyncStorageArray";
 
 export const ReminderScreen = () => {
 	const dispatch = useDispatch();

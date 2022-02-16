@@ -45,7 +45,7 @@ const Pomodoro = ({ navigation }) => {
 
 	const animation = LayoutAnimation.create(
 		// 175,
-		190,
+		185,
 		LayoutAnimation.Types.easeInEaseOut,
 		LayoutAnimation.Properties.scaleXY
 	);
