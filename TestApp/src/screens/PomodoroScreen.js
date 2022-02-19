@@ -6,8 +6,6 @@ import {
 	FlatList,
 	LayoutAnimation,
 	Alert,
-	Text,
-	Button,
 	Pressable,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +33,7 @@ import InfoBar from "../components/InfoBar";
 import * as Haptics from "expo-haptics";
 import BackButton from "../components/backButtonComponent";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Tracker } from "../extras/TrackerObject";
 
 const Pomodoro = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
@@ -80,7 +79,7 @@ const Pomodoro = ({ navigation }) => {
 						e.preventDefault();
 						Alert.alert(
 							"Leave?",
-							"This will reset the pomodoro. Do you still want to leave?",
+							"Leaving will result in loss of productivity and procrastination. Disappointment may follow. Do you wish to proceed?",
 							[
 								{ text: "No", style: "cancel", onPress: () => {} },
 								{
@@ -103,31 +102,6 @@ const Pomodoro = ({ navigation }) => {
 			_CLEANUP();
 		};
 	}, []);
-
-	const renderItem = ({ item, index }) => {
-		const itemObject = JSON.parse(item);
-		return (
-			<PresetContainerCondensed
-				itemObject={itemObject}
-				colors={colors}
-				ParentHoldCallback={toggleDetails}
-				index={index}
-				touchEndCallback={(value) => {
-					LayoutAnimation.configureNext(animation);
-					_SETCYCLEDATA(value);
-				}}
-			/>
-		);
-	};
-	const clearAll = async () => {
-		try {
-			await AsyncStorage.clear();
-		} catch (e) {
-			// clear error
-		}
-
-		console.log("Done.");
-	};
 	useEffect(() => {
 		if (pomodoro.isRunning && !pomodoro.isFinished) {
 			_SETNEWCYCLE();
@@ -158,6 +132,31 @@ const Pomodoro = ({ navigation }) => {
 		};
 		getallObjects();
 	}, [pomodoro.numOfPresets]);
+
+	const renderItem = ({ item, index }) => {
+		const itemObject = JSON.parse(item);
+		return (
+			<PresetContainerCondensed
+				itemObject={itemObject}
+				colors={colors}
+				ParentHoldCallback={toggleDetails}
+				index={index}
+				touchEndCallback={(value) => {
+					LayoutAnimation.configureNext(animation);
+					_SETCYCLEDATA(value);
+				}}
+			/>
+		);
+	};
+	const clearAll = async () => {
+		try {
+			await AsyncStorage.clear();
+		} catch (e) {
+			// clear error
+		}
+
+		console.log("Done.");
+	};
 
 	// nuke everything
 	// clearAll();
@@ -342,10 +341,8 @@ const styles = StyleSheet.create({
 	},
 	buttonStyles: {
 		backgroundColor: "white",
-		// paddingHorizontal: 10,
 		margin: 5,
 		padding: 10,
-		// paddingVertical: 8,
 		borderRadius: 25,
 		justifyContent: "center",
 	},

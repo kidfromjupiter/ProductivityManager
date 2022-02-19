@@ -4,10 +4,10 @@ const updateAsyncStorageArray = async (key, value) => {
 	let storedValue;
 	try {
 		storedValue = await AsyncStorage.getItem(key);
-		const JsonValue = JSON.parse(storedValue);
+		const Value_OBJECT = JSON.parse(storedValue);
 		let tempArray;
 		if (storedValue) {
-			tempArray = JsonValue;
+			tempArray = Value_OBJECT;
 		} else {
 			tempArray = [];
 		}
