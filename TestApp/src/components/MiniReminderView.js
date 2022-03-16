@@ -36,7 +36,6 @@ const MiniReminderView = () => {
 		dispatch(editReminder({ index: index }));
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 	};
-	console.log("reminders from multireminderview ", reminders);
 	const renderItem = ({ item, index }) => {
 		return (
 			<ListItemGeneric

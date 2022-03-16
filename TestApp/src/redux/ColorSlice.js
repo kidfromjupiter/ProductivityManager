@@ -4,14 +4,14 @@ export const ColorSlice = createSlice({
 	name: "colors",
 	initialState: {
 		//slate moss
-		// backgroundColor: "#191F2C",
-		// levelOne: "#2B3748",
-		// levelTwo: "#445168",
-		// levelThree: "#586781",
-		// levelFour: "#97A7C2",
-		// textColor: "#D7D7D7", //light
-		// textColorTwo: "#BECADE", //dark
-		// accentColor: "#00D34B",
+		backgroundColor: "#191F2C",
+		levelOne: "#2B3748",
+		levelTwo: "#445168",
+		levelThree: "#586781",
+		levelFour: "#97A7C2",
+		textColor: "#D7D7D7", //light
+		textColorTwo: "#BECADE", //dark
+		accentColor: "#00D34B",
 		//////////////////////////
 		// rose gold
 		// backgroundColor: "#A86452",
@@ -56,15 +56,15 @@ export const ColorSlice = createSlice({
 
 		/////////////////////////////////
 		// sunset forest
-		backgroundColor: "#30301B",
-		levelOne: "#2F4F31",
-		levelTwo: "#698366",
-		levelThree: "#D6B16F",
-		levelFour: "#E2822C",
-		textColor: "#FFD8C5",
-		textColorTwo: "#311600",
-		accentColor: "#DB5B1E",
-		name: "Sunset Forest",
+		// backgroundColor: "#30301B",
+		// levelOne: "#2F4F31",
+		// levelTwo: "#698366",
+		// levelThree: "#D6B16F",
+		// levelFour: "#E2822C",
+		// textColor: "#FFD8C5",
+		// textColorTwo: "#311600",
+		// accentColor: "#DB5B1E",
+		// name: "Sunset Forest",
 	},
 	reducers: {
 		changeBackgroundColor: (state, action) => {

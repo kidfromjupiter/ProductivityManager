@@ -12,7 +12,15 @@ import { AntDesign } from "@expo/vector-icons";
 
 const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
 
-const ListHeader = ({ extraStyle, text, onPressCallback, animation }) => {
+const ListHeader = ({
+	extraStyle,
+	text,
+	onPressCallback,
+	animation,
+	iconName,
+	iconColor,
+	iconSize,
+}) => {
 	const animatedValue = new Animated.Value(1);
 
 	const colors = useSelector((state) => state.colors);
@@ -22,7 +30,6 @@ const ListHeader = ({ extraStyle, text, onPressCallback, animation }) => {
 			toValue: 0.8,
 			useNativeDriver: true,
 			mass: 0.1,
-			// damping: 10,
 		}).start();
 	};
 	const onTouchEnd = () => {
@@ -33,7 +40,6 @@ const ListHeader = ({ extraStyle, text, onPressCallback, animation }) => {
 			// mass: 1,
 		}).start();
 	};
-	console.log("rendered");
 	return (
 		<View style={[styles.container, extraStyle]}>
 			<Text
@@ -58,13 +64,13 @@ const ListHeader = ({ extraStyle, text, onPressCallback, animation }) => {
 					}}
 				>
 					<AnimatedIcon
-						name="pluscircle"
+						name={iconName}
 						style={[
 							styles.iconStyle,
 							{ transform: [{ scale: animatedValue }] },
 						]}
-						size={30}
-						color={colors.accentColor}
+						size={!iconSize ? 30 : iconSize}
+						color={!iconColor ? colors.accentColor : iconColor}
 					/>
 				</Pressable>
 			</View>

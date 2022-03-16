@@ -13,14 +13,19 @@ import Square from "./square";
 import PomodoroPresetContainer from "./PomodoroPresetContainer";
 import { useDispatch, useSelector } from "react-redux";
 import Slider from "@react-native-community/slider";
-
+import storeData from "../extras/saveData";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import sessionArrayGen from "../extras/sessionArrayGen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PomodoroClass } from "../extras/PomodoroCreator";
+import { PomodoroClass } from "../extras/classes/PomodoroCreator";
 import { incrementNumOfPresets } from "../redux/PomodoroSlice";
 
-const PresetContainerDetails = ({ details, showDetailsSetter, animation }) => {
+const PresetContainerDetails = ({
+	details,
+	showDetailsSetter,
+	animation,
+	pomodoroList,
+}) => {
 	const colors = useSelector((state) => state.colors);
 	const [detailsObjectSD, setDetailsObjectSD] = useState(details.sessionTime);
 	const [detailsObjectBD, setDetailsObjectBD] = useState(details.breakTime);
@@ -38,10 +43,18 @@ const PresetContainerDetails = ({ details, showDetailsSetter, animation }) => {
 			detailsObjectBD,
 			details.id
 		);
-		await AsyncStorage.mergeItem(details.id, pomodoroNew.stringify(), (value) =>
-			value
-				? console.log("there was an error", value)
-				: dispatch(incrementNumOfPresets({ number: 1 }))
+		let objList = [];
+		pomodoroList.forEach((element) => {
+			if (element.id == details.id) {
+				objList.push(pomodoroNew);
+			} else {
+				objList.push(element);
+			}
+		});
+		const jsonArray = JSON.stringify(objList);
+
+		await AsyncStorage.setItem("pomodoro", jsonArray).then(
+			dispatch(incrementNumOfPresets({ number: -1 }))
 		);
 
 		console.log("Done.");
@@ -57,18 +70,17 @@ const PresetContainerDetails = ({ details, showDetailsSetter, animation }) => {
 		setDetailsObjectNOS(value);
 	};
 	const _deletePreset = () => {
-		// setDetailsObject((detailsObject.sessionTime = value));
+		let objList = [];
+		pomodoroList.forEach((element) => {
+			if (element.id != details.id) {
+				objList.push(element);
+			}
+		});
+		const jsonArray = JSON.stringify(objList);
 
-		let removeValue = async (key) => {
-			await AsyncStorage.removeItem(key, () =>
-				dispatch(incrementNumOfPresets({ number: -1 }))
-			);
-		};
-
-		removeValue(details.id)
-			.then((value) => console.log(value))
-			.catch((value) => console.log(value));
-		// console.log("deleted");
+		AsyncStorage.setItem("pomodoro", jsonArray).then(
+			dispatch(incrementNumOfPresets({ number: -1 }))
+		);
 	};
 	const _setTitle = (value) => {
 		setDetailsObjectT(value);
@@ -258,7 +270,7 @@ const PresetContainerCondensed = ({
 					title={itemObject.title}
 					numOfSessions={itemObject.numOfSessions}
 					holdCallback={() => ParentHoldCallback(itemObject, index)}
-					holdDelay={150}
+					holdDelay={220}
 					touchEndCallback={() => {
 						touchEndCallback(
 							sessionArrayGen(

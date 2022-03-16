@@ -1,19 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import dateParser from "../extras/dateparser";
-import { View } from "react-native";
+import { View, Text, Button, Animated, Easing } from "react-native";
 import { StyleSheet } from "react-native";
 import Square from "../components/square";
 import { useSelector } from "react-redux";
 import Timer from "../components/Counter";
 import MiniReminderView from "../components/MiniReminderView";
 import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
+import { getMostRecentEvent } from "../extras/GAuth";
+import TodayInfo from "../components/SpacedRep/TodayInfoContainer";
+import QuickView, {
+	QuickViewSub,
+} from "../components/SpacedRep/HomeScreenQuickView";
+import Loading from "../components/LottieLoading";
+
+// import Animated, { FadeInDown } from "react-native-reanimated";
 
 function HomeScreen({ navigation }) {
+	const fadeAnimValue = new Animated.Value(0);
 	const timer = useSelector((state) => state.time);
 	const color = useSelector((state) => state.colors);
-
+	const accessToken = useSelector((state) => state.gauth.AuthToken);
+	const calID = useSelector((state) => state.gauth.calendarID);
+	const [eventData, setEventData] = useState(null);
 	const dispatch = useDispatch();
+
+	const fadeAnim = {
+		opacity: fadeAnimValue.interpolate({
+			inputRange: [0, 1],
+			outputRange: [0, 1],
+		}),
+		transform: [
+			{
+				translateY: fadeAnimValue.interpolate({
+					inputRange: [0, 1],
+					outputRange: [40, 0],
+				}),
+			},
+		],
+	};
+
+	function getTimePrompt() {
+		const time = new Date();
+		if (time.getHours() <= 12) {
+			return "Morning";
+		}
+		if (time.getHours() >= 12 && time.getHours() <= 15) {
+			return "Afternoon";
+		}
+		if (time.getHours() >= 15) {
+			return "Evening";
+		}
+		if (time.getHours() == 11 && time.getMinutes() == 59) {
+			return "grief. Go to sleep";
+		}
+	}
+
+	function getEvent() {
+		getMostRecentEvent(accessToken, calID)
+			// .then((e) => console.log(e.data))
+			.then((e) => {
+				e.data.items.length > 0
+					? setEventData(e.data.items[0])
+					: setEventData("empty");
+			})
+			.catch((e) => setEventData("empty"));
+	}
 
 	const StartTimer = () => {
 		if (timer.time !== 0) {
@@ -27,11 +80,33 @@ function HomeScreen({ navigation }) {
 		dispatch(setTimer(value));
 	};
 
+	useEffect(() => {
+		getEvent();
+	});
+	useEffect(() => {
+		Animated.timing(fadeAnimValue, {
+			toValue: 1,
+			duration: 900,
+			useNativeDriver: true,
+		}).start();
+	}, []);
+
 	const { minutes, seconds } = dateParser(timer.time);
 	return (
 		<View
 			style={[styles.rootContainer, { backgroundColor: color.backgroundColor }]}
 		>
+			<Animated.View
+				style={[
+					styles.section,
+					styles.intro,
+					{ backgroundColor: null },
+					fadeAnim,
+				]}
+			>
+				<Text style={styles.introText}>Good</Text>
+				<Text style={styles.introText}>{getTimePrompt()}</Text>
+			</Animated.View>
 			<View style={styles.container}>
 				<Square
 					flex={5}
@@ -54,7 +129,7 @@ function HomeScreen({ navigation }) {
 				>
 					<Timer
 						context="home"
-						timeSize={65}
+						timeSize={55}
 						isDisabled
 						StartTimer={StartTimer}
 						ResetTimer={ResetTimer}
@@ -80,16 +155,32 @@ function HomeScreen({ navigation }) {
 				</View>
 				<Square
 					flex={1}
-					text="Stats"
+					text="Spaced Repetition"
 					endColor="#ff5858"
 					startColor="#D33E30"
 					navigation={navigation}
 					showTitle
 					customStyles={{ backgroundColor: color.levelOne }}
 					titleStyle={{ color: color.accentColor }}
-				/>
+				>
+					{eventData && eventData != "empty" ? (
+						<QuickView
+							title={eventData.summary}
+							startDate={eventData.end.date}
+							repNumber={eventData.extendedProperties.private.repNumber}
+							numberOfReps={eventData.extendedProperties.private.numberOfReps}
+						/>
+					) : eventData == "empty" ? (
+						<QuickViewSub color={color} />
+					) : (
+						<Loading
+							containerStyle={{ backgroundColor: null }}
+							lottieStyle={{ height: 90, width: 90 }}
+						/>
+					)}
+				</Square>
 			</View>
-			<View style={styles.container}>
+			<View style={[styles.container, { flex: 4 }]}>
 				<Square
 					flex={1}
 					text="Reminders"
@@ -109,13 +200,22 @@ function HomeScreen({ navigation }) {
 }
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		flex: 3,
 		flexDirection: "row",
 	},
 	rootContainer: {
 		flex: 1,
 		backgroundColor: "#191F2C",
-		paddingTop: 30,
+	},
+	intro: {
+		height: 200,
+		flex: 3,
+		paddingHorizontal: 20,
+		justifyContent: "center",
+	},
+	introText: {
+		fontSize: 40,
+		color: "white",
 	},
 });
 export default HomeScreen;

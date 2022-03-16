@@ -1,7 +1,6 @@
 import { StatusBar } from "expo-status-bar";
+import { NativeModules } from "react-native";
 import * as React from "react";
-import { useEffect } from "react";
-import { View, Button, NativeModules } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
@@ -12,32 +11,36 @@ import { store, persistor } from "./src/redux/store";
 import ReminderScreen from "./src/screens/ReminderScreen";
 import Pomodoro from "./src/screens/PomodoroScreen";
 import ColorPickerScreen from "./src/screens/ColorPickerScreen";
-import { batchAdd } from "./src/redux/ReminderSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import SettingsScreen from "./src/screens/SettingsScreen";
+import CreateEvent from "./src/screens/SpacedRep/SpacedRepCreateEvent";
 import AppLoading from "expo-app-loading";
 import { PersistGate } from "redux-persist/integration/react";
-
+import SpacedRepHome from "./src/screens/SpacedRep/SpacedRepHome";
+import { GoogleSignin } from "react-native-google-signin";
+import { useSelector, useDispatch } from "react-redux";
+import { LogBox } from "react-native";
+LogBox.ignoreLogs(["Setting a timer"]);
 const { UIManager } = NativeModules;
 
 UIManager.setLayoutAnimationEnabledExperimental &&
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 
-function SettingsScreen({ navigation }) {
-	return (
-		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-			<Button
-				title="Colors"
-				onPress={() => navigation.navigate("ColorPicker")}
-			/>
-		</View>
-	);
-}
-
 const Stack = createNativeStackNavigator();
+GoogleSignin.configure({
+	scopes: [
+		"https://www.googleapis.com/auth/calendar",
+		"https://www.googleapis.com/auth/calendar.events",
+	],
+	webClientId:
+		"828611517945-1j64mv1irokorth2rc4333dm3tctq3hi.apps.googleusercontent.com",
+	offlineAccess: true,
+	profileImageSize: 120,
+});
 
 const animation = "fade";
 
 function StackNav() {
+	const dispatch = useDispatch();
 	return (
 		<Stack.Navigator
 			initialRouteName="Home"
@@ -55,45 +58,35 @@ function StackNav() {
 				component={HomeScreen}
 				options={{
 					title: "Productivity Manager",
+					// head
 				}}
 			/>
-
 			<Stack.Screen name="Timer" component={TimerScreen} />
 			<Stack.Screen name="ColorPicker" component={ColorPickerScreen} />
 			<Stack.Screen name="Pomodoro" component={Pomodoro} />
 			<Stack.Screen name="Reminders" component={ReminderScreen} />
+			<Stack.Screen
+				name="CreateEvent"
+				component={CreateEvent}
+				options={{ animation: "slide_from_right" }}
+			/>
 			<Stack.Screen name="Settings" component={SettingsScreen} />
+			<Stack.Screen name="Spaced Repetition" component={SpacedRepHome} />
 		</Stack.Navigator>
 	);
 }
 
 export default function App() {
-	const [loaded, setLoaded] = React.useState(false);
-	// useEffect(() => {
-	// 	console.log("running app effect");
-	// 	async function grab() {
-	// 		try {
-	// 			const reminders = await AsyncStorage.getItem("reminders");
-	// 			const parsed = JSON.parse(reminders);
-	// 			store.dispatch(batchAdd({ data: parsed }));
-	// 		} catch (error) {
-	// 			console.log(error);
-	// 		}
-	// 	}
-	// 	grab()
-	// 		.then(() => setLoaded(true))
-	// 		.then(() => console.log("loaded"));
-	// }, []);
 	return (
-		<TopLevelContainer>
-			<Provider store={store}>
-				<PersistGate loading={<AppLoading />} persistor={persistor}>
+		<Provider store={store}>
+			<PersistGate loading={<AppLoading />} persistor={persistor}>
+				<TopLevelContainer>
 					<NavigationContainer>
 						<StackNav />
 					</NavigationContainer>
-				</PersistGate>
-			</Provider>
+				</TopLevelContainer>
+			</PersistGate>
 			<StatusBar style="light" />
-		</TopLevelContainer>
+		</Provider>
 	);
 }

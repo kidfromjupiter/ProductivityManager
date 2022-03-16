@@ -15,17 +15,19 @@
 		},
 		"assetBundlePatterns": ["**/*"],
 		"ios": {
-			"supportsTablet": false
+			"supportsTablet": false,
+			"bundleIdentifier": "test.com"
 		},
 		"android": {
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#FFFFFF"
 			},
-			"package": "test.com"
+			"package": "getitdone.com"
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"
-		}
+		},
+		"jsEngine": "hermes"
 	}
 }

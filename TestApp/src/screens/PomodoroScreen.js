@@ -6,8 +6,6 @@ import {
 	FlatList,
 	LayoutAnimation,
 	Alert,
-	Text,
-	Button,
 	Pressable,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +23,7 @@ import {
 	exitCleanup,
 } from "../redux/PomodoroSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PomodoroClass } from "../extras/PomodoroCreator";
+import { PomodoroClass } from "../extras/classes/PomodoroCreator";
 import AnimatedRing from "../components/AnimatedRing";
 import {
 	PresetContainerCondensed,
@@ -35,6 +33,7 @@ import InfoBar from "../components/InfoBar";
 import * as Haptics from "expo-haptics";
 import BackButton from "../components/backButtonComponent";
 import { MaterialIcons } from "@expo/vector-icons";
+// import { Tracker } from "../extras/TrackerObject";
 
 const Pomodoro = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
@@ -80,7 +79,7 @@ const Pomodoro = ({ navigation }) => {
 						e.preventDefault();
 						Alert.alert(
 							"Leave?",
-							"This will reset the pomodoro. Do you still want to leave?",
+							"Leaving will result in loss of productivity and procrastination. Disappointment may follow. Do you wish to proceed?",
 							[
 								{ text: "No", style: "cancel", onPress: () => {} },
 								{
@@ -96,19 +95,46 @@ const Pomodoro = ({ navigation }) => {
 				: null,
 		[]
 	);
-
 	useEffect(() => {
 		return () => {
 			console.log("running cleanup");
 			_CLEANUP();
 		};
 	}, []);
+	useEffect(() => {
+		if (pomodoro.isRunning && !pomodoro.isFinished) {
+			_SETNEWCYCLE();
+		}
+	}, [pomodoro.isSession]);
+
+	useEffect(() => {
+		const getallObjects = async () => {
+			let keys = [];
+			let newValues = [];
+			try {
+				keys = await AsyncStorage.getItem("pomodoro");
+			} catch (e) {
+				console.log(e);
+			}
+			try {
+				JSON.parse(keys).forEach((item) => {
+					newValues.unshift(item);
+				});
+				setPomodoroPresetsList(newValues);
+			} catch (e) {
+				console.log(e);
+			}
+		};
+		getallObjects();
+	}, [pomodoro.numOfPresets]);
+
+	// console.log(pomodoroPresetsList);
 
 	const renderItem = ({ item, index }) => {
-		const itemObject = JSON.parse(item);
+		// const itemObject = item;
 		return (
 			<PresetContainerCondensed
-				itemObject={itemObject}
+				itemObject={item}
 				colors={colors}
 				ParentHoldCallback={toggleDetails}
 				index={index}
@@ -121,43 +147,13 @@ const Pomodoro = ({ navigation }) => {
 	};
 	const clearAll = async () => {
 		try {
-			await AsyncStorage.clear();
+			await AsyncStorage.removeItem("pomodoro");
 		} catch (e) {
 			// clear error
 		}
 
 		console.log("Done.");
 	};
-	useEffect(() => {
-		if (pomodoro.isRunning && !pomodoro.isFinished) {
-			_SETNEWCYCLE();
-		}
-	}, [pomodoro.isSession]);
-
-	useEffect(() => {
-		const getallObjects = async () => {
-			let keys = [];
-			let values = [];
-			try {
-				keys = await AsyncStorage.getAllKeys();
-			} catch (e) {
-				console.log(e);
-			}
-			try {
-				let [...values] = await AsyncStorage.multiGet(keys);
-				let newValues = [];
-				values.forEach((item) => {
-					item[0] == "reminders" || item[0] == "persist:root"
-						? null
-						: newValues.unshift(item[1]);
-				});
-				setPomodoroPresetsList(newValues);
-			} catch (e) {
-				console.log(e);
-			}
-		};
-		getallObjects();
-	}, [pomodoro.numOfPresets]);
 
 	// nuke everything
 	// clearAll();
@@ -175,7 +171,8 @@ const Pomodoro = ({ navigation }) => {
 			sessionTime,
 			breakTime
 		);
-		storeData(pomodoro.id, pomodoro.stringify());
+		const newArray = [pomodoro].concat(pomodoroPresetsList);
+		storeData("pomodoro", JSON.stringify(newArray));
 		console.log("created and saved");
 		_INCREMENETPRESETNUMBER(1);
 	};
@@ -296,6 +293,7 @@ const Pomodoro = ({ navigation }) => {
 						onPressCallback={createPomodoro}
 						text="Presets"
 						animation={animation}
+						iconName="pluscircle"
 					/>
 					<FlatList
 						extraData={pomodoroPresetsList}
@@ -303,8 +301,7 @@ const Pomodoro = ({ navigation }) => {
 						style={[styles.list, { backgroundColor: colors.levelOne }]}
 						renderItem={(item) => renderItem(item)}
 						keyExtractor={(item) => {
-							const itemObject = JSON.parse(item);
-							return itemObject.id;
+							return item.id;
 						}}
 						horizontal
 						showsHorizontalScrollIndicator={false}
@@ -316,6 +313,7 @@ const Pomodoro = ({ navigation }) => {
 					details={showDetails}
 					showDetailsSetter={toggleDetails}
 					animation={animation}
+					pomodoroList={pomodoroPresetsList}
 				/>
 			) : null}
 		</View>
@@ -342,10 +340,8 @@ const styles = StyleSheet.create({
 	},
 	buttonStyles: {
 		backgroundColor: "white",
-		// paddingHorizontal: 10,
 		margin: 5,
 		padding: 10,
-		// paddingVertical: 8,
 		borderRadius: 25,
 		justifyContent: "center",
 	},

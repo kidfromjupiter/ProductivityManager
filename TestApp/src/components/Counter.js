@@ -29,7 +29,7 @@ const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 					style={[styles.button, buttonColor]}
 					onPress={() => {
 						resetTimer(0);
-						setTimer({ time: 1 * 6 });
+						setTimer({ time: 1 * 60 });
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>1</Text>
@@ -97,13 +97,26 @@ const Timer = ({
 	});
 
 	async function playSound() {
-		console.log("Loading Sound");
+		Audio.setIsEnabledAsync(true);
+
+		Audio.setAudioModeAsync({
+			playsInSilentModeIOS: true,
+			shouldDuckAndroid: true,
+		});
+
 		const { sound } = await Audio.Sound.createAsync(
 			require("../../assets/Phobos.mp3")
 		);
+		sound.setOnPlaybackStatusUpdate(({ didJustFinish }) => {
+			if (didJustFinish == true) {
+				sound.unloadAsync();
+			}
+		});
+
 		setSound(sound);
 
 		console.log("Playing Sound");
+
 		await sound.playAsync();
 	}
 	useEffect(() => {
@@ -119,10 +132,7 @@ const Timer = ({
 
 	return (
 		<Pressable
-			style={[
-				styles.timeContainer,
-				// { backgroundColor: context == "home" ? null : colors.backgroundColor },
-			]}
+			style={[styles.timeContainer]}
 			onPress={() => {
 				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 				LayoutAnimation.configureNext(layoutanimation);
