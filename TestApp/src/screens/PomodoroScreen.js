@@ -155,6 +155,31 @@ const Pomodoro = ({ navigation }) => {
 		console.log("Done.");
 	};
 
+	const renderItem = ({ item, index }) => {
+		const itemObject = JSON.parse(item);
+		return (
+			<PresetContainerCondensed
+				itemObject={itemObject}
+				colors={colors}
+				ParentHoldCallback={toggleDetails}
+				index={index}
+				touchEndCallback={(value) => {
+					LayoutAnimation.configureNext(animation);
+					_SETCYCLEDATA(value);
+				}}
+			/>
+		);
+	};
+	const clearAll = async () => {
+		try {
+			await AsyncStorage.clear();
+		} catch (e) {
+			// clear error
+		}
+
+		console.log("Done.");
+	};
+
 	// nuke everything
 	// clearAll();
 
