@@ -6,25 +6,20 @@ import {
 	Dimensions,
 	TextInput,
 	TouchableOpacity,
-	LayoutAnimation,
-	Alert,
 } from "react-native";
 import Square from "./square";
 import PomodoroPresetContainer from "./PomodoroPresetContainer";
 import { useDispatch, useSelector } from "react-redux";
 import Slider from "@react-native-community/slider";
-import storeData from "../extras/saveData";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import sessionArrayGen from "../extras/sessionArrayGen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PomodoroClass } from "../extras/classes/PomodoroCreator";
-import { incrementNumOfPresets } from "../redux/PomodoroSlice";
 
 const PresetContainerDetails = ({
 	details,
 	showDetailsSetter,
-	animation,
 	pomodoroList,
+	setPomodoroPresetsList,
 }) => {
 	const colors = useSelector((state) => state.colors);
 	const [detailsObjectSD, setDetailsObjectSD] = useState(details.sessionTime);
@@ -34,8 +29,7 @@ const PresetContainerDetails = ({
 	);
 	const [detailsObjectT, setDetailsObjectT] = useState(details.title);
 
-	const dispatch = useDispatch();
-	const SaveToStorage = async () => {
+	const SaveToStorage = () => {
 		const pomodoroNew = new PomodoroClass(
 			detailsObjectT,
 			detailsObjectNOS,
@@ -51,23 +45,9 @@ const PresetContainerDetails = ({
 				objList.push(element);
 			}
 		});
-		const jsonArray = JSON.stringify(objList);
-
-		await AsyncStorage.setItem("pomodoro", jsonArray).then(
-			dispatch(incrementNumOfPresets({ number: -1 }))
-		);
+		setPomodoroPresetsList(objList);
 
 		console.log("Done.");
-	};
-
-	const _setSessionDuration = (value) => {
-		setDetailsObjectSD(value);
-	};
-	const _setBreakDuration = (value) => {
-		setDetailsObjectBD(value);
-	};
-	const _setNumOfSessions = (value) => {
-		setDetailsObjectNOS(value);
 	};
 	const _deletePreset = () => {
 		let objList = [];
@@ -76,14 +56,7 @@ const PresetContainerDetails = ({
 				objList.push(element);
 			}
 		});
-		const jsonArray = JSON.stringify(objList);
-
-		AsyncStorage.setItem("pomodoro", jsonArray).then(
-			dispatch(incrementNumOfPresets({ number: -1 }))
-		);
-	};
-	const _setTitle = (value) => {
-		setDetailsObjectT(value);
+		setPomodoroPresetsList(objList);
 	};
 	return (
 		<View style={[styles.container, { backgroundColor: colors.levelFour }]}>
@@ -95,7 +68,7 @@ const PresetContainerDetails = ({
 						styles.headerText,
 						{ borderBottomColor: colors.levelThree },
 					]}
-					onChangeText={(value) => _setTitle(value)}
+					onChangeText={(value) => setDetailsObjectT(value)}
 				/>
 				<Ionicons
 					name="ios-trash-outline"
@@ -103,9 +76,9 @@ const PresetContainerDetails = ({
 					color="white"
 					style={[styles.iconStyle]}
 					onPress={() => {
-						LayoutAnimation.configureNext(
-							LayoutAnimation.Presets.easeInEaseOut
-						);
+						// LayoutAnimation.configureNext(
+						// 	LayoutAnimation.Presets.easeInEaseOut
+						// );
 						_deletePreset();
 						showDetailsSetter();
 					}}
@@ -117,11 +90,10 @@ const PresetContainerDetails = ({
 					<Text style={styles.text}>{detailsObjectSD} min</Text>
 				</View>
 				<SliderHolder
-					value={100}
 					colors={colors}
-					parentCallback={(value) => _setSessionDuration(value)}
+					parentCallback={(value) => setDetailsObjectSD(value)}
 					value={detailsObjectSD}
-					min={10}
+					min={5}
 					max={45}
 				/>
 			</View>
@@ -131,9 +103,8 @@ const PresetContainerDetails = ({
 					<Text style={styles.text}>{detailsObjectNOS}</Text>
 				</View>
 				<SliderHolder
-					value={100}
 					colors={colors}
-					parentCallback={(value) => _setNumOfSessions(value)}
+					parentCallback={(value) => setDetailsObjectNOS(value)}
 					value={detailsObjectNOS}
 					min={2}
 					max={10}
@@ -145,9 +116,8 @@ const PresetContainerDetails = ({
 					<Text style={styles.text}>{detailsObjectBD} min</Text>
 				</View>
 				<SliderHolder
-					value={100}
 					colors={colors}
-					parentCallback={(value) => _setBreakDuration(value)}
+					parentCallback={(value) => setDetailsObjectBD(value)}
 					value={detailsObjectBD}
 					min={5}
 					max={20}
@@ -169,7 +139,7 @@ const PresetContainerDetails = ({
 				</TouchableOpacity>
 				<TouchableOpacity
 					onPress={() => {
-						SaveToStorage().finally((value) => console.log(value));
+						SaveToStorage();
 						showDetailsSetter();
 					}}
 					style={{
@@ -196,49 +166,22 @@ const SliderHolder = ({
 	max,
 	parentCallback,
 }) => {
-	const [_slidervalue, _setSliderValue] = useState(value);
-	const [_sliding, _setSliding] = useState(false);
 	return (
 		<View style={styles.SliderHolder}>
-			{_sliding ? (
-				<View
-					style={{
-						flex: 1,
-						position: "absolute",
-						left: Dimensions.get("window").width / 2,
-						backgroundColor: "white",
-						elevation: 5,
-						padding: 12,
-						bottom: 45,
-						borderRadius: 15,
-					}}
-				>
-					<Text style={{ fontWeight: "bold" }}>{_slidervalue}</Text>
-				</View>
-			) : null}
-
 			<Slider
 				style={{ height: 40 }}
-				minimumValue={1} //change back to min
+				minimumValue={1}
 				maximumValue={max}
-				value={_slidervalue}
+				value={value}
 				minimumTrackTintColor={colors.levelOne}
 				maximumTrackTintColor={colors.levelTwo}
 				thumbTintColor={colors.accentColor}
-				onSlidingStart={() => {
-					LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-					_setSliding(true);
-				}}
 				onValueChange={(Slidervalue) => {
-					_setSliderValue(Math.round(Slidervalue));
-					// value = 0;
+					parentCallback(Math.round(Slidervalue));
 				}}
-				onSlidingComplete={() => {
-					LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-					_setSliding(false);
-					parentCallback(_slidervalue);
+				onSlidingComplete={(Slidervalue) => {
+					parentCallback(Math.round(Slidervalue));
 				}}
-				// step={min - max}
 			/>
 		</View>
 	);

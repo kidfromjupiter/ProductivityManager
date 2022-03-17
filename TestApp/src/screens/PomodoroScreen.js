@@ -41,6 +41,7 @@ const Pomodoro = ({ navigation }) => {
 	const pomodoro = useSelector((state) => state.pomodoro);
 	const [pomodoroPresetsList, setPomodoroPresetsList] = useState([]);
 	const [isAod, setisAod] = useState(false);
+	// LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
 	const animation = LayoutAnimation.create(
 		// 175,
@@ -69,8 +70,13 @@ const Pomodoro = ({ navigation }) => {
 	const _SETNEWCYCLE = () => {
 		dispatch(setNewCycle());
 	};
+
 	const _CLEANUP = () => {
-		dispatch(exitCleanup());
+		console.log(JSON.stringify(pomodoroPresetsList));
+		try {
+			AsyncStorage.setItem("pomodoro", JSON.stringify(pomodoroPresetsList));
+			dispatch(exitCleanup());
+		} catch (error) {}
 	};
 	useEffect(
 		() =>
@@ -100,7 +106,7 @@ const Pomodoro = ({ navigation }) => {
 			console.log("running cleanup");
 			_CLEANUP();
 		};
-	}, []);
+	}, [pomodoroPresetsList]);
 	useEffect(() => {
 		if (pomodoro.isRunning && !pomodoro.isFinished) {
 			_SETNEWCYCLE();
@@ -109,54 +115,30 @@ const Pomodoro = ({ navigation }) => {
 
 	useEffect(() => {
 		const getallObjects = async () => {
-			let keys = [];
 			let newValues = [];
 			try {
-				keys = await AsyncStorage.getItem("pomodoro");
-			} catch (e) {
-				console.log(e);
-			}
-			try {
-				JSON.parse(keys).forEach((item) => {
-					newValues.unshift(item);
+				AsyncStorage.getItem("pomodoro").then((value) => {
+					try {
+						console.log(value);
+						JSON.parse(value).forEach((item) => {
+							newValues.unshift(item);
+						});
+						setPomodoroPresetsList(newValues);
+					} catch {
+						console.log("error in getting pomodoro");
+					}
 				});
-				setPomodoroPresetsList(newValues);
 			} catch (e) {
 				console.log(e);
 			}
 		};
 		getallObjects();
-	}, [pomodoro.numOfPresets]);
+	}, []);
 
 	// console.log(pomodoroPresetsList);
 
 	const renderItem = ({ item, index }) => {
-		// const itemObject = item;
-		return (
-			<PresetContainerCondensed
-				itemObject={item}
-				colors={colors}
-				ParentHoldCallback={toggleDetails}
-				index={index}
-				touchEndCallback={(value) => {
-					LayoutAnimation.configureNext(animation);
-					_SETCYCLEDATA(value);
-				}}
-			/>
-		);
-	};
-	const clearAll = async () => {
-		try {
-			await AsyncStorage.removeItem("pomodoro");
-		} catch (e) {
-			// clear error
-		}
-
-		console.log("Done.");
-	};
-
-	const renderItem = ({ item, index }) => {
-		const itemObject = JSON.parse(item);
+		const itemObject = item;
 		return (
 			<PresetContainerCondensed
 				itemObject={itemObject}
@@ -164,7 +146,7 @@ const Pomodoro = ({ navigation }) => {
 				ParentHoldCallback={toggleDetails}
 				index={index}
 				touchEndCallback={(value) => {
-					LayoutAnimation.configureNext(animation);
+					LayoutAnimation.easeInEaseOut();
 					_SETCYCLEDATA(value);
 				}}
 			/>
@@ -197,7 +179,7 @@ const Pomodoro = ({ navigation }) => {
 			breakTime
 		);
 		const newArray = [pomodoro].concat(pomodoroPresetsList);
-		storeData("pomodoro", JSON.stringify(newArray));
+		setPomodoroPresetsList(newArray);
 		console.log("created and saved");
 		_INCREMENETPRESETNUMBER(1);
 	};
@@ -338,6 +320,7 @@ const Pomodoro = ({ navigation }) => {
 					details={showDetails}
 					showDetailsSetter={toggleDetails}
 					animation={animation}
+					setPomodoroPresetsList={setPomodoroPresetsList}
 					pomodoroList={pomodoroPresetsList}
 				/>
 			) : null}

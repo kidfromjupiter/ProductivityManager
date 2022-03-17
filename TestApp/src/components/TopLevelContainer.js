@@ -30,31 +30,31 @@ const TopLevelContainer = (props) => {
 			}).then(() => console.log("backed up"));
 		});
 	}
-	// const handleAppStateChange = (nextAppState) => {
-	// 	if (nextAppState === "background") {
-	// 		if (signedIn && shouldSync) {
-	// 			GoogleSignin.signInSilently().then((e) => {
-	// 				sendData(e.idToken);
-	// 			});
-	// 		}
-	// 	}
-	// };
-	// useEffect(() => {
-	// 	const eventSub = AppState.addEventListener("change", handleAppStateChange);
-	// 	const interval = setInterval(() => {
-	// 		if (signedIn && shouldSync) {
-	// 			GoogleSignin.signInSilently().then((e) => {
-	// 				sendData(e.idToken);
-	// 			});
-	// 		}
-	// 	}, 1000 * 60 * 5);
-	// 	return () => {
-	// 		clearInterval(interval);
-	// 		try {
-	// 			eventSub.remove();
-	// 		} catch {}
-	// 	};
-	// }, [shouldSync]);
+	const handleAppStateChange = (nextAppState) => {
+		if (nextAppState === "background") {
+			if (signedIn && shouldSync) {
+				GoogleSignin.signInSilently().then((e) => {
+					sendData(e.idToken);
+				});
+			}
+		}
+	};
+	useEffect(() => {
+		const eventSub = AppState.addEventListener("change", handleAppStateChange);
+		const interval = setInterval(() => {
+			if (signedIn && shouldSync) {
+				GoogleSignin.signInSilently().then((e) => {
+					sendData(e.idToken);
+				});
+			}
+		}, 1000 * 60 * 5);
+		return () => {
+			clearInterval(interval);
+			try {
+				eventSub.remove();
+			} catch {}
+		};
+	}, [shouldSync]);
 
 	useEffect(() => {
 		if (signedIn) {

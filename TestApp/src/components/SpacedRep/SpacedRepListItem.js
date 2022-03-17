@@ -8,7 +8,6 @@ import Animated, {
 	withRepeat,
 	withSequence,
 	withTiming,
-	SlideInRight,
 } from "react-native-reanimated";
 
 const Tags = ({ name }) => {
@@ -70,7 +69,7 @@ const SpacedRepListItem = ({
 	return (
 		<Animated.View
 			style={[styles.container, animatedStyle]}
-			entering={SlideInRight}
+			// entering={SlideInRight}
 			onTouchEnd={() => {
 				rotation.value = withSequence(
 					withTiming(-1, { duration: 50 }),
