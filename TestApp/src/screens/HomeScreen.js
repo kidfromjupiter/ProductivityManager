@@ -1,19 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import dateParser from "../extras/dateparser";
-import { View, Text, Button, Animated, Easing } from "react-native";
-import { StyleSheet } from "react-native";
-import Square from "../components/square";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { Animated, StyleSheet, Text, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import Timer from "../components/Counter";
-import MiniReminderView from "../components/MiniReminderView";
-import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
-import { getMostRecentEvent } from "../extras/GAuth";
-import TodayInfo from "../components/SpacedRep/TodayInfoContainer";
-import QuickView, {
-	QuickViewSub,
-} from "../components/SpacedRep/HomeScreenQuickView";
 import Loading from "../components/LottieLoading";
+import MiniReminderView from "../components/MiniReminderView";
+import QuickView, {
+	QuickViewSub
+} from "../components/SpacedRep/HomeScreenQuickView";
+import Square from "../components/square";
+import dateParser from "../extras/dateparser";
+import { getMostRecentEvent } from "../extras/GAuth";
+import { resetTimer, setTimer, startTimer } from "../redux/TimerSlice";
 
 // import Animated, { FadeInDown } from "react-native-reanimated";
 

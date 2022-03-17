@@ -1,11 +1,11 @@
-import React, { useRef } from "react";
+import React from "react";
 import {
-	StyleSheet,
-	View,
-	Text,
 	Animated,
-	Pressable,
 	LayoutAnimation,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
 } from "react-native";
 
 const PressableAnimated = Animated.createAnimatedComponent(Pressable);
@@ -19,7 +19,6 @@ const Square = ({
 	navigation,
 	customStyles,
 	scaleDown,
-	scaleUp,
 	holdToExpand,
 	expandSize,
 	expanded,
@@ -27,38 +26,29 @@ const Square = ({
 	touchEndCallback,
 	titleStyle,
 }) => {
-	// const [expanded, setExpanded] = React.useState(false);
-	const animatedButtonScale = new Animated.Value(1);
+	const animatedButtonScale = new Animated.Value(0);
 
 	const onTouchStart = () => {
 		Animated.timing(animatedButtonScale, {
-			toValue: scaleDown ? scaleDown : 0.8,
+			toValue: 10,
 			useNativeDriver: true,
-			duration: 200,
-		}).start(() => onTouchEnd());
-	};
-
-	const onTouchEnd = () => {
-		Animated.timing(animatedButtonScale, {
-			toValue: scaleUp ? scaleUp : 1,
-			useNativeDriver: true,
-			duration: 200,
-		}).start(() =>
-			navigation ? navigation.navigate(text) : TouchEndCallback()
-		);
-	};
-
-	const TouchEndCallback = () => {
-		return touchEndCallback ? touchEndCallback() : null;
+			duration: 300,
+		}).start(() => animatedButtonScale.setValue(0));
 	};
 
 	const animatedScaleStyle = {
-		transform: [{ scale: animatedButtonScale }],
+		transform: [
+			{
+				scale: animatedButtonScale.interpolate({
+					inputRange: [0, 5, 10],
+					outputRange: [1, scaleDown ? scaleDown : 0.9, 1],
+				}),
+			},
+		],
 	};
 
 	return (
 		<PressableAnimated
-			// colors={[props.startColor, props.endColor]}
 			delayLongPress={250}
 			style={[
 				styles.container,
@@ -71,7 +61,11 @@ const Square = ({
 				onTouchStart();
 			}}
 			onTouchEnd={() => {
-				onTouchEnd();
+				touchEndCallback
+					? touchEndCallback()
+					: navigation
+					? navigation.navigate(text)
+					: null;
 			}}
 			onLongPress={
 				enableLongPress
@@ -108,8 +102,6 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.27,
 		shadowRadius: 4.65,
 		elevation: 8,
-
-		// backgroundColor: "white",
 	},
 	rootContainer: {
 		flex: 1,

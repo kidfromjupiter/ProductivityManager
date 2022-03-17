@@ -1,12 +1,6 @@
 import React from "react";
 import {
-	TextInput,
-	StyleSheet,
-	View,
-	Text,
-	Dimensions,
-	TouchableOpacity,
-	LayoutAnimation,
+	Dimensions, LayoutAnimation, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from "react-native";
 
 const DialogBox = ({

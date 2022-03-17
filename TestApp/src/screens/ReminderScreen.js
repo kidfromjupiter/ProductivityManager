@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, LayoutAnimation } from "react-native";
-import { useDispatch } from "react-redux";
+import React from "react";
+import { LayoutAnimation, StyleSheet, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import ActionButton from "../components/ActionButton";
+import DialogBox from "../components/DialogBox";
+import ReminderList from "../components/ReminderList";
+import { ReminderClass } from "../extras/classes/ReminderClass";
 import { addReminder } from "../redux/ReminderSlice";
 
-import ReminderList from "../components/ReminderList";
-import ActionButton from "../components/ActionButton";
-import { useSelector } from "react-redux";
-import DialogBox from "../components/DialogBox";
-import { ReminderClass } from "../extras/classes/ReminderClass";
 
 export const ReminderScreen = () => {
 	const dispatch = useDispatch();

@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text } from "react-native";
 import LottieView from "lottie-react-native";
+import React from "react";
+import { View } from "react-native";
 
 export default function Loading({ lottieStyle, containerStyle }) {
 	return (

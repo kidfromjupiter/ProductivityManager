@@ -1,16 +1,10 @@
-import React, { useEffect, useState } from "react";
-import {
-	View,
-	Text,
-	StyleSheet,
-	Pressable,
-	Vibration,
-	TouchableHighlight,
-	LayoutAnimation,
-} from "react-native";
-import { useDispatch, useSelector } from "react-redux";
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
+import React, { useEffect, useState } from "react";
+import {
+	LayoutAnimation, Pressable, StyleSheet, Text, TouchableHighlight, View
+} from "react-native";
+import { useSelector } from "react-redux";
 
 const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 	const buttonColor = {

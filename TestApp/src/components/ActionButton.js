@@ -1,17 +1,11 @@
+import { AntDesign } from "@expo/vector-icons";
 import React from "react";
 import {
-	View,
-	Pressable,
-	StyleSheet,
-	Text,
-	Dimensions,
-	Animated,
-	LayoutAnimation,
+	Animated, Pressable,
+	StyleSheet
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-
-import DialogBox from "./DialogBox";
 import { useSelector } from "react-redux";
+
 
 const PressableAnimated = Animated.createAnimatedComponent(Pressable);
 

@@ -1,29 +1,25 @@
-import React, { useState } from "react";
+import { AntDesign } from "@expo/vector-icons";
+import LottieView from "lottie-react-native";
+import React, { useEffect, useState } from "react";
 import {
-	View,
-	Text,
-	StyleSheet,
+	Button,
 	Dimensions,
 	FlatList,
-	Button,
+	StyleSheet,
+	Text,
+	View,
 } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { setIdToken, setIsSignedIn, setToken } from "../../redux/GAuthSlice";
+import { GoogleSignin } from "react-native-google-signin";
+import { useDispatch, useSelector } from "react-redux";
 import ListHeader from "../../components/ListHeader";
+import Loading from "../../components/LottieLoading";
 import SearchBar from "../../components/SearchBar";
 import SpacedRepListItem from "../../components/SpacedRep/SpacedRepListItem";
 import TodayInfo from "../../components/SpacedRep/TodayInfoContainer";
-import { deleteEvent, getEvents } from "../../extras/GAuth";
-import { AntDesign } from "@expo/vector-icons";
-import { useEffect } from "react";
-import { setCalID } from "../../redux/GAuthSlice";
 import CalendarEvent from "../../extras/classes/EventsResourceClass";
-import LottieView from "lottie-react-native";
+import { addCalendar, deleteEvent, getEvents } from "../../extras/GAuth";
 import { setEvents } from "../../redux/CalendarSlice";
-import { addCalendar } from "../../extras/GAuth";
-import { GoogleSignin, GoogleSigninButton } from "react-native-google-signin";
-import { grabData } from "../../extras/BACKEND";
-import Loading from "../../components/LottieLoading";
+import { setCalID, setIdToken, setToken } from "../../redux/GAuthSlice";
 
 const SpacedRepHome = ({ navigation }) => {
 	const dispatch = useDispatch();

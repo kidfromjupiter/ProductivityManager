@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Animated } from "react-native";
+import { Animated, StyleSheet, Text } from "react-native";
 
 const CustomButton = ({ color, text, callback, textColor, customStyles }) => {
 	const animatedButtonScale = new Animated.Value(1);

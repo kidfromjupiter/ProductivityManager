@@ -1,14 +1,8 @@
 import React from "react";
 import {
-	View,
-	Text,
-	StyleSheet,
-	Pressable,
-	LayoutAnimation,
-	TouchableNativeFeedback,
+	LayoutAnimation, Pressable, StyleSheet, Text, View
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { useState } from "react";
 
 const ListItemGeneric = ({
 	text,

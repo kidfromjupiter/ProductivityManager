@@ -1,16 +1,10 @@
 import React from "react";
 import {
-	View,
-	Text,
-	FlatList,
-	Platform,
-	UIManager,
-	StyleSheet,
-	Dimensions,
+	Dimensions, FlatList,
+	Platform, StyleSheet, Text, UIManager, View
 } from "react-native";
-import ListItem from "./ListItem";
-import { AntDesign } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
+import ListItem from "./ListItem";
 import { ListEmpty } from "./MiniReminderView";
 
 if (

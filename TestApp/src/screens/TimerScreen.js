@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
-import Timer from "../components/Counter";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import BottomToast from "../components/BottomToast";
-import { useSelector, useDispatch } from "react-redux";
-import { setTimer, resetTimer, startTimer } from "../redux/TimerSlice";
+import Timer from "../components/Counter";
 import dateParser from "../extras/dateparser";
+import { resetTimer, setTimer, startTimer } from "../redux/TimerSlice";
 
 const TimerScreen = () => {
 	const running = useSelector((state) => state.time.isRunning);

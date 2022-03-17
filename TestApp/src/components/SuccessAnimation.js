@@ -1,6 +1,6 @@
-import React, { useState } from "react";
 import LottieView from "lottie-react-native";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import Modal from "react-native-modal";
 
 const SuccessAlert = ({

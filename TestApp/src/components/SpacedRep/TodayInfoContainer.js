@@ -1,25 +1,16 @@
+import { AntDesign } from "@expo/vector-icons";
 import React from "react";
 import {
-	View,
-	StyleSheet,
-	Text,
 	Dimensions,
-	FlatList,
-	LayoutAnimation,
+	FlatList, StyleSheet,
+	Text, View
 } from "react-native";
-import CustomButton from "./CustomButton";
 import CircularProgress from "react-native-circular-progress-indicator";
-import { AntDesign } from "@expo/vector-icons";
-import { deleteEvent } from "../../extras/GAuth";
-import { useSelector } from "react-redux";
-import InfoBar from "../InfoBar";
-import {
-	Directions,
-	Gesture,
-	GestureDetector,
-	GestureHandlerRootView,
-} from "react-native-gesture-handler";
 import Animated, { SlideInDown } from "react-native-reanimated";
+import { useSelector } from "react-redux";
+import { deleteEvent } from "../../extras/GAuth";
+import InfoBar from "../InfoBar";
+import CustomButton from "./CustomButton";
 
 const TodayInfo = ({
 	percentage,

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { AppState, View, NativeModules } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { grabData, updateUserData } from "../extras/BACKEND";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { AppState, View } from "react-native";
 import { GoogleSignin } from "react-native-google-signin";
-
+import { useDispatch, useSelector } from "react-redux";
+import { grabData, updateUserData } from "../extras/BACKEND";
 import {
 	setCalID,
 	setGAuthMeta,
 	setIsSignedIn,
-	setToken,
+	setToken
 } from "../redux/GAuthSlice";
+
 
 const TopLevelContainer = (props) => {
 	const signedIn = useSelector((state) => state.gauth.isSignedIn);

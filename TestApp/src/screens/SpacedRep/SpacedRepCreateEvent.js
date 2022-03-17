@@ -1,20 +1,16 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import {
-	View,
-	Text,
-	StyleSheet,
-	TextInput,
-	Button,
-	ScrollView,
-} from "react-native";
-import { DateTimeGenerator, spacedRepDateGen } from "../../extras/dateparser";
-import { useDispatch, useSelector } from "react-redux";
-import { addCalendar, addEvent, listCalendars } from "../../extras/GAuth";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import React, { useState } from "react";
+import {
+	Button,
+	ScrollView, StyleSheet, Text, TextInput, View
+} from "react-native";
+import Tags from "react-native-tags";
+import { useSelector } from "react-redux";
 import GestureSlider from "../../components/GestureSlider";
 import CalView from "../../components/SpacedRep/CalDate";
 import SuccessAlert from "../../components/SuccessAnimation";
-import Tags from "react-native-tags";
+import { DateTimeGenerator, spacedRepDateGen } from "../../extras/dateparser";
+import { addEvent } from "../../extras/GAuth";
 
 const CreateEvent = ({ navigation }) => {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);

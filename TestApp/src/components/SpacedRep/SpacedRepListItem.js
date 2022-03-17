@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
-import { getEventData } from "../../extras/GAuth";
 import { AntDesign } from "@expo/vector-icons";
+import React, { useEffect } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import Animated, {
-	useSharedValue,
-	useAnimatedStyle,
-	withRepeat,
+	useAnimatedStyle, useSharedValue, withRepeat,
 	withSequence,
-	withTiming,
+	withTiming
 } from "react-native-reanimated";
 
 const Tags = ({ name }) => {

@@ -1,14 +1,10 @@
+import { AntDesign } from "@expo/vector-icons";
 import React from "react";
 import {
-	Text,
-	View,
-	StyleSheet,
-	Animated,
-	Pressable,
-	LayoutAnimation,
+	Animated, LayoutAnimation, Pressable, StyleSheet, Text,
+	View
 } from "react-native";
 import { useSelector } from "react-redux";
-import { AntDesign } from "@expo/vector-icons";
 
 const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
 

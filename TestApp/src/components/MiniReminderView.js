@@ -1,16 +1,11 @@
-import React, { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React from "react";
 import {
-	StyleSheet,
-	View,
-	Text,
-	Animated,
-	LayoutAnimation,
-	FlatList,
+	FlatList, LayoutAnimation, StyleSheet, Text, View
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import ListItemGeneric from "./ListItemGeneric";
 import { editReminder } from "../redux/ReminderSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ListItemGeneric from "./ListItemGeneric";
 
 const ListEmpty = ({ emptyText, colors }) => {
 	return (

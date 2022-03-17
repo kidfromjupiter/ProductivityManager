@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, SafeAreaView, Platform } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, Text } from "react-native";
 
 const BackButton = ({ navigation, color }) => {
 	if (Platform.OS === "ios") {

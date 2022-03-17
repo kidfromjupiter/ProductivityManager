@@ -1,20 +1,12 @@
+import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
-	View,
-	Text,
-	StyleSheet,
-	ScrollView,
-	FlatList,
 	Dimensions,
-	Pressable,
-	VirtualizedList,
+	Pressable, StyleSheet, Text, View, VirtualizedList
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import HomeScreen from "./HomeScreen";
-import Pomodoro from "./PomodoroScreen";
 import { changeColorScheme } from "../redux/ColorSlice";
-import ListItemGeneric from "../components/ListItemGeneric";
-import { StatusBar } from "expo-status-bar";
+import Pomodoro from "./PomodoroScreen";
 
 const ColorPickerScreen = () => {
 	const dispatch = useDispatch();

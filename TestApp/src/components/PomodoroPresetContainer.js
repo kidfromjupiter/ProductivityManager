@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import InfoCircle from "./Circle";
-import { View, Text, StyleSheet, Pressable } from "react-native";
 import * as Haptics from "expo-haptics";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import InfoCircle from "./Circle";
 
 const PomodoroPresetContainer = ({
 	colors,
@@ -14,7 +14,6 @@ const PomodoroPresetContainer = ({
 	holdCallback,
 	holdDelay,
 }) => {
-	// const title = "hello";
 	return (
 		<Pressable
 			style={styles.PresetInfoContainer}

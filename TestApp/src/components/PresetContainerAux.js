@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import Slider from "@react-native-community/slider";
+import React, { useState } from "react";
 import {
-	Text,
-	View,
-	StyleSheet,
 	Dimensions,
+	StyleSheet,
+	Text,
 	TextInput,
 	TouchableOpacity,
+	View,
 } from "react-native";
-import Square from "./square";
-import PomodoroPresetContainer from "./PomodoroPresetContainer";
-import { useDispatch, useSelector } from "react-redux";
-import Slider from "@react-native-community/slider";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
-import sessionArrayGen from "../extras/sessionArrayGen";
+import { useSelector } from "react-redux";
 import { PomodoroClass } from "../extras/classes/PomodoroCreator";
+import sessionArrayGen from "../extras/sessionArrayGen";
+import PomodoroPresetContainer from "./PomodoroPresetContainer";
+import Square from "./square";
 
 const PresetContainerDetails = ({
 	details,
@@ -76,51 +76,38 @@ const PresetContainerDetails = ({
 					color="white"
 					style={[styles.iconStyle]}
 					onPress={() => {
-						// LayoutAnimation.configureNext(
-						// 	LayoutAnimation.Presets.easeInEaseOut
-						// );
 						_deletePreset();
 						showDetailsSetter();
 					}}
 				/>
 			</View>
 			<View style={styles.rows}>
-				<View style={styles.textHolder}>
-					<Text style={styles.text}>Session duration</Text>
-					<Text style={styles.text}>{detailsObjectSD} min</Text>
-				</View>
-				<SliderHolder
-					colors={colors}
-					parentCallback={(value) => setDetailsObjectSD(value)}
-					value={detailsObjectSD}
+				<SliderObject
 					min={5}
 					max={45}
+					value={detailsObjectSD}
+					parentCallback={setDetailsObjectSD}
+					text="Session Duration"
+					suffix="min"
 				/>
 			</View>
 			<View style={styles.rows}>
-				<View style={styles.textHolder}>
-					<Text style={styles.text}>Number of sessions</Text>
-					<Text style={styles.text}>{detailsObjectNOS}</Text>
-				</View>
-				<SliderHolder
-					colors={colors}
-					parentCallback={(value) => setDetailsObjectNOS(value)}
-					value={detailsObjectNOS}
+				<SliderObject
 					min={2}
 					max={10}
+					value={detailsObjectNOS}
+					parentCallback={setDetailsObjectNOS}
+					text="Number of Sessions"
 				/>
 			</View>
 			<View style={styles.rows}>
-				<View style={styles.textHolder}>
-					<Text style={styles.text}>Break duration</Text>
-					<Text style={styles.text}>{detailsObjectBD} min</Text>
-				</View>
-				<SliderHolder
-					colors={colors}
-					parentCallback={(value) => setDetailsObjectBD(value)}
-					value={detailsObjectBD}
+				<SliderObject
 					min={5}
 					max={20}
+					value={detailsObjectBD}
+					parentCallback={setDetailsObjectBD}
+					text="Break Duration"
+					suffix="min"
 				/>
 			</View>
 			<View style={{ flex: 1, flexDirection: "row" }}>
@@ -156,6 +143,40 @@ const PresetContainerDetails = ({
 	);
 };
 
+const SliderObject = ({ max, min, parentCallback, value, text, suffix }) => {
+	const colors = useSelector((state) => state.colors);
+	const [isSliding, setIsSliding] = useState(false);
+	return (
+		<>
+			<View style={styles.textHolder}>
+				<Text style={styles.text}>{text}</Text>
+				<Text
+					style={[
+						styles.text,
+						{
+							backgroundColor: isSliding ? "white" : "transparent",
+							paddingHorizontal: 5,
+							borderRadius: 5,
+							transform: [{ scale: isSliding ? 1.25 : 1 }],
+							elevation: isSliding ? 5 : 0,
+						},
+					]}
+				>
+					{value} {suffix ? suffix : ""}
+				</Text>
+			</View>
+			<SliderHolder
+				colors={colors}
+				parentCallback={(value) => parentCallback(value)}
+				setSliding={setIsSliding}
+				value={value}
+				min={min}
+				max={max}
+			/>
+		</>
+	);
+};
+
 const SliderHolder = ({
 	title,
 	value,
@@ -165,6 +186,7 @@ const SliderHolder = ({
 	min,
 	max,
 	parentCallback,
+	setSliding,
 }) => {
 	return (
 		<View style={styles.SliderHolder}>
@@ -177,10 +199,12 @@ const SliderHolder = ({
 				maximumTrackTintColor={colors.levelTwo}
 				thumbTintColor={colors.accentColor}
 				onValueChange={(Slidervalue) => {
+					setSliding(true);
 					parentCallback(Math.round(Slidervalue));
 				}}
 				onSlidingComplete={(Slidervalue) => {
 					parentCallback(Math.round(Slidervalue));
+					setSliding(false);
 				}}
 			/>
 		</View>
@@ -254,7 +278,6 @@ const styles = StyleSheet.create({
 		left: 5,
 		right: 5,
 		borderRadius: 15,
-		// zIndex: 100,
 		overflow: "hidden",
 	},
 	rows: {
@@ -262,14 +285,12 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		width: Dimensions.get("window").width - 20,
 		paddingHorizontal: 10,
-		// alignContent: "center",
 	},
 	text: {
 		fontSize: 16,
 		fontWeight: "bold",
 	},
 	headerContainer: {
-		// backgroundColor: "grey",
 		padding: 8,
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -289,7 +310,9 @@ const styles = StyleSheet.create({
 	iconStyle: {
 		borderRadius: 7,
 		backgroundColor: "#E71F1F",
-		// padding: 1,
+		padding: 3,
+		textAlign: "center",
+		textAlignVertical: "center",
 	},
 });
 

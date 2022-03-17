@@ -1,35 +1,22 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState } from "react";
 import {
-	View,
-	Button,
-	NativeModules,
-	Text,
-	ScrollView,
-	StyleSheet,
-	TextInput,
-	Alert,
-	Image,
-	Dimensions,
+	Alert, Button, Dimensions, Image, ScrollView,
+	StyleSheet, Text, TextInput, View
 } from "react-native";
-import SettingsListItem from "../components/Settings/SettingsListItem";
 import { GoogleSignin } from "react-native-google-signin";
-import {
-	setCalID,
-	setIsSignedIn,
-	setIdToken,
-	setShouldSync,
-	resetGAuth,
-	setGAuthMeta,
-} from "../redux/GAuthSlice";
+import Modal from "react-native-modal";
 import { useDispatch, useSelector } from "react-redux";
 import ListHeader from "../components/ListHeader";
-import { deleteCalendar } from "../extras/GAuth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { batchAdd, deleteAllReminders } from "../redux/ReminderSlice";
+import SettingsListItem from "../components/Settings/SettingsListItem";
 import SuccessAlert from "../components/SuccessAnimation";
-import { changeColorScheme } from "../redux/ColorSlice";
-import Modal from "react-native-modal";
 import { createUser, grabData, updateUserData } from "../extras/BACKEND";
+import { deleteCalendar } from "../extras/GAuth";
+import { changeColorScheme } from "../redux/ColorSlice";
+import {
+	resetGAuth, setCalID, setGAuthMeta, setIdToken, setIsSignedIn, setShouldSync
+} from "../redux/GAuthSlice";
+import { batchAdd, deleteAllReminders } from "../redux/ReminderSlice";
 
 function SettingsScreen({ navigation }) {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);

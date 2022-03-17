@@ -1,38 +1,28 @@
-import React, { useState, useEffect } from "react";
+import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Haptics from "expo-haptics";
 import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
+import React, { useEffect, useState } from "react";
 import {
-	View,
-	StyleSheet,
-	FlatList,
-	LayoutAnimation,
-	Alert,
-	Pressable,
+	Alert, FlatList,
+	LayoutAnimation, Pressable, StyleSheet, View
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import dateParser from "../extras/dateparser";
-import storeData from "../extras/saveData";
+import AnimatedRing from "../components/AnimatedRing";
+import BackButton from "../components/backButtonComponent";
 import Timer from "../components/Counter";
+import InfoBar from "../components/InfoBar";
 import ListHeader from "../components/ListHeader";
 import {
-	resetTimer,
-	setTime,
-	toggleTimer,
-	incrementNumOfPresets,
-	setNewCycle,
-	setCycleData,
-	exitCleanup,
-} from "../redux/PomodoroSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PomodoroClass } from "../extras/classes/PomodoroCreator";
-import AnimatedRing from "../components/AnimatedRing";
-import {
 	PresetContainerCondensed,
-	PresetContainerDetails,
+	PresetContainerDetails
 } from "../components/PresetContainerAux";
-import InfoBar from "../components/InfoBar";
-import * as Haptics from "expo-haptics";
-import BackButton from "../components/backButtonComponent";
-import { MaterialIcons } from "@expo/vector-icons";
+import { PomodoroClass } from "../extras/classes/PomodoroCreator";
+import dateParser from "../extras/dateparser";
+import {
+	exitCleanup, incrementNumOfPresets, resetTimer, setCycleData, setNewCycle, setTime,
+	toggleTimer
+} from "../redux/PomodoroSlice";
 // import { Tracker } from "../extras/TrackerObject";
 
 const Pomodoro = ({ navigation }) => {

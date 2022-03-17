@@ -1,20 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-	View,
-	Text,
-	StyleSheet,
-	Touchable,
-	Pressable,
-	LayoutAnimation,
-} from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { Audio } from "expo-av";
+import React, { useState } from "react";
 import {
-	Gesture,
-	GestureDetector,
-	GestureHandlerRootView,
-	PanGestureHandler,
-} from "react-native-gesture-handler";
+	LayoutAnimation, StyleSheet, View
+} from "react-native";
 
 const GestureSlider = ({
 	onTick,

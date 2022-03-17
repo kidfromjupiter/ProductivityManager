@@ -1,18 +1,11 @@
+import { AntDesign } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-	View,
-	Animated,
-	StyleSheet,
-	Pressable,
-	Easing,
-	LayoutAnimation,
-	Text,
+	Animated, LayoutAnimation, Pressable, StyleSheet, Text, View
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { useDispatch } from "react-redux";
-import { editReminder, deleteReminder } from "../redux/ReminderSlice";
-import { AntDesign } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteReminder, editReminder } from "../redux/ReminderSlice";
 
 // const Vector
 
