@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 const CalView = ({ month, date, year, onPress }) => {
 	return (
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 	container: {
 		height: 150,
 		// flex: 1,
-		width: 140,
+		width: 160,
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 20,
@@ -42,10 +42,14 @@ const styles = StyleSheet.create({
 	},
 	year: {
 		fontSize: 17,
+		textAlign: "center",
+		textAlignVertical: "top",
 	},
 	date: {
-		fontSize: 50,
+		fontSize: 60,
 		fontWeight: "bold",
+		textAlignVertical: "center",
+		textAlign: "center",
 		color: "#00D34B",
 	},
 });

@@ -1,44 +1,36 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import {
 	Button,
-	ScrollView, StyleSheet, Text, TextInput, View
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
 } from "react-native";
+import DatePicker from "react-native-date-picker";
 import Tags from "react-native-tags";
 import { useSelector } from "react-redux";
 import GestureSlider from "../../components/GestureSlider";
-import CalView from "../../components/SpacedRep/CalDate";
+import ListHeader from "../../components/ListHeader";
 import SuccessAlert from "../../components/SuccessAnimation";
 import { DateTimeGenerator, spacedRepDateGen } from "../../extras/dateparser";
 import { addEvent } from "../../extras/GAuth";
-
 const CreateEvent = ({ navigation }) => {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
 	const calendarID = useSelector((state) => state.gauth.calendarID);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [endDate, setEndDate] = useState(new Date());
 	const [startDate, setStartDate] = useState(new Date());
-	const [show_end, setShow_end] = useState(false);
-	const [show_start, setShow_start] = useState(false);
 	const [rep_count, setRepCount] = useState(0);
 	const [title, setTitle] = useState("");
 	const [tags, setTags] = useState();
 	const [scrollEnabled, setScrollEnabled] = useState(true);
-	const [repList, setRepList] = useState(0);
 
-	const onChange_start = (event, selectedDate) => {
-		if (event.type == "set") {
-			const currentDate = selectedDate || startDate;
-			setShow_start(Platform.OS === "ios");
-			setStartDate(currentDate);
-		}
+	const onChange_start = (date) => {
+		setStartDate(date);
 	};
-	const onChange_end = (event, selectedDate) => {
-		if (event.type == "set") {
-			const currentDate = selectedDate || endDate;
-			setShow_end(Platform.OS === "ios");
-			setEndDate(currentDate);
-		}
+	const onChange_end = (date) => {
+		setEndDate(date);
 	};
 
 	const createEventArray = () => {
@@ -51,7 +43,7 @@ const CreateEvent = ({ navigation }) => {
 			startDate.toISOString().substring(0, 10),
 			dateArray,
 			title,
-			{ tags: tags.toString() }
+			{ tags: tags?.toString() }
 		);
 		return CalObjectArray;
 	};
@@ -67,13 +59,13 @@ const CreateEvent = ({ navigation }) => {
 	const onTitleChange = (text) => {
 		setTitle(text);
 	};
-
 	const changeRepCount = (value) => {
 		const amount = rep_count + value;
 		if (amount >= 0) {
 			setRepCount(amount);
 		}
 	};
+	console.log(startDate);
 	return (
 		<View style={styles.container}>
 			<ScrollView scrollEnabled={scrollEnabled}>
@@ -88,59 +80,42 @@ const CreateEvent = ({ navigation }) => {
 						onChangeText={(text) => onTitleChange(text)}
 					/>
 				</View>
-				<View
-					style={[styles.section, styles.dates]}
-					onTouchEnd={() => setShow_start(!show_start)}
-				>
+				<ListHeader
+					text="Select Starting date"
+					extraStyle={{ paddingHorizontal: 10 }}
+				/>
+				<View style={[styles.section, styles.dates]}>
 					<View style={styles.dateHolder}>
-						<Text style={styles.subtitle}>When would you like to start?</Text>
-						<CalView
-							year={startDate.getFullYear()}
-							date={startDate.getDate()}
-							month={startDate.toString().substring(4, 7)}
-						/>
-					</View>
-
-					{show_start && (
-						<DateTimePicker
-							testID="dateTimePicker"
-							value={startDate}
+						<DatePicker
+							date={startDate}
 							minimumDate={new Date()}
 							mode="date"
-							is24Hour={true}
-							display="default"
-							onChange={onChange_start}
-						/>
-					)}
-				</View>
-				<View
-					style={[styles.section, styles.dates]}
-					onTouchEnd={() => setShow_end(!show_end)}
-				>
-					<View style={styles.dateHolder}>
-						<Text style={styles.subtitle}>
-							When are you planning to finish?
-						</Text>
-						<CalView
-							year={endDate.getFullYear()}
-							date={endDate.getDate()}
-							month={endDate.toString().substring(4, 7)}
+							onDateChange={onChange_start}
+							fadeToColor="#2B3748"
+							textColor="white"
 						/>
 					</View>
-					{show_end && (
-						<DateTimePicker
-							testID="dateTimePicker"
-							value={endDate}
-							mode="date"
-							is24Hour={true}
-							display="default"
+				</View>
+				<ListHeader
+					text="Select Ending date"
+					extraStyle={{ paddingHorizontal: 10 }}
+				/>
+				<View style={[styles.section, styles.dates]}>
+					<View style={styles.dateHolder}>
+						<DatePicker
+							date={endDate}
 							minimumDate={startDate}
-							onChange={onChange_end}
+							mode="date"
+							onDateChange={onChange_end}
+							fadeToColor="#2B3748"
+							textColor="white"
 						/>
-					)}
+					</View>
 				</View>
 				<View style={[styles.section, { flex: 1 }]}>
-					<Text style={styles.subtitle}>Give the event a set of tags</Text>
+					<Text style={styles.subtitle}>
+						Give the event a set of tags seperated with spaces
+					</Text>
 
 					<Tags
 						// style={{ flex: 1 }}
@@ -226,6 +201,7 @@ const styles = StyleSheet.create({
 	dates: {
 		flexDirection: "row",
 		justifyContent: "center",
+		alignItems: "center",
 		height: 220,
 		// backgroundColor: "red",
 	},

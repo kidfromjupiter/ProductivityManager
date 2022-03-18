@@ -1,14 +1,46 @@
 import { AntDesign } from "@expo/vector-icons";
 import React, { useEffect } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
-import Animated, {
-	useAnimatedStyle, useSharedValue, withRepeat,
+import { Animated, FlatList, StyleSheet, Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+import {
+	default as Anim,
+	useAnimatedStyle,
+	useSharedValue,
+	withRepeat,
 	withSequence,
-	withTiming
+	withTiming,
 } from "react-native-reanimated";
+import { useSelector } from "react-redux";
+import { deleteEvent } from "../../extras/GAuth";
 
 const Tags = ({ name }) => {
 	return <Text style={styles.tag}>{name}</Text>;
+};
+
+const LeftActions = (progress, dragX) => {
+	const trans = dragX.interpolate({
+		inputRange: [0, 50, 100, 101],
+		outputRange: [-40, 0, 0, 1],
+		extrapolate: "clamp",
+	});
+
+	return (
+		<View
+			style={{ flex: 1, backgroundColor: "#FF002D", justifyContent: "center" }}
+		>
+			<Animated.Text
+				style={{
+					color: "white",
+					paddingHorizontal: 10,
+					fontWeight: "600",
+					transform: [{ translateX: trans }],
+				}}
+			>
+				<AntDesign name="delete" size={24} color="white" />
+			</Animated.Text>
+		</View>
+	);
 };
 
 const SpacedRepListItem = ({
@@ -25,15 +57,11 @@ const SpacedRepListItem = ({
 	percentFinished,
 	repsRemaining,
 	repsLeft,
-	selectedId,
+	index,
+	updateObjectArray,
+	slideDelete,
 }) => {
-	// const [tags, setTags] = useState([]);
-	// useEffect(() => {
-	// 	getEventData(accessToken, calendarId, id)
-	// 		.then((e) => console.log(e.data))
-	// 		.catch((e) => console.log(e.response));
-	// }, [id]);
-	// console.log(totalreps, reps);
+	const calID = useSelector((state) => state.gauth.calendarID);
 	const rotation = useSharedValue(0);
 	const animatedStyle = useAnimatedStyle(() => {
 		return {
@@ -63,74 +91,89 @@ const SpacedRepListItem = ({
 			onPressCallback ? onPressCallback(null) : null;
 		}
 	}, []);
+
 	return (
-		<Animated.View
-			style={[styles.container, animatedStyle]}
-			// entering={SlideInRight}
-			onTouchEnd={() => {
-				rotation.value = withSequence(
-					withTiming(-1, { duration: 50 }),
-					withRepeat(withTiming(0.5, { duration: 100 }), 4, true),
-					withTiming(0, { duration: 50 })
-				);
-				// rotation.value = 10;
-				onPressCallback
-					? onPressCallback({
-							today: false,
-							title: title,
-							id: id,
-							accessToken: accessToken,
-							calendarId: calendarId,
-							tags: tags,
-							reps: reps,
-							daysTill: daysTill,
-							totalreps: totalreps,
-							spacedRepId: spacedRepId,
-							percentFinished: percentFinished,
-							repsRemaining: repsRemaining,
-					  })
-					: null;
-			}}
-		>
-			<View style={styles.metaContainer}>
-				<View style={styles.titleContainer}>
-					<Text style={styles.titleText}>{title}</Text>
-				</View>
-				<View style={styles.tagContainer}>
-					<AntDesign name="tags" size={18} color="#D7D7D7" />
-					<FlatList
-						data={tags}
-						horizontal
-						renderItem={({ item }) => {
-							return <Tags name={item} />;
-						}}
-						keyExtractor={(item) => item}
-						showsHorizontalScrollIndicator={false}
-					/>
-				</View>
-			</View>
-			{!repsLeft ? (
-				<View style={styles.counterHolder}>
-					<View style={styles.counter}>
-						{daysTill ? (
-							daysTill == 1 ? (
-								<Text style={styles.counterText}>In {daysTill} day</Text>
-							) : (
-								<Text style={styles.counterText}>In {daysTill} days</Text>
-							)
-						) : (
-							<Text style={styles.counterText}>Today</Text>
-						)}
+		<GestureHandlerRootView>
+			<Swipeable
+				renderLeftActions={slideDelete ? LeftActions : null}
+				friction={2.5}
+				leftThreshold={50}
+				onSwipeableOpen={() => {
+					updateObjectArray(index);
+					deleteEvent(accessToken, id, calID).catch((e) =>
+						console.log(e.response)
+					);
+				}}
+			>
+				<Anim.View
+					style={[styles.container, animatedStyle]}
+					onTouchEnd={() => {
+						rotation.value = withSequence(
+							withTiming(-1, { duration: 50 }),
+							withRepeat(withTiming(0.7, { duration: 100 }), 4, true),
+							withTiming(0, { duration: 50 })
+						);
+						onPressCallback
+							? onPressCallback({
+									today: false,
+									title: title,
+									id: id,
+									accessToken: accessToken,
+									calendarId: calendarId,
+									tags: tags,
+									reps: reps,
+									daysTill: daysTill,
+									totalreps: totalreps,
+									spacedRepId: spacedRepId,
+									percentFinished: percentFinished,
+									repsRemaining: repsRemaining,
+							  })
+							: null;
+					}}
+				>
+					<View style={styles.metaContainer}>
+						<View style={styles.titleContainer}>
+							<Text style={styles.titleText}>{title}</Text>
+						</View>
+						<View style={styles.tagContainer}>
+							<AntDesign name="tags" size={18} color="#D7D7D7" />
+							<FlatList
+								data={tags}
+								horizontal
+								renderItem={({ item }) => {
+									return <Tags name={item} />;
+								}}
+								keyExtractor={(item) => item}
+								showsHorizontalScrollIndicator={false}
+							/>
+						</View>
 					</View>
-				</View>
-			) : (
-				<View style={styles.counterHolder}>
-					<View style={styles.counter}>
-						<Text style={styles.counterText}>{repsRemaining} reps left</Text>
-					</View>
-				</View>
-			)}
-		</Animated.View>
+					{!repsLeft ? (
+						<View style={styles.counterHolder}>
+							<View style={styles.counter}>
+								{daysTill ? (
+									daysTill == 1 ? (
+										<Text style={styles.counterText}>In {daysTill} day</Text>
+									) : (
+										<Text style={styles.counterText}>In {daysTill} days</Text>
+									)
+								) : (
+									<Text style={styles.counterText}>Today</Text>
+								)}
+							</View>
+						</View>
+					) : (
+						<View style={styles.counterHolder}>
+							<View style={styles.counter}>
+								<Text style={styles.counterText}>
+									{repsRemaining} reps left
+								</Text>
+							</View>
+						</View>
+					)}
+				</Anim.View>
+			</Swipeable>
+		</GestureHandlerRootView>
 	);
 };
 
@@ -139,9 +182,14 @@ const styles = StyleSheet.create({
 		backgroundColor: "#2B3748",
 		flexDirection: "row",
 		height: 85,
-		borderRadius: 10,
-		marginTop: 10,
+		borderRadius: 8,
+		// marginTop: 10,
 		// flex: 1,
+	},
+	leftAction: {
+		flex: 1,
+		backgroundColor: "#497AFC",
+		justifyContent: "center",
 	},
 	metaContainer: {
 		flex: 5,

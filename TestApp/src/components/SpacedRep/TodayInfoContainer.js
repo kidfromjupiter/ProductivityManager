@@ -1,12 +1,21 @@
 import { AntDesign } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import {
 	Dimensions,
-	FlatList, StyleSheet,
-	Text, View
+	FlatList,
+	LayoutAnimation,
+	StyleSheet,
+	Text,
+	View,
 } from "react-native";
 import CircularProgress from "react-native-circular-progress-indicator";
-import Animated, { SlideInDown } from "react-native-reanimated";
+import {
+	Directions,
+	Gesture,
+	GestureDetector,
+	GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import { useSelector } from "react-redux";
 import { deleteEvent } from "../../extras/GAuth";
 import InfoBar from "../InfoBar";
@@ -29,17 +38,26 @@ const TodayInfo = ({
 }) => {
 	const calID = useSelector((state) => state.gauth.calendarID);
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
+	const [show, setShow] = useState(false);
 
 	const Tags = ({ name }) => {
 		return <Text style={styles.tag}>{name}</Text>;
 	};
-	if (!title) {
-		return <></>;
-	} else {
-		console.log("rendered");
-		return (
-			<Animated.View entering={SlideInDown}>
-				<View style={[styles.container]}>
+
+	const gesture = Gesture.Fling()
+		.direction(Directions.DOWN)
+		.onFinalize(() => setShow(!show));
+	// .onEnd);
+
+	return (
+		<GestureHandlerRootView>
+			<GestureDetector gesture={gesture}>
+				<Animated.View
+					style={[styles.container]}
+					entering={FadeInDown}
+					exiting={FadeOutDown}
+				>
+					<View style={styles.topDragPill}></View>
 					<View style={[styles.metaHolder]}>
 						<View style={styles.data}>
 							{today ? (
@@ -101,6 +119,9 @@ const TodayInfo = ({
 						<View style={styles.topButtons}>
 							<CustomButton
 								callback={() => {
+									LayoutAnimation.configureNext(
+										LayoutAnimation.Presets.easeInEaseOut
+									);
 									deleteEvent(accessToken, id, calID)
 										.then((e) => {
 											refreshCallback();
@@ -112,17 +133,25 @@ const TodayInfo = ({
 								text="Delete"
 								textColor="#D7D7D7"
 							/>
-							{/* <CustomButton text="Modify" color="#586781" textColor="#D7D7D7" />
-					<CustomButton text="Pomodoro" color="#586781" textColor="#D7D7D7" /> */}
+							{/* <CustomButton
+									text="Modify"
+									color="#586781"
+									textColor="#D7D7D7"
+								/>
+								<CustomButton
+									text="Pomodoro"
+									color="#586781"
+									textColor="#D7D7D7"
+								/> */}
 						</View>
 						{/* <View style={styles.bottomButtons}>
-					<CustomButton color="#00D34B" text="Mark Completed" />
-				</View> */}
+								<CustomButton color="#00D34B" text="Mark Completed" />
+							</View> */}
 					</View>
-				</View>
-			</Animated.View>
-		);
-	}
+				</Animated.View>
+			</GestureDetector>
+		</GestureHandlerRootView>
+	);
 };
 
 const styles = StyleSheet.create({
@@ -133,6 +162,7 @@ const styles = StyleSheet.create({
 		borderTopEndRadius: 20,
 		borderTopStartRadius: 20,
 		maxHeight: 270,
+		overflow: "hidden",
 	},
 
 	completedButton: {},
@@ -181,8 +211,12 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		fontSize: 20,
 	},
-	list: {
-		// maxHeight: 30,
+	topDragPill: {
+		backgroundColor: "white",
+		height: 3,
+		marginTop: 10,
+		marginHorizontal: 40,
+		borderRadius: 10,
 	},
 	tagholder: {
 		flexDirection: "row",

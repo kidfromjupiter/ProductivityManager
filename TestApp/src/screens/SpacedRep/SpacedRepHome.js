@@ -15,23 +15,20 @@ import ListHeader from "../../components/ListHeader";
 import Loading from "../../components/LottieLoading";
 import SearchBar from "../../components/SearchBar";
 import SpacedRepListItem from "../../components/SpacedRep/SpacedRepListItem";
-import TodayInfo from "../../components/SpacedRep/TodayInfoContainer";
 import CalendarEvent from "../../extras/classes/EventsResourceClass";
-import { addCalendar, deleteEvent, getEvents } from "../../extras/GAuth";
-import { setEvents } from "../../redux/CalendarSlice";
+import { addCalendar, getEvents } from "../../extras/GAuth";
 import { setCalID, setIdToken, setToken } from "../../redux/GAuthSlice";
 
 const SpacedRepHome = ({ navigation }) => {
 	const dispatch = useDispatch();
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
-	const IdToken = useSelector((state) => state.gauth.IdToken);
 	const calID = useSelector((state) => state.gauth.calendarID);
 	const spacedRepEventList = useSelector((state) => state.calendar.events);
 	const signedIn = useSelector((state) => state.gauth.isSignedIn);
 	const [selectedData, setSelectedData] = useState(null);
 	const [eventsObjectArray, setObjectArray] = useState(null);
+	const [almostFinished, setAlmostFinished] = useState(null);
 	const [refreshing, setRefresh] = useState(false);
-	const [expanded_UPCOMING, setExpanded_UPCOMING] = useState(false);
 	const colors = useSelector((state) => state.colors);
 
 	function creatingObjectArray(e) {
@@ -46,34 +43,30 @@ const SpacedRepHome = ({ navigation }) => {
 				extendedProperties.private,
 				id
 			);
-			if (d.daysTill() < 0) {
-				deleteEvent(accessToken, d.id, calID);
-			} else {
-				if (!spacedRepIdArray.includes(extendedProperties.private.id)) {
-					spacedRepIdArray.push({
-						id: extendedProperties.private.id,
-						object: d,
-					});
-				}
-				spacedRepIdArray.forEach((idObj) => {
-					let repsRemaining = 0;
-					e.data.items.forEach((obj) => {
-						if (obj.extendedProperties.private.id == idObj.id) {
-							repsRemaining++;
-						}
-					});
-					idObj.object.extendedProperties.private.repsRemaining = repsRemaining;
-					idObj.object.extendedProperties.private.percentFinished = Math.floor(
-						((idObj.object.extendedProperties.private.numberOfReps -
-							repsRemaining) /
-							idObj.object.extendedProperties.private.numberOfReps) *
-							100
-					);
-					if (!events.includes(idObj.object)) {
-						events.push(idObj.object);
-					}
+			if (!spacedRepIdArray.includes(extendedProperties.private.id)) {
+				spacedRepIdArray.push({
+					id: extendedProperties.private.id,
+					object: d,
 				});
 			}
+			spacedRepIdArray.forEach((idObj) => {
+				let repsRemaining = 0;
+				e.data.items.forEach((obj) => {
+					if (obj.extendedProperties.private.id == idObj.id) {
+						repsRemaining++;
+					}
+				});
+				idObj.object.extendedProperties.private.repsRemaining = repsRemaining;
+				idObj.object.extendedProperties.private.percentFinished = Math.floor(
+					((idObj.object.extendedProperties.private.numberOfReps -
+						repsRemaining) /
+						idObj.object.extendedProperties.private.numberOfReps) *
+						100
+				);
+				if (!events.includes(idObj.object)) {
+					events.push(idObj.object);
+				}
+			});
 		});
 		let ID_ARRAY = [];
 		spacedRepIdArray.forEach((e) => {
@@ -81,17 +74,19 @@ const SpacedRepHome = ({ navigation }) => {
 				ID_ARRAY.push(e.id);
 			}
 		});
-
-		ID_ARRAY.forEach((e) => {
-			let i = events.find((v) => v.extendedProperties.private.id == e);
+		ID_ARRAY.forEach((id) => {
+			let i = events.find((v) => v.extendedProperties.private.id == id);
 			spacedRepEvents.push(i);
 		});
 		events.sort((a, b) => a.daysTill() - b.daysTill());
+		events.forEach((e) => {
+			if (e.extendedProperties.private.percentFinished > 50) {
+				setAlmostFinished([e]);
+			}
+		});
 		setObjectArray(events);
-		dispatch(setEvents({ spacedRepEvents: spacedRepEvents }));
 		setRefresh(false);
 	}
-
 	function refresh() {
 		getEvents(accessToken, calID)
 			.then((e) => {
@@ -117,14 +112,18 @@ const SpacedRepHome = ({ navigation }) => {
 			refresh();
 		}
 	}, [signedIn, accessToken, calID]);
-
-	function renderItem({ item }) {
+	function updateObjectArray(index) {
+		let objects = [...eventsObjectArray];
+		objects.splice(index, 1);
+		setObjectArray(objects);
+	}
+	function renderItem({ item, index }) {
 		return (
 			<SpacedRepListItem
 				title={item.summary}
 				percentFinished={item.extendedProperties.private.percentFinished}
 				repsRemaining={item.extendedProperties.private.repsRemaining}
-				tags={item.extendedProperties.private.tags.split(",")}
+				tags={item.extendedProperties.private.tags?.split(",")}
 				totalreps={item.extendedProperties.private.numberOfReps}
 				spacedRepId={item.extendedProperties.private.id}
 				daysTill={item.daysTill()}
@@ -133,28 +132,31 @@ const SpacedRepHome = ({ navigation }) => {
 				accessToken={accessToken}
 				onPressCallback={setSelectedData}
 				selectedId={selectedData ? selectedData.id : null}
+				refreshCallback={refresh}
+				setStateCallback={() => setSelectedData(null)}
+				index={index}
+				updateObjectArray={updateObjectArray}
+				slideDelete
 			/>
 		);
 	}
 	function renderItem_2({ item }) {
-		if (item.extendedProperties.private.percentFinished >= 50) {
-			return (
-				<SpacedRepListItem
-					title={item.summary}
-					percentFinished={item.extendedProperties.private.percentFinished}
-					repsRemaining={item.extendedProperties.private.repsRemaining}
-					tags={item.extendedProperties.private.tags.split(",")}
-					totalreps={item.extendedProperties.private.numberOfReps}
-					spacedRepId={item.extendedProperties.private.id}
-					id={item.id}
-					calendarId={calID}
-					accessToken={accessToken}
-					repsLeft
-				/>
-			);
-		}
-		return null;
+		return (
+			<SpacedRepListItem
+				title={item.summary}
+				percentFinished={item.extendedProperties.private.percentFinished}
+				repsRemaining={item.extendedProperties.private.repsRemaining}
+				tags={item.extendedProperties.private.tags?.split(",")}
+				totalreps={item.extendedProperties.private.numberOfReps}
+				spacedRepId={item.extendedProperties.private.id}
+				id={item.id}
+				calendarId={calID}
+				accessToken={accessToken}
+				repsLeft
+			/>
+		);
 	}
+	console.log("rerendering");
 	if (!signedIn) {
 		return (
 			<View
@@ -197,61 +199,14 @@ const SpacedRepHome = ({ navigation }) => {
 						onPress={() => navigation.navigate("CreateEvent")}
 					/>
 				</View>
-				<View style={[styles.section]}>
-					<ListHeader
-						text="Upcoming"
-						extraStyle={{ paddingHorizontal: 5, paddingRight: 10 }}
-						iconName="down"
-						iconColor="white"
-						onPressCallback={() => {
-							setSelectedData(false);
-							setExpanded_UPCOMING(!expanded_UPCOMING);
-						}}
-					/>
-					<FlatList
-						data={eventsObjectArray}
-						refreshing={refreshing}
-						initialNumToRender={2}
-						onRefresh={() => {
-							setRefresh(true);
-							refresh();
-						}}
-						extraData={eventsObjectArray}
-						renderItem={renderItem}
-						style={{
-							width: Dimensions.get("window").width,
-						}}
-						ListEmptyComponent={
-							<View style={{ justifyContent: "center", alignItems: "center" }}>
-								<Text
-									style={{ color: "grey", textAlign: "center", padding: 20 }}
-								>
-									Looks empty boss. Try pulling down to refresh
-								</Text>
-								<LottieView
-									source={require("../../../assets/animations/empty.json")}
-									autoPlay
-									loop={false}
-									style={{
-										backgroundColor: "transparent",
-										height: 100,
-										width: 200,
-									}}
-									speed={1.2}
-								/>
-							</View>
-						}
-						keyExtractor={(item) => item.id}
-					/>
-				</View>
-				{!expanded_UPCOMING ? (
-					<View style={[styles.section]}>
+				{almostFinished ? (
+					<View style={[styles.section, { maxHeight: 200 }]}>
 						<ListHeader
 							text="Almost Finished"
 							extraStyle={{ paddingHorizontal: 5, paddingRight: 10 }}
 						/>
 						<FlatList
-							data={spacedRepEventList}
+							data={almostFinished}
 							refreshing={refreshing}
 							initialNumToRender={2}
 							onRefresh={() => {
@@ -288,18 +243,50 @@ const SpacedRepHome = ({ navigation }) => {
 						/>
 					</View>
 				) : null}
+				<View style={[styles.section]}>
+					<ListHeader
+						text="Upcoming"
+						extraStyle={{ paddingHorizontal: 5, paddingRight: 10 }}
+					/>
+					<FlatList
+						data={eventsObjectArray}
+						refreshing={refreshing}
+						// initialNumToRender={2}
+						onRefresh={() => {
+							setRefresh(true);
+							refresh();
+						}}
+						extraData={eventsObjectArray}
+						renderItem={renderItem}
+						style={{
+							width: Dimensions.get("window").width,
+						}}
+						ListEmptyComponent={
+							<View style={{ justifyContent: "center", alignItems: "center" }}>
+								<Text
+									style={{ color: "grey", textAlign: "center", padding: 20 }}
+								>
+									Looks empty boss. Try pulling down to refresh
+								</Text>
+								<LottieView
+									source={require("../../../assets/animations/empty.json")}
+									autoPlay
+									loop={false}
+									style={{
+										backgroundColor: "transparent",
+										height: 100,
+										width: 200,
+									}}
+									speed={1.2}
+								/>
+							</View>
+						}
+						ItemSeparatorComponent={() => <View style={{ height: 7 }}></View>}
+						keyExtractor={(item) => item.id}
+					/>
+				</View>
 
-				<View
-					style={[
-						styles.section,
-						styles.bottom,
-						{
-							flex: selectedData ? 5 : 2,
-							// width: Dimensions.get("window").width,
-							// justifyContent: "unset",
-						},
-					]}
-				>
+				{/* <View style={[styles.section, styles.bottom]}>
 					<TodayInfo
 						percentage={10}
 						daysTill={selectedData ? selectedData.daysTill : null}
@@ -314,7 +301,7 @@ const SpacedRepHome = ({ navigation }) => {
 						repsRemaining={selectedData ? selectedData.repsRemaining : null}
 						setStateCallback={() => setSelectedData(null)}
 					/>
-				</View>
+				</View> */}
 			</View>
 		);
 	}
@@ -333,15 +320,20 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		paddingRight: 10,
-		marginBottom: 10,
+		maxHeight: 50,
 	},
 	section: {
 		flex: 6,
 		margin: 5,
 		alignItems: "center",
-		// overflow: "hidden",
 	},
-	bottom: { flex: 5, justifyContent: "flex-end" },
+	bottom: {
+		justifyContent: "flex-end",
+		position: "absolute",
+		height: 300,
+		width: Dimensions.get("window").width,
+		bottom: 0,
+	},
 });
 
 export default SpacedRepHome;
