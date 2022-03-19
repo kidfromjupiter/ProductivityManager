@@ -1,7 +1,16 @@
 import React from "react";
 import { Animated, StyleSheet, Text } from "react-native";
+import { View } from "react-native-animatable";
 
-const CustomButton = ({ color, text, callback, textColor, customStyles }) => {
+const CustomButton = ({
+	color,
+	text,
+	callback,
+	textColor,
+	customStyles,
+	disabled,
+	icon,
+}) => {
 	const animatedButtonScale = new Animated.Value(1);
 
 	const onTouchStart = () => {
@@ -17,7 +26,7 @@ const CustomButton = ({ color, text, callback, textColor, customStyles }) => {
 			toValue: 1,
 			useNativeDriver: true,
 			duration: 100,
-		}).start(() => callback());
+		}).start(() => (!disabled ? callback() : null));
 	};
 	const animatedScaleStyle = {
 		transform: [{ scale: animatedButtonScale }],
@@ -36,15 +45,21 @@ const CustomButton = ({ color, text, callback, textColor, customStyles }) => {
 				},
 				customStyles,
 				animatedScaleStyle,
+				{ backgroundColor: disabled ? "grey" : color },
 			]}
-			onTouchEnd={() => {
+			onTouchStart={() => {
 				onTouchStart();
 			}}
 		>
+			<View style={styles.icon}>{icon ? icon : null}</View>
 			<Text
 				style={[
 					styles.buttonText,
-					{ color: textColor ? textColor : "black", marginHorizontal: 0 },
+					{
+						color: textColor ? textColor : "black",
+						marginHorizontal: 0,
+						fontSize: 16,
+					},
 				]}
 			>
 				{text}
@@ -60,9 +75,13 @@ const styles = StyleSheet.create({
 		marginHorizontal: 5,
 		justifyContent: "center",
 		alignItems: "center",
-		borderRadius: 4,
+		borderRadius: 6,
+		flexDirection: "row",
 	},
 	buttonText: { fontSize: 17 },
+	icon: {
+		margin: 7,
+	},
 });
 
 export default CustomButton;

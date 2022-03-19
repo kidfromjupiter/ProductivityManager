@@ -1,10 +1,9 @@
 import axios from "axios";
-import CalendarEvent from "./classes/EventsResourceClass";
-import { GoogleSignin } from "react-native-google-signin";
 
 axios.defaults.baseURL = "https://www.googleapis.com/calendar/v3";
 
 axios.interceptors.response.use(null, function (error) {
+	console.log(Object.keys(error));
 	if (error.response.status == 403) {
 		return axios(error.config);
 	} else if (error.response.status == 401) {

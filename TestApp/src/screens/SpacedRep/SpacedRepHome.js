@@ -23,7 +23,6 @@ const SpacedRepHome = ({ navigation }) => {
 	const dispatch = useDispatch();
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
 	const calID = useSelector((state) => state.gauth.calendarID);
-	const spacedRepEventList = useSelector((state) => state.calendar.events);
 	const signedIn = useSelector((state) => state.gauth.isSignedIn);
 	const [selectedData, setSelectedData] = useState(null);
 	const [eventsObjectArray, setObjectArray] = useState(null);
@@ -140,23 +139,20 @@ const SpacedRepHome = ({ navigation }) => {
 			/>
 		);
 	}
-	function renderItem_2({ item }) {
-		return (
-			<SpacedRepListItem
-				title={item.summary}
-				percentFinished={item.extendedProperties.private.percentFinished}
-				repsRemaining={item.extendedProperties.private.repsRemaining}
-				tags={item.extendedProperties.private.tags?.split(",")}
-				totalreps={item.extendedProperties.private.numberOfReps}
-				spacedRepId={item.extendedProperties.private.id}
-				id={item.id}
-				calendarId={calID}
-				accessToken={accessToken}
-				repsLeft
-			/>
-		);
-	}
-	console.log("rerendering");
+	// function renderItem_2({ item }) {
+	// 	return (
+	// 		<SpacedRepListItem
+	// 			title={item.summary}
+	// 			percentFinished={item.extendedProperties.private.percentFinished}
+	// 			repsRemaining={item.extendedProperties.private.repsRemaining}
+	// 			tags={item.extendedProperties.private.tags?.split(",")}
+	// 			totalreps={item.extendedProperties.private.numberOfReps}
+	// 			spacedRepId={item.extendedProperties.private.id}
+	// 			id={item.id}
+	// 			repsLeft
+	// 		/>
+	// 	);
+	// }
 	if (!signedIn) {
 		return (
 			<View
@@ -180,7 +176,7 @@ const SpacedRepHome = ({ navigation }) => {
 				/>
 			</View>
 		);
-	} else if (!(eventsObjectArray && spacedRepEventList)) {
+	} else if (!eventsObjectArray) {
 		return <Loading />;
 	} else {
 		return (
@@ -199,7 +195,7 @@ const SpacedRepHome = ({ navigation }) => {
 						onPress={() => navigation.navigate("CreateEvent")}
 					/>
 				</View>
-				{almostFinished ? (
+				{/* {almostFinished ? (
 					<View style={[styles.section, { maxHeight: 200 }]}>
 						<ListHeader
 							text="Almost Finished"
@@ -242,7 +238,7 @@ const SpacedRepHome = ({ navigation }) => {
 							}
 						/>
 					</View>
-				) : null}
+				) : null} */}
 				<View style={[styles.section]}>
 					<ListHeader
 						text="Upcoming"

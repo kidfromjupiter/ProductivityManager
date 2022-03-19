@@ -1,17 +1,13 @@
-import React, { useState } from "react";
-import {
-	Button,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TextInput,
-	View,
-} from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import React, { useRef, useState } from "react";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Calendar } from "react-native-calendars";
 import DatePicker from "react-native-date-picker";
 import Tags from "react-native-tags";
 import { useSelector } from "react-redux";
 import GestureSlider from "../../components/GestureSlider";
 import ListHeader from "../../components/ListHeader";
+import CustomButton from "../../components/SpacedRep/CustomButton";
 import SuccessAlert from "../../components/SuccessAnimation";
 import { DateTimeGenerator, spacedRepDateGen } from "../../extras/dateparser";
 import { addEvent } from "../../extras/GAuth";
@@ -25,6 +21,10 @@ const CreateEvent = ({ navigation }) => {
 	const [title, setTitle] = useState("");
 	const [tags, setTags] = useState();
 	const [scrollEnabled, setScrollEnabled] = useState(true);
+	const [show, setShow] = useState(false);
+	const scrollViewRef = useRef();
+	const [calendarEvents, setCalendarEvents] = useState([]);
+	const [markedDates, setMarkedDates] = useState({});
 
 	const onChange_start = (date) => {
 		setStartDate(date);
@@ -39,18 +39,23 @@ const CreateEvent = ({ navigation }) => {
 		);
 		const dateArray = spacedRepDateGen(days, Math.round(rep_count));
 
-		const CalObjectArray = DateTimeGenerator(
+		const [CalObjectArray, markedDates] = DateTimeGenerator(
 			startDate.toISOString().substring(0, 10),
 			dateArray,
 			title,
 			{ tags: tags?.toString() }
 		);
-		return CalObjectArray;
+		setCalendarEvents(CalObjectArray);
+		let markedObjects = {};
+		markedDates.forEach((object) => {
+			Object.assign(markedObjects, {
+				[object]: { selected: true, selectedColor: "#00D34B" },
+			});
+		});
+		setMarkedDates(markedObjects);
 	};
 	async function batchAdd() {
-		const array = createEventArray();
-
-		await array.map((element) => {
+		await calendarEvents.map((element) => {
 			addEvent(accessToken, element, calendarID).catch((e) =>
 				console.log(e.response.data)
 			);
@@ -65,10 +70,30 @@ const CreateEvent = ({ navigation }) => {
 			setRepCount(amount);
 		}
 	};
-	console.log(startDate);
+	const theme = {
+		backgroundColor: "#ffffff",
+		calendarBackground: "#ffffff",
+		textSectionTitleColor: "#b6c1cd",
+		textSectionTitleDisabledColor: "#d9e1e8",
+		selectedDayBackgroundColor: "#00adf5",
+		selectedDayTextColor: "#ffffff",
+		todayTextColor: "#00adf5",
+		dayTextColor: "#2d4150",
+		textDisabledColor: "#d9e1e8",
+		dotColor: "#00adf5",
+		selectedDotColor: "#ffffff",
+		arrowColor: "orange",
+		disabledArrowColor: "#d9e1e8",
+		textDayFontWeight: "300",
+		textMonthFontWeight: "bold",
+		textDayHeaderFontWeight: "300",
+		textDayFontSize: 16,
+		textMonthFontSize: 16,
+		textDayHeaderFontSize: 16,
+	};
 	return (
 		<View style={styles.container}>
-			<ScrollView scrollEnabled={scrollEnabled}>
+			<ScrollView scrollEnabled={scrollEnabled} ref={scrollViewRef}>
 				<View style={[styles.section, styles.intro, { backgroundColor: null }]}>
 					<Text style={styles.introText}>Lets get planning!</Text>
 				</View>
@@ -118,7 +143,6 @@ const CreateEvent = ({ navigation }) => {
 					</Text>
 
 					<Tags
-						// style={{ flex: 1 }}
 						textInputProps={{
 							placeholder: "tags",
 							autoCapitalize: "none",
@@ -159,20 +183,81 @@ const CreateEvent = ({ navigation }) => {
 						setNotScrolling={() => setScrollEnabled(false)}
 					/>
 				</View>
+				{!show ? (
+					<View style={styles.buttonHolder}>
+						<CustomButton
+							text="Looks about right"
+							color="#00D34B"
+							textColor="white"
+							callback={() => {
+								setShow(true);
+								createEventArray();
+								scrollViewRef.current.scrollToEnd();
+							}}
+							disabled={
+								startDate.toISOString().substring(4, 15) ==
+									endDate.toISOString().substring(4, 15) ||
+								title.length == 0 ||
+								rep_count == 0
+							}
+							icon={<AntDesign name="check" size={24} color="white" />}
+						/>
+					</View>
+				) : null}
 
-				<View style={styles.buttonHolder}>
-					<Button
-						title="Add to my Calendar"
-						disabled={
-							startDate.toISOString().substring(4, 15) ==
-								endDate.toISOString().substring(4, 15) ||
-							title.length == 0 ||
-							rep_count == 0
-						}
-						onPress={() => batchAdd().then(setModalVisible(true))}
-						color="#00D34B"
-					/>
-				</View>
+				{show ? (
+					<>
+						<ListHeader
+							text="This is how everything will look like"
+							extraStyle={{ paddingHorizontal: 10 }}
+						/>
+						<View style={{ margin: 10 }}>
+							<Calendar
+								current={
+									startDate.getFullYear() +
+									"-" +
+									(startDate.getMonth() + 1) +
+									"-" +
+									startDate.getDate()
+								}
+								firstDay={1}
+								enableSwipeMonths={true}
+								style={{ borderRadius: 10, overflow: "hidden" }}
+								theme={theme}
+								markedDates={markedDates}
+								// markedDates={}
+							/>
+						</View>
+
+						<View style={styles.buttonHolder}>
+							<CustomButton
+								text="Check again"
+								color="#FF6700"
+								callback={() => {
+									setShow(false);
+									setCalendarEvents([]);
+									setMarkedDates({});
+								}}
+								textColor="white"
+								icon={
+									<AntDesign
+										name="exclamationcircleo"
+										size={24}
+										color="white"
+									/>
+								}
+							/>
+							<CustomButton
+								text="Add to calendar"
+								color="#00D34B"
+								textColor="white"
+								callback={() => batchAdd().then(setModalVisible(true))}
+								icon={<AntDesign name="calendar" size={24} color="white" />}
+							/>
+						</View>
+						<View style={styles.buttonHolder}></View>
+					</>
+				) : null}
 			</ScrollView>
 			<SuccessAlert
 				setModalVisible={setModalVisible}
@@ -246,8 +331,8 @@ const styles = StyleSheet.create({
 	},
 	buttonHolder: {
 		height: 70,
-		alignItems: "flex-end",
 		padding: 10,
+		flexDirection: "row",
 	},
 	tagsModal: {
 		height: 250,

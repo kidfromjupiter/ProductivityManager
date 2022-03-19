@@ -34,6 +34,7 @@ function DateTimeGenerator(startingDate, dateArray, title, tags) {
 	const month = today.getMonth();
 	let DateTimeArray = [];
 	let repCountArray = [];
+	let markedDates = [];
 
 	for (let index = 0; index < dateArray.length; index++) {
 		repCountArray[index] = index + 1;
@@ -59,8 +60,9 @@ function DateTimeGenerator(startingDate, dateArray, title, tags) {
 			)
 		);
 		DateTimeArray[index] = Cal;
+		markedDates[index] = endDate.toISOString().substring(0, 10);
 	});
-	return DateTimeArray;
+	return [DateTimeArray, markedDates];
 }
 
 export { spacedRepDateGen, DateTimeGenerator };

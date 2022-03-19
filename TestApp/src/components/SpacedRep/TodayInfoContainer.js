@@ -15,7 +15,7 @@ import {
 	GestureDetector,
 	GestureHandlerRootView,
 } from "react-native-gesture-handler";
-import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { useSelector } from "react-redux";
 import { deleteEvent } from "../../extras/GAuth";
 import InfoBar from "../InfoBar";
@@ -43,97 +43,101 @@ const TodayInfo = ({
 	const Tags = ({ name }) => {
 		return <Text style={styles.tag}>{name}</Text>;
 	};
+	function ToggleShow() {
+		setShow(!show);
+	}
 
 	const gesture = Gesture.Fling()
 		.direction(Directions.DOWN)
-		.onFinalize(() => setShow(!show));
+		// .onc
+		.onFinalize(ToggleShow);
 	// .onEnd);
 
-	return (
-		<GestureHandlerRootView>
-			<GestureDetector gesture={gesture}>
-				<Animated.View
-					style={[styles.container]}
-					entering={FadeInDown}
-					exiting={FadeOutDown}
-				>
-					<View style={styles.topDragPill}></View>
-					<View style={[styles.metaHolder]}>
-						<View style={styles.data}>
-							{today ? (
-								<Text
-									style={{
-										fontSize: 25,
-										color: "#00D34B",
-										fontWeight: "bold",
-									}}
-								>
-									Today
-								</Text>
-							) : (
-								<Text
-									style={{
-										fontSize: 25,
-										color: "#00D34B",
-										fontWeight: "bold",
-									}}
-								>
-									Info
-								</Text>
-							)}
+	// console.log(show);
+	if (!show) {
+		return <></>;
+	} else {
+		return (
+			<GestureHandlerRootView>
+				<GestureDetector gesture={gesture}>
+					<Animated.View style={[styles.container]}>
+						<View style={styles.topDragPill}></View>
+						<View style={[styles.metaHolder]}>
+							<View style={styles.data}>
+								{today ? (
+									<Text
+										style={{
+											fontSize: 25,
+											color: "#00D34B",
+											fontWeight: "bold",
+										}}
+									>
+										Today
+									</Text>
+								) : (
+									<Text
+										style={{
+											fontSize: 25,
+											color: "#00D34B",
+											fontWeight: "bold",
+										}}
+									>
+										Info
+									</Text>
+								)}
 
-							<Text style={styles.title}>{title}</Text>
-							<View style={styles.tagholder}>
-								<AntDesign name="tags" size={18} color="#D7D7D7" />
-								<FlatList
-									style={styles.list}
-									data={tags}
-									horizontal
-									renderItem={({ item }) => {
-										return <Tags name={item} />;
-									}}
-									keyExtractor={(item) => item}
-									showsHorizontalScrollIndicator={false}
+								<Text style={styles.title}>{title}</Text>
+								<View style={styles.tagholder}>
+									<AntDesign name="tags" size={18} color="#D7D7D7" />
+									<FlatList
+										style={styles.list}
+										data={tags}
+										horizontal
+										renderItem={({ item }) => {
+											return <Tags name={item} />;
+										}}
+										keyExtractor={(item) => item}
+										showsHorizontalScrollIndicator={false}
+									/>
+								</View>
+							</View>
+							<View style={styles.progress}>
+								<CircularProgress
+									value={percentFinished}
+									valueSuffix="%"
+									activeStrokeColor="#00D34B"
+									inActiveStrokeColor="#191F2C"
+									in
+									delay={10}
+									subtitleFontSize={13}
+									radius={55}
+									fontSize={23}
+								/>
+								<InfoBar
+									info={repsRemaining + " reps left"}
+									customstyles={{ borderRadius: 7 }}
 								/>
 							</View>
 						</View>
-						<View style={styles.progress}>
-							<CircularProgress
-								value={percentFinished}
-								valueSuffix="%"
-								activeStrokeColor="#00D34B"
-								inActiveStrokeColor="#191F2C"
-								in
-								delay={10}
-								subtitleFontSize={13}
-								radius={55}
-								fontSize={23}
-							/>
-							<InfoBar
-								info={repsRemaining + " reps left"}
-								customstyles={{ borderRadius: 7 }}
-							/>
-						</View>
-					</View>
-					<View style={styles.buttonHolder}>
-						<View style={styles.topButtons}>
-							<CustomButton
-								callback={() => {
-									LayoutAnimation.configureNext(
-										LayoutAnimation.Presets.easeInEaseOut
-									);
-									deleteEvent(accessToken, id, calID)
-										.then((e) => {
-											refreshCallback();
-											setStateCallback();
-										})
-										.catch((e) => console.log(e.response));
-								}}
-								color="#FF002D"
-								text="Delete"
-								textColor="#D7D7D7"
-							/>
-							{/* <CustomButton
+						<View style={styles.buttonHolder}>
+							<View style={styles.topButtons}>
+								<CustomButton
+									callback={() => {
+										LayoutAnimation.configureNext(
+											LayoutAnimation.Presets.easeInEaseOut
+										);
+										deleteEvent(accessToken, id, calID)
+											.then((e) => {
+												refreshCallback();
+												setStateCallback();
+											})
+											.catch((e) => console.log(e.response));
+									}}
+									color="#FF002D"
+									text="Delete"
+									textColor="#D7D7D7"
+								/>
+								{/* <CustomButton
 									text="Modify"
 									color="#586781"
 									textColor="#D7D7D7"
@@ -143,15 +147,16 @@ const TodayInfo = ({
 									color="#586781"
 									textColor="#D7D7D7"
 								/> */}
-						</View>
-						{/* <View style={styles.bottomButtons}>
+							</View>
+							{/* <View style={styles.bottomButtons}>
 								<CustomButton color="#00D34B" text="Mark Completed" />
 							</View> */}
-					</View>
-				</Animated.View>
-			</GestureDetector>
-		</GestureHandlerRootView>
-	);
+						</View>
+					</Animated.View>
+				</GestureDetector>
+			</GestureHandlerRootView>
+		);
+	}
 };
 
 const styles = StyleSheet.create({
