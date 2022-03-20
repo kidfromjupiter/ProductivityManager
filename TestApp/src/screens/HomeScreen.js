@@ -5,7 +5,7 @@ import Timer from "../components/Counter";
 import Loading from "../components/LottieLoading";
 import MiniReminderView from "../components/MiniReminderView";
 import QuickView, {
-	QuickViewSub
+	QuickViewSub,
 } from "../components/SpacedRep/HomeScreenQuickView";
 import Square from "../components/square";
 import dateParser from "../extras/dateparser";
@@ -189,7 +189,7 @@ function HomeScreen({ navigation }) {
 					titleStyle={{ color: color.accentColor }}
 					iconName="pluscircle"
 				>
-					<MiniReminderView />
+					<MiniReminderView navigation={navigation} />
 				</Square>
 			</View>
 		</View>

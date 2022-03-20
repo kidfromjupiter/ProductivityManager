@@ -11,23 +11,25 @@ export const RemiderSlice = createSlice({
 		},
 		editReminder: (state, action) => {
 			//gets the current state of the object using index from payload. splices and removes the object. switches the state. adds it again at the end of the reminders list
-			const completedState = state.reminders[action.payload.index].completed;
+			let localState = JSON.parse(JSON.stringify(state));
+			const completedState =
+				localState.reminders[action.payload.index].completed;
 			if (completedState == false) {
-				const RemovedReminder = state.reminders.splice(action.payload.index, 1);
+				const RemovedReminder = localState.reminders.splice(
+					action.payload.index,
+					1
+				);
 				RemovedReminder[0].completed = !completedState;
-				state.reminders.push(RemovedReminder[0]);
+				localState.reminders.push(RemovedReminder[0]);
 			} else {
-				state.reminders[action.payload.index].completed = !completedState;
-				state.reminders.sort(function (a, b) {
-					if (a.completed > b.completed) {
-						return 1;
-					}
-					if (a.completed < b.completed) {
-						return -1;
-					}
-					return 0;
-				});
+				localState.reminders[action.payload.index].completed = !completedState;
+				const toggledReminder = localState.reminders.splice(
+					action.payload.index,
+					1
+				);
+				localState.reminders.unshift(toggledReminder[0]);
 			}
+			return localState;
 		},
 		deleteReminder: (state, action) => {
 			state.reminders.splice(action.payload.index, 1);

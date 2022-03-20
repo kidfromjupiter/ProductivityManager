@@ -1,12 +1,14 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 import {
-	FlatList, LayoutAnimation, StyleSheet, Text, View
+	FlatList,
+	LayoutAnimation,
+	StyleSheet,
+	Text,
+	View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { editReminder } from "../redux/ReminderSlice";
 import ListItemGeneric from "./ListItemGeneric";
-
 const ListEmpty = ({ emptyText, colors }) => {
 	return (
 		<View style={styles.emptyContainer}>
@@ -22,15 +24,15 @@ const ListEmpty = ({ emptyText, colors }) => {
 	);
 };
 
-const MiniReminderView = () => {
-	const reminders = useSelector((state) => state.reminders);
+const MiniReminderView = ({ navigation }) => {
+	const reminders = useSelector((state) => state.reminders.reminders);
 	const colors = useSelector((state) => state.colors);
 	const dispatch = useDispatch();
 
-	const setComplete = (index) => {
+	function setComplete(index) {
+		LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 		dispatch(editReminder({ index: index }));
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-	};
+	}
 	const renderItem = ({ item, index }) => {
 		return (
 			<ListItemGeneric
@@ -44,16 +46,6 @@ const MiniReminderView = () => {
 			/>
 		);
 	};
-	const clearAll = async () => {
-		try {
-			await AsyncStorage.clear();
-		} catch (e) {
-			// clear error
-		}
-
-		console.log("Done.");
-	};
-	// clearAll();
 
 	return (
 		<View
@@ -67,16 +59,18 @@ const MiniReminderView = () => {
 				{/* <Text>This is text</Text> */}
 				<FlatList
 					style={styles.listStyle}
-					// extradata={reminders.reminders}
 					ListEmptyComponent={() => (
 						<ListEmpty colors={colors} emptyText="No reminders" />
 					)}
-					data={reminders.reminders ? reminders.reminders : null}
+					data={reminders ? reminders : null}
 					maxToRenderPerBatch={5}
 					initialNumToRender={7}
 					renderItem={renderItem}
 					keyExtractor={(item) => item.id}
 					showsVerticalScrollIndicator={false}
+					ItemSeparatorComponent={() => (
+						<View style={{ height: 1, backgroundColor: colors.levelThree }} />
+					)}
 				/>
 			</View>
 		</View>
@@ -111,4 +105,4 @@ const styles = StyleSheet.create({
 });
 
 export { ListEmpty };
-export default React.memo(MiniReminderView);
+export default MiniReminderView;

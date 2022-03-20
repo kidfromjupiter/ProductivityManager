@@ -1,6 +1,10 @@
 import React from "react";
 import {
-	LayoutAnimation, Pressable, StyleSheet, Text, View
+	LayoutAnimation,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
@@ -80,8 +84,6 @@ const styles = StyleSheet.create({
 		height: 50,
 		flex: 1,
 		justifyContent: "center",
-		borderBottomColor: "#8091B0",
-		borderBottomWidth: 1,
 		paddingLeft: 8,
 	},
 	textStyle: {

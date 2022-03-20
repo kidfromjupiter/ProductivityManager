@@ -1,24 +1,22 @@
 import React from "react";
-import {
-	Dimensions, FlatList,
-	Platform, StyleSheet, Text, UIManager, View
-} from "react-native";
-import { useSelector } from "react-redux";
+import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import ListItem from "./ListItem";
 import { ListEmpty } from "./MiniReminderView";
 
-if (
-	Platform.OS === "android" &&
-	UIManager.setLayoutAnimationEnabledExperimental
-) {
-	UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-
-const ReminderList = ({ DATA }) => {
-	const renderItem = ({ item, index }) => (
-		<ListItem index={index} item={item} />
-	);
+const ReminderList = ({ DATA, setComplete, deleteItem }) => {
 	const Color = useSelector((state) => state.colors);
+	// const [dataList, setDataList] = useState(DATA);
+	const renderItem = ({ item, index }) => (
+		<ListItem
+			index={index}
+			item={item}
+			setCompleteCallback={setComplete}
+			swipeRight={deleteItem}
+		/>
+	);
+	const dispatch = useDispatch();
+
 	return (
 		<View
 			style={[styles.container, { backgroundColor: Color.backgroundColor }]}
@@ -31,6 +29,7 @@ const ReminderList = ({ DATA }) => {
 				ListEmptyComponent={() => (
 					<ListEmpty colors={Color} emptyText="All done! Add a new reminder." />
 				)}
+				ItemSeparatorComponent={() => <View style={{ height: 10 }}></View>}
 			/>
 			{DATA.length > 0 ? (
 				<Text
