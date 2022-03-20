@@ -1,5 +1,5 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const InfoCircle = ({
 	setRadius,
@@ -53,17 +53,17 @@ const InfoCircle = ({
 
 const styles = StyleSheet.create({
 	container: {
-		justifyContent: "center",
+		justifyContent: 'center',
 		flex: 1,
 	},
 	text: {
-		textAlign: "center",
+		textAlign: 'center',
 		// textAlignVertical: "center",
 	},
 	Text: {
 		// flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 	number: {
 		fontSize: 30,

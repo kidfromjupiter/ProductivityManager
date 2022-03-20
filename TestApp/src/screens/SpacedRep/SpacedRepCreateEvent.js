@@ -1,16 +1,16 @@
-import { AntDesign } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { Calendar } from "react-native-calendars";
-import DatePicker from "react-native-date-picker";
-import Tags from "react-native-tags";
-import { useSelector } from "react-redux";
-import GestureSlider from "../../components/GestureSlider";
-import ListHeader from "../../components/ListHeader";
-import CustomButton from "../../components/SpacedRep/CustomButton";
-import SuccessAlert from "../../components/SuccessAnimation";
-import { DateTimeGenerator, spacedRepDateGen } from "../../extras/dateparser";
-import { addEvent } from "../../extras/GAuth";
+import { AntDesign } from '@expo/vector-icons';
+import React, { useRef, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Calendar } from 'react-native-calendars';
+import DatePicker from 'react-native-date-picker';
+import Tags from 'react-native-tags';
+import { useSelector } from 'react-redux';
+import GestureSlider from '../../components/GestureSlider';
+import ListHeader from '../../components/ListHeader';
+import CustomButton from '../../components/SpacedRep/CustomButton';
+import SuccessAlert from '../../components/SuccessAnimation';
+import { DateTimeGenerator, spacedRepDateGen } from '../../extras/dateparser';
+import { addEvent } from '../../extras/GAuth';
 const CreateEvent = ({ navigation }) => {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
 	const calendarID = useSelector((state) => state.gauth.calendarID);
@@ -18,7 +18,7 @@ const CreateEvent = ({ navigation }) => {
 	const [endDate, setEndDate] = useState(new Date());
 	const [startDate, setStartDate] = useState(new Date());
 	const [rep_count, setRepCount] = useState(0);
-	const [title, setTitle] = useState("");
+	const [title, setTitle] = useState('');
 	const [tags, setTags] = useState();
 	const [scrollEnabled, setScrollEnabled] = useState(true);
 	const [show, setShow] = useState(false);
@@ -35,7 +35,7 @@ const CreateEvent = ({ navigation }) => {
 
 	const createEventArray = () => {
 		const days = Math.floor(
-			(endDate.getTime() - startDate.getTime()) / 1000 / 3600 / 24
+			(endDate.getTime() - startDate.getTime()) / 1000 / 3600 / 24,
 		);
 		const dateArray = spacedRepDateGen(days, Math.round(rep_count));
 
@@ -43,13 +43,13 @@ const CreateEvent = ({ navigation }) => {
 			startDate.toISOString().substring(0, 10),
 			dateArray,
 			title,
-			{ tags: tags?.toString() }
+			{ tags: tags?.toString() },
 		);
 		setCalendarEvents(CalObjectArray);
-		let markedObjects = {};
+		const markedObjects = {};
 		markedDates.forEach((object) => {
 			Object.assign(markedObjects, {
-				[object]: { selected: true, selectedColor: "#00D34B" },
+				[object]: { selected: true, selectedColor: '#00D34B' },
 			});
 		});
 		setMarkedDates(markedObjects);
@@ -57,7 +57,7 @@ const CreateEvent = ({ navigation }) => {
 	async function batchAdd() {
 		await calendarEvents.map((element) => {
 			addEvent(accessToken, element, calendarID).catch((e) =>
-				console.log(e.response.data)
+				console.log(e.response.data),
 			);
 		});
 	}
@@ -71,22 +71,22 @@ const CreateEvent = ({ navigation }) => {
 		}
 	};
 	const theme = {
-		backgroundColor: "#ffffff",
-		calendarBackground: "#ffffff",
-		textSectionTitleColor: "#b6c1cd",
-		textSectionTitleDisabledColor: "#d9e1e8",
-		selectedDayBackgroundColor: "#00adf5",
-		selectedDayTextColor: "#ffffff",
-		todayTextColor: "#00adf5",
-		dayTextColor: "#2d4150",
-		textDisabledColor: "#d9e1e8",
-		dotColor: "#00adf5",
-		selectedDotColor: "#ffffff",
-		arrowColor: "orange",
-		disabledArrowColor: "#d9e1e8",
-		textDayFontWeight: "300",
-		textMonthFontWeight: "bold",
-		textDayHeaderFontWeight: "300",
+		backgroundColor: '#ffffff',
+		calendarBackground: '#ffffff',
+		textSectionTitleColor: '#b6c1cd',
+		textSectionTitleDisabledColor: '#d9e1e8',
+		selectedDayBackgroundColor: '#00adf5',
+		selectedDayTextColor: '#ffffff',
+		todayTextColor: '#00adf5',
+		dayTextColor: '#2d4150',
+		textDisabledColor: '#d9e1e8',
+		dotColor: '#00adf5',
+		selectedDotColor: '#ffffff',
+		arrowColor: 'orange',
+		disabledArrowColor: '#d9e1e8',
+		textDayFontWeight: '300',
+		textMonthFontWeight: 'bold',
+		textDayHeaderFontWeight: '300',
 		textDayFontSize: 16,
 		textMonthFontSize: 16,
 		textDayHeaderFontSize: 16,
@@ -144,23 +144,23 @@ const CreateEvent = ({ navigation }) => {
 
 					<Tags
 						textInputProps={{
-							placeholder: "tags",
-							autoCapitalize: "none",
+							placeholder: 'tags',
+							autoCapitalize: 'none',
 							autoCorrect: false,
-							autoComplete: "off",
+							autoComplete: 'off',
 						}}
 						onChangeTags={(tags) => setTags(tags)}
 						onTagPress={(index) => {
-							let tagList = tags;
+							const tagList = tags;
 							tagList.splice(index, 1);
 							setTags(tagList);
 						}}
 						tagTextStyle={{ fontSize: 16 }}
-						containerStyle={{ justifyContent: "center" }}
+						containerStyle={{ justifyContent: 'center' }}
 						inputStyle={{
-							backgroundColor: "#445168",
+							backgroundColor: '#445168',
 							borderRadius: 6,
-							color: "white",
+							color: 'white',
 							height: 100,
 							fontSize: 17,
 						}}
@@ -170,7 +170,7 @@ const CreateEvent = ({ navigation }) => {
 					<Text style={styles.subtitle}>
 						How many repetitions would you like?
 					</Text>
-					<View style={{ justifyContent: "center", alignItems: "center" }}>
+					<View style={{ justifyContent: 'center', alignItems: 'center' }}>
 						<Text style={[styles.textStyles, styles.repCount]}>
 							{Math.round(rep_count)}
 						</Text>
@@ -215,14 +215,14 @@ const CreateEvent = ({ navigation }) => {
 							<Calendar
 								current={
 									startDate.getFullYear() +
-									"-" +
+									'-' +
 									(startDate.getMonth() + 1) +
-									"-" +
+									'-' +
 									startDate.getDate()
 								}
 								firstDay={1}
 								enableSwipeMonths={true}
-								style={{ borderRadius: 10, overflow: "hidden" }}
+								style={{ borderRadius: 10, overflow: 'hidden' }}
 								theme={theme}
 								markedDates={markedDates}
 								// markedDates={}
@@ -272,26 +272,26 @@ const CreateEvent = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#191F2C",
-		color: "white",
+		backgroundColor: '#191F2C',
+		color: 'white',
 	},
 	section: {
 		marginHorizontal: 10,
-		backgroundColor: "#2B3748",
+		backgroundColor: '#2B3748',
 		margin: 10,
 		borderRadius: 10,
 		padding: 15,
-		justifyContent: "space-around",
+		justifyContent: 'space-around',
 	},
 	dates: {
-		flexDirection: "row",
-		justifyContent: "center",
-		alignItems: "center",
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
 		height: 220,
 		// backgroundColor: "red",
 	},
 	input: {
-		backgroundColor: "white",
+		backgroundColor: 'white',
 		maxHeight: 50,
 		flex: 1,
 		height: 40,
@@ -300,13 +300,13 @@ const styles = StyleSheet.create({
 	},
 	dateHolder: {
 		flex: 1,
-		justifyContent: "space-around",
-		alignItems: "center",
+		justifyContent: 'space-around',
+		alignItems: 'center',
 	},
 	textStyles: {
 		fontSize: 20,
-		color: "white",
-		textAlign: "center",
+		color: 'white',
+		textAlign: 'center',
 		margin: 10,
 	},
 	repCount: {
@@ -318,12 +318,12 @@ const styles = StyleSheet.create({
 	},
 	introText: {
 		fontSize: 50,
-		color: "white",
+		color: 'white',
 	},
 	subtitle: {
 		fontSize: 20,
-		color: "white",
-		textAlign: "left",
+		color: 'white',
+		textAlign: 'left',
 		margin: 10,
 	},
 	repCountHolder: {
@@ -332,12 +332,12 @@ const styles = StyleSheet.create({
 	buttonHolder: {
 		height: 70,
 		padding: 10,
-		flexDirection: "row",
+		flexDirection: 'row',
 	},
 	tagsModal: {
 		height: 250,
 		width: 300,
-		backgroundColor: "#2B3748",
+		backgroundColor: '#2B3748',
 		borderRadius: 10,
 		padding: 10,
 	},
@@ -347,13 +347,13 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 8,
 		paddingVertical: 5,
 		margin: 2,
-		backgroundColor: "#E2E2E2",
+		backgroundColor: '#E2E2E2',
 		borderRadius: 20,
 	},
 });
 
 export default CreateEvent;
-//slate moss
+// slate moss
 // backgroundColor: "#191F2C",
 // levelOne: "#2B3748",
 // levelTwo: "#445168",

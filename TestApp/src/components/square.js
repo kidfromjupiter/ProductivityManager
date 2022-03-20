@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
 	Animated,
 	LayoutAnimation,
@@ -6,7 +6,7 @@ import {
 	StyleSheet,
 	Text,
 	View,
-} from "react-native";
+} from 'react-native';
 
 const PressableAnimated = Animated.createAnimatedComponent(Pressable);
 
@@ -61,20 +61,20 @@ const Square = ({
 				onTouchStart();
 			}}
 			onTouchEnd={() => {
-				touchEndCallback
-					? touchEndCallback()
-					: navigation
-					? navigation.navigate(text)
-					: null;
+				touchEndCallback ?
+					touchEndCallback() :
+					navigation ?
+						navigation.navigate(text) :
+						null;
 			}}
 			onLongPress={
-				enableLongPress
-					? () => {
-							LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+				enableLongPress ?
+					() => {
+						LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
-							ParentHoldCallback();
-					  }
-					: null
+						ParentHoldCallback();
+					  } :
+					null
 			}
 		>
 			<View style={styles.childrenContainer}>
@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		borderRadius: 20,
 		margin: 6,
-		backgroundColor: "#2B3748",
-		shadowColor: "black",
+		backgroundColor: '#2B3748',
+		shadowColor: 'black',
 		shadowRadius: 2,
 		shadowOffset: {
 			width: 2,
@@ -108,18 +108,18 @@ const styles = StyleSheet.create({
 	},
 	text: {
 		fontSize: 20,
-		color: "#00D34B",
-		fontWeight: "bold",
+		color: '#00D34B',
+		fontWeight: 'bold',
 		padding: 12,
 	},
 	textHolder: {
 		flex: 1,
-		alignItems: "center",
-		justifyContent: "center",
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	childrenContainer: {
 		flex: 1,
-		flexDirection: "column",
+		flexDirection: 'column',
 	},
 });
 

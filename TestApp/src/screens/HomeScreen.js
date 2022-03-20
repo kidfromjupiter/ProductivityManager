@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import Timer from "../components/Counter";
-import Loading from "../components/LottieLoading";
-import MiniReminderView from "../components/MiniReminderView";
+import React, { useEffect, useState } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import Timer from '../components/Counter';
+import Loading from '../components/LottieLoading';
+import MiniReminderView from '../components/MiniReminderView';
 import QuickView, {
 	QuickViewSub,
-} from "../components/SpacedRep/HomeScreenQuickView";
-import Square from "../components/square";
-import dateParser from "../extras/dateparser";
-import { getMostRecentEvent } from "../extras/GAuth";
-import { resetTimer, setTimer, startTimer } from "../redux/TimerSlice";
+} from '../components/SpacedRep/HomeScreenQuickView';
+import Square from '../components/square';
+import dateParser from '../extras/dateparser';
+import { getMostRecentEvent } from '../extras/GAuth';
+import { resetTimer, setTimer, startTimer } from '../redux/TimerSlice';
 
 // import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -41,16 +41,16 @@ function HomeScreen({ navigation }) {
 	function getTimePrompt() {
 		const time = new Date();
 		if (time.getHours() <= 12) {
-			return "Morning";
+			return 'Morning';
 		}
 		if (time.getHours() >= 12 && time.getHours() <= 15) {
-			return "Afternoon";
+			return 'Afternoon';
 		}
 		if (time.getHours() >= 15) {
-			return "Evening";
+			return 'Evening';
 		}
 		if (time.getHours() == 11 && time.getMinutes() == 59) {
-			return "grief. Go to sleep";
+			return 'grief. Go to sleep';
 		}
 	}
 
@@ -58,11 +58,11 @@ function HomeScreen({ navigation }) {
 		getMostRecentEvent(accessToken, calID)
 			// .then((e) => console.log(e.data))
 			.then((e) => {
-				e.data.items.length > 0
-					? setEventData(e.data.items[0])
-					: setEventData("empty");
+				e.data.items.length > 0 ?
+					setEventData(e.data.items[0]) :
+					setEventData('empty');
 			})
-			.catch((e) => setEventData("empty"));
+			.catch((e) => setEventData('empty'));
 	}
 
 	const StartTimer = () => {
@@ -160,14 +160,14 @@ function HomeScreen({ navigation }) {
 					customStyles={{ backgroundColor: color.levelOne }}
 					titleStyle={{ color: color.accentColor }}
 				>
-					{eventData && eventData != "empty" ? (
+					{eventData && eventData != 'empty' ? (
 						<QuickView
 							title={eventData.summary}
 							startDate={eventData.end.date}
 							repNumber={eventData.extendedProperties.private.repNumber}
 							numberOfReps={eventData.extendedProperties.private.numberOfReps}
 						/>
-					) : eventData == "empty" ? (
+					) : eventData == 'empty' ? (
 						<QuickViewSub color={color} />
 					) : (
 						<Loading
@@ -198,21 +198,21 @@ function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 3,
-		flexDirection: "row",
+		flexDirection: 'row',
 	},
 	rootContainer: {
 		flex: 1,
-		backgroundColor: "#191F2C",
+		backgroundColor: '#191F2C',
 	},
 	intro: {
 		height: 200,
 		flex: 3,
 		paddingHorizontal: 20,
-		justifyContent: "center",
+		justifyContent: 'center',
 	},
 	introText: {
 		fontSize: 40,
-		color: "white",
+		color: 'white',
 	},
 });
 export default HomeScreen;

@@ -3,21 +3,21 @@
 // import ReminderSliceReducer from "./ReminderSlice";
 // import ColorSlice from "./ColorSlice";
 // import PomodoroSlice from "./PomodoroSlice";
-import rootReducer from "./rootReducer";
+import rootReducer from './rootReducer';
 
-import { createStore, applyMiddleware } from "redux";
-import thunkMiddleware from "redux-thunk";
-import { persistStore, persistReducer } from "redux-persist";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { persistStore, persistReducer } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const persistConfig = {
-	key: "root",
+	key: 'root',
 	storage: AsyncStorage,
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = createStore(persistedReducer);
-let persistor = persistStore(store);
+const persistor = persistStore(store);
 
 export { store, persistor };
 

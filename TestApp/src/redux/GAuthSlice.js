@@ -1,7 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const GSlice = createSlice({
-	name: "gauth",
+	name: 'gauth',
 	initialState: {
 		AuthToken: null,
 		calendarID: null,
@@ -18,12 +18,12 @@ export const GSlice = createSlice({
 	},
 	reducers: {
 		setToken: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.AuthToken = action.payload.AuthToken;
 			return localState;
 		},
 		setGAuth: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.AuthToken = action.payload.AuthToken;
 			// localState.profilepic = action.payload.profilepic;
 			// localState.email = action.payload.email;
@@ -33,7 +33,7 @@ export const GSlice = createSlice({
 			return localState;
 		},
 		setGAuthMeta: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.profile_pic = action.payload.profile_pic;
 			localState.email = action.payload.email;
 			localState.name = action.payload.name;
@@ -41,32 +41,32 @@ export const GSlice = createSlice({
 			return localState;
 		},
 		setCalID: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.calendarID = action.payload.calendarID;
 			return localState;
 		},
 		setRefreshNeeded: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.shouldRefresh = action.payload.shouldRefresh;
 			return localState;
 		},
 		setIsSignedIn: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.isSignedIn = action.payload.isSignedIn;
 			return localState;
 		},
 		setIdToken: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.IdToken = action.payload.IdToken;
 			return localState;
 		},
 		setShouldSync: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.shouldSync = action.payload.shouldSync;
 			return localState;
 		},
 		resetGAuth: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.AuthToken = null;
 			localState.calendarID = null;
 			localState.expiry = null;

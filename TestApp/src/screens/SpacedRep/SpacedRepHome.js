@@ -1,6 +1,6 @@
-import { AntDesign } from "@expo/vector-icons";
-import LottieView from "lottie-react-native";
-import React, { useEffect, useState } from "react";
+import { AntDesign } from '@expo/vector-icons';
+import LottieView from 'lottie-react-native';
+import React, { useEffect, useState } from 'react';
 import {
 	Button,
 	Dimensions,
@@ -8,16 +8,16 @@ import {
 	StyleSheet,
 	Text,
 	View,
-} from "react-native";
-import { GoogleSignin } from "react-native-google-signin";
-import { useDispatch, useSelector } from "react-redux";
-import ListHeader from "../../components/ListHeader";
-import Loading from "../../components/LottieLoading";
-import SearchBar from "../../components/SearchBar";
-import SpacedRepListItem from "../../components/SpacedRep/SpacedRepListItem";
-import CalendarEvent from "../../extras/classes/EventsResourceClass";
-import { addCalendar, getEvents } from "../../extras/GAuth";
-import { setCalID, setIdToken, setToken } from "../../redux/GAuthSlice";
+} from 'react-native';
+import { GoogleSignin } from 'react-native-google-signin';
+import { useDispatch, useSelector } from 'react-redux';
+import ListHeader from '../../components/ListHeader';
+import Loading from '../../components/LottieLoading';
+import SearchBar from '../../components/SearchBar';
+import SpacedRepListItem from '../../components/SpacedRep/SpacedRepListItem';
+import CalendarEvent from '../../extras/classes/EventsResourceClass';
+import { addCalendar, getEvents } from '../../extras/GAuth';
+import { setCalID, setIdToken, setToken } from '../../redux/GAuthSlice';
 
 const SpacedRepHome = ({ navigation }) => {
 	const dispatch = useDispatch();
@@ -31,16 +31,16 @@ const SpacedRepHome = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
 
 	function creatingObjectArray(e) {
-		let events = [];
-		let spacedRepIdArray = [];
-		let spacedRepEvents = [];
+		const events = [];
+		const spacedRepIdArray = [];
+		const spacedRepEvents = [];
 		e.data.items.forEach(({ start, summary, id, extendedProperties }) => {
-			let d = new CalendarEvent(
+			const d = new CalendarEvent(
 				start.date,
 				start.date,
 				summary,
 				extendedProperties.private,
-				id
+				id,
 			);
 			if (!spacedRepIdArray.includes(extendedProperties.private.id)) {
 				spacedRepIdArray.push({
@@ -60,21 +60,21 @@ const SpacedRepHome = ({ navigation }) => {
 					((idObj.object.extendedProperties.private.numberOfReps -
 						repsRemaining) /
 						idObj.object.extendedProperties.private.numberOfReps) *
-						100
+						100,
 				);
 				if (!events.includes(idObj.object)) {
 					events.push(idObj.object);
 				}
 			});
 		});
-		let ID_ARRAY = [];
+		const ID_ARRAY = [];
 		spacedRepIdArray.forEach((e) => {
 			if (!ID_ARRAY.includes(e.id)) {
 				ID_ARRAY.push(e.id);
 			}
 		});
 		ID_ARRAY.forEach((id) => {
-			let i = events.find((v) => v.extendedProperties.private.id == id);
+			const i = events.find((v) => v.extendedProperties.private.id == id);
 			spacedRepEvents.push(i);
 		});
 		events.sort((a, b) => a.daysTill() - b.daysTill());
@@ -92,7 +92,7 @@ const SpacedRepHome = ({ navigation }) => {
 				creatingObjectArray(e);
 			})
 			.catch((e) => {
-				if (e.response.data.error.status == "UNAUTHENTICATED") {
+				if (e.response.data.error.status == 'UNAUTHENTICATED') {
 					GoogleSignin.getTokens().then((e) => {
 						dispatch(setToken({ AuthToken: e.accessToken }));
 						dispatch(setIdToken({ IdToken: e.idToken }));
@@ -112,7 +112,7 @@ const SpacedRepHome = ({ navigation }) => {
 		}
 	}, [signedIn, accessToken, calID]);
 	function updateObjectArray(index) {
-		let objects = [...eventsObjectArray];
+		const objects = [...eventsObjectArray];
 		objects.splice(index, 1);
 		setObjectArray(objects);
 	}
@@ -122,7 +122,7 @@ const SpacedRepHome = ({ navigation }) => {
 				title={item.summary}
 				percentFinished={item.extendedProperties.private.percentFinished}
 				repsRemaining={item.extendedProperties.private.repsRemaining}
-				tags={item.extendedProperties.private.tags?.split(",")}
+				tags={item.extendedProperties.private.tags?.split(',')}
 				totalreps={item.extendedProperties.private.numberOfReps}
 				spacedRepId={item.extendedProperties.private.id}
 				daysTill={item.daysTill()}
@@ -158,13 +158,13 @@ const SpacedRepHome = ({ navigation }) => {
 			<View
 				style={{
 					flex: 1,
-					backgroundColor: "black",
-					justifyContent: "center",
-					alignItems: "center",
+					backgroundColor: 'black',
+					justifyContent: 'center',
+					alignItems: 'center',
 				}}
 			>
 				<LottieView
-					source={require("../../../assets/animations/cal.json")}
+					source={require('../../../assets/animations/cal.json')}
 					style={{ height: 250, width: 250 }}
 					autoPlay
 					loop
@@ -172,7 +172,7 @@ const SpacedRepHome = ({ navigation }) => {
 				/>
 				<Button
 					title="Sign in"
-					onPress={() => navigation.navigate("Settings")}
+					onPress={() => navigation.navigate('Settings')}
 				/>
 			</View>
 		);
@@ -192,7 +192,7 @@ const SpacedRepHome = ({ navigation }) => {
 						name="pluscircle"
 						size={35}
 						color="white"
-						onPress={() => navigation.navigate("CreateEvent")}
+						onPress={() => navigation.navigate('CreateEvent')}
 					/>
 				</View>
 				{/* {almostFinished ? (
@@ -255,21 +255,21 @@ const SpacedRepHome = ({ navigation }) => {
 						extraData={eventsObjectArray}
 						renderItem={renderItem}
 						style={{
-							width: Dimensions.get("window").width,
+							width: Dimensions.get('window').width,
 						}}
 						ListEmptyComponent={
-							<View style={{ justifyContent: "center", alignItems: "center" }}>
+							<View style={{ justifyContent: 'center', alignItems: 'center' }}>
 								<Text
-									style={{ color: "grey", textAlign: "center", padding: 20 }}
+									style={{ color: 'grey', textAlign: 'center', padding: 20 }}
 								>
 									Looks empty boss. Try pulling down to refresh
 								</Text>
 								<LottieView
-									source={require("../../../assets/animations/empty.json")}
+									source={require('../../../assets/animations/empty.json')}
 									autoPlay
 									loop={false}
 									style={{
-										backgroundColor: "transparent",
+										backgroundColor: 'transparent',
 										height: 100,
 										width: 200,
 									}}
@@ -306,28 +306,28 @@ const SpacedRepHome = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 	topBar: {
 		flex: 1,
-		flexDirection: "row",
-		width: Dimensions.get("window").width,
-		alignItems: "center",
-		justifyContent: "center",
+		flexDirection: 'row',
+		width: Dimensions.get('window').width,
+		alignItems: 'center',
+		justifyContent: 'center',
 		paddingRight: 10,
 		maxHeight: 50,
 	},
 	section: {
 		flex: 6,
 		margin: 5,
-		alignItems: "center",
+		alignItems: 'center',
 	},
 	bottom: {
-		justifyContent: "flex-end",
-		position: "absolute",
+		justifyContent: 'flex-end',
+		position: 'absolute',
 		height: 300,
-		width: Dimensions.get("window").width,
+		width: Dimensions.get('window').width,
 		bottom: 0,
 	},
 });

@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 const InfoBar = ({ info, customstyles }) => {
 	return (
@@ -11,14 +11,14 @@ const InfoBar = ({ info, customstyles }) => {
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: "white",
+		backgroundColor: 'white',
 		elevation: 5,
 		padding: 5,
 		margin: 5,
 	},
 	text: {
-		fontWeight: "bold",
-		textAlign: "right",
+		fontWeight: 'bold',
+		textAlign: 'right',
 	},
 });
 

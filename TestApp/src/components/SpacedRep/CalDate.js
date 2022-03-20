@@ -1,5 +1,5 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const CalView = ({ month, date, year, onPress }) => {
 	return (
@@ -22,35 +22,35 @@ const styles = StyleSheet.create({
 		height: 150,
 		// flex: 1,
 		width: 160,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 		padding: 20,
 		margin: 30,
 		// borderColor: "white",
 		// borderWidth: 2,
 	},
-	yearholder: { flex: 1, alignItems: "center", justifyContent: "center" },
-	dateholder: { flex: 3, alignItems: "center", justifyContent: "center" },
-	monthholder: { flex: 1, alignItems: "center", justifyContent: "center" },
+	yearholder: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+	dateholder: { flex: 3, alignItems: 'center', justifyContent: 'center' },
+	monthholder: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 	text: {
-		color: "white",
-		textAlignVertical: "center",
+		color: 'white',
+		textAlignVertical: 'center',
 	},
 	month: {
 		fontSize: 23,
-		textAlignVertical: "bottom",
+		textAlignVertical: 'bottom',
 	},
 	year: {
 		fontSize: 17,
-		textAlign: "center",
-		textAlignVertical: "top",
+		textAlign: 'center',
+		textAlignVertical: 'top',
 	},
 	date: {
 		fontSize: 60,
-		fontWeight: "bold",
-		textAlignVertical: "center",
-		textAlign: "center",
-		color: "#00D34B",
+		fontWeight: 'bold',
+		textAlignVertical: 'center',
+		textAlign: 'center',
+		color: '#00D34B',
 	},
 });
 

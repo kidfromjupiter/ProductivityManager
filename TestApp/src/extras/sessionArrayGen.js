@@ -1,7 +1,7 @@
 function sessionArrayGen(sessionTime, breakTime, numOfSessions) {
 	console.log(sessionTime, breakTime, numOfSessions);
 	const primaryArray = [sessionTime, breakTime];
-	let secondaryArray = [];
+	const secondaryArray = [];
 	let i = 0;
 	while (i < numOfSessions) {
 		for (const num of primaryArray) {

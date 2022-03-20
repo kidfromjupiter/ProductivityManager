@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 import {
-	Dimensions, LayoutAnimation, StyleSheet, Text, TextInput, TouchableOpacity, View
-} from "react-native";
+	Dimensions, LayoutAnimation, StyleSheet, Text, TextInput, TouchableOpacity, View,
+} from 'react-native';
 
 const DialogBox = ({
 	onChangeText,
@@ -58,11 +58,11 @@ const DialogBox = ({
 						onPress={() => {
 							onCancel(false);
 							LayoutAnimation.configureNext(
-								LayoutAnimation.Presets.easeInEaseOut
+								LayoutAnimation.Presets.easeInEaseOut,
 							);
 						}}
 					>
-						<Text style={[styles.text, { color: "#ED1717" }]}>Cancel</Text>
+						<Text style={[styles.text, { color: '#ED1717' }]}>Cancel</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={[styles.button, {}]}
@@ -70,7 +70,7 @@ const DialogBox = ({
 							onSubmit(text, description);
 						}}
 					>
-						<Text style={[styles.text, { color: "#0050D8" }]}>Add</Text>
+						<Text style={[styles.text, { color: '#0050D8' }]}>Add</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -81,71 +81,71 @@ const DialogBox = ({
 const styles = StyleSheet.create({
 	titleTexts: {
 		fontSize: 19,
-		color: "#D7D7D7",
-		fontWeight: "bold",
-		textAlign: "left",
+		color: '#D7D7D7',
+		fontWeight: 'bold',
+		textAlign: 'left',
 		marginVertical: 10,
 	},
 	Overlay: {
-		backgroundColor: "rgba(0,0,0,0.5)",
-		position: "absolute",
-		height: Dimensions.get("window").height,
-		width: Dimensions.get("window").width,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		position: 'absolute',
+		height: Dimensions.get('window').height,
+		width: Dimensions.get('window').width,
 	},
 
 	OuterContainer: {
 		flex: 1,
-		position: "absolute",
-		alignItems: "center",
-		justifyContent: "center",
+		position: 'absolute',
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	container: {
 		zIndex: 200,
 		flex: 1,
-		backgroundColor: "#0F0021",
-		justifyContent: "center",
-		alignItems: "center",
+		backgroundColor: '#0F0021',
+		justifyContent: 'center',
+		alignItems: 'center',
 		borderRadius: 30,
-		height: "auto",
-		width: "auto",
+		height: 'auto',
+		width: 'auto',
 	},
 	input: {
 		width: 250,
 		borderRadius: 10,
 		marginBottom: 10,
 		padding: 10,
-		borderBottomColor: "#909090",
-		backgroundColor: "#252525",
-		color: "white",
+		borderBottomColor: '#909090',
+		backgroundColor: '#252525',
+		color: 'white',
 	},
 	buttonContainer: {
 		flex: 1,
-		flexDirection: "row",
+		flexDirection: 'row',
 		maxHeight: 75,
 	},
 	button: {
 		width: 150,
-		color: "white",
+		color: 'white',
 		padding: 10,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 		borderTopWidth: 1,
 		fontSize: 17,
 	},
 	text: {
-		textAlignVertical: "center",
-		textAlign: "center",
+		textAlignVertical: 'center',
+		textAlign: 'center',
 		fontSize: 17,
 	},
 	InputHolder: {
 		flex: 2,
-		justifyContent: "center",
+		justifyContent: 'center',
 		// alignItems: "center",
 		paddingVertical: 20,
 	},
 	description: {
 		height: 100,
-		textAlignVertical: "top",
+		textAlignVertical: 'top',
 	},
 });
 

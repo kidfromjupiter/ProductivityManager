@@ -1,13 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const CalSlice = createSlice({
-	name: "calendar",
+	name: 'calendar',
 	initialState: {
 		events: null,
 	},
 	reducers: {
 		setEvents: (state, actions) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.events = actions.payload.spacedRepEvents;
 			return localState;
 		},

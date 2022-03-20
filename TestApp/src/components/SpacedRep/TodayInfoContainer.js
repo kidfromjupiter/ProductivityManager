@@ -1,5 +1,5 @@
-import { AntDesign } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { AntDesign } from '@expo/vector-icons';
+import React, { useState } from 'react';
 import {
 	Dimensions,
 	FlatList,
@@ -7,19 +7,19 @@ import {
 	StyleSheet,
 	Text,
 	View,
-} from "react-native";
-import CircularProgress from "react-native-circular-progress-indicator";
+} from 'react-native';
+import CircularProgress from 'react-native-circular-progress-indicator';
 import {
 	Directions,
 	Gesture,
 	GestureDetector,
 	GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
-import { useSelector } from "react-redux";
-import { deleteEvent } from "../../extras/GAuth";
-import InfoBar from "../InfoBar";
-import CustomButton from "./CustomButton";
+} from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
+import { deleteEvent } from '../../extras/GAuth';
+import InfoBar from '../InfoBar';
+import CustomButton from './CustomButton';
 
 const TodayInfo = ({
 	percentage,
@@ -68,8 +68,8 @@ const TodayInfo = ({
 									<Text
 										style={{
 											fontSize: 25,
-											color: "#00D34B",
-											fontWeight: "bold",
+											color: '#00D34B',
+											fontWeight: 'bold',
 										}}
 									>
 										Today
@@ -78,8 +78,8 @@ const TodayInfo = ({
 									<Text
 										style={{
 											fontSize: 25,
-											color: "#00D34B",
-											fontWeight: "bold",
+											color: '#00D34B',
+											fontWeight: 'bold',
 										}}
 									>
 										Info
@@ -114,7 +114,7 @@ const TodayInfo = ({
 									fontSize={23}
 								/>
 								<InfoBar
-									info={repsRemaining + " reps left"}
+									info={repsRemaining + ' reps left'}
 									customstyles={{ borderRadius: 7 }}
 								/>
 							</View>
@@ -124,7 +124,7 @@ const TodayInfo = ({
 								<CustomButton
 									callback={() => {
 										LayoutAnimation.configureNext(
-											LayoutAnimation.Presets.easeInEaseOut
+											LayoutAnimation.Presets.easeInEaseOut,
 										);
 										deleteEvent(accessToken, id, calID)
 											.then((e) => {
@@ -161,70 +161,70 @@ const TodayInfo = ({
 
 const styles = StyleSheet.create({
 	container: {
-		width: Dimensions.get("window").width,
+		width: Dimensions.get('window').width,
 		flex: 1,
-		backgroundColor: "#445168",
+		backgroundColor: '#445168',
 		borderTopEndRadius: 20,
 		borderTopStartRadius: 20,
 		maxHeight: 270,
-		overflow: "hidden",
+		overflow: 'hidden',
 	},
 
 	completedButton: {},
 	closeButton: {
 		width: 30,
 		height: 20,
-		backgroundColor: "#445168",
+		backgroundColor: '#445168',
 		borderRadius: 5,
-		alignItems: "center",
+		alignItems: 'center',
 	},
 
-	metaHolder: { flex: 4, flexDirection: "row" },
+	metaHolder: { flex: 4, flexDirection: 'row' },
 	buttonHolder: { flex: 1 },
 	topButtons: {
 		flex: 1,
-		flexDirection: "row",
+		flexDirection: 'row',
 		marginBottom: 5,
 	},
 	bottomButtons: { flex: 1 },
 	data: {
 		flex: 6,
-		justifyContent: "center",
+		justifyContent: 'center',
 		paddingLeft: 10,
 	},
 	progress: {
 		flex: 4,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 		// backgroundColor: "red",
 	},
 	tag: {
-		color: "#D7D7D7",
+		color: '#D7D7D7',
 		marginHorizontal: 5,
-		backgroundColor: "#586781",
+		backgroundColor: '#586781',
 		paddingHorizontal: 10,
 		borderRadius: 5,
-		textAlignVertical: "center",
-		textAlign: "center",
+		textAlignVertical: 'center',
+		textAlign: 'center',
 		// maxHeight: 25,
 	},
 	title: {
 		padding: 10,
 		marginVertical: 15,
-		backgroundColor: "#D7D7D7",
+		backgroundColor: '#D7D7D7',
 		borderRadius: 10,
-		fontWeight: "bold",
+		fontWeight: 'bold',
 		fontSize: 20,
 	},
 	topDragPill: {
-		backgroundColor: "white",
+		backgroundColor: 'white',
 		height: 3,
 		marginTop: 10,
 		marginHorizontal: 40,
 		borderRadius: 10,
 	},
 	tagholder: {
-		flexDirection: "row",
+		flexDirection: 'row',
 	},
 });
 

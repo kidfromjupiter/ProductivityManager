@@ -1,7 +1,7 @@
-import LottieView from "lottie-react-native";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import CircularProgress from "react-native-circular-progress-indicator";
+import LottieView from 'lottie-react-native';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import CircularProgress from 'react-native-circular-progress-indicator';
 
 const QuickView = ({
 	navigation,
@@ -23,14 +23,14 @@ const QuickView = ({
 		<View style={styles.container}>
 			<View>
 				<View style={styles.titleContainer}>
-					<Text style={[styles.textStyle, { fontWeight: "bold" }]}>
+					<Text style={[styles.textStyle, { fontWeight: 'bold' }]}>
 						{title}
 					</Text>
 				</View>
 				<View
 					style={[
 						styles.dateHolder,
-						{ justifyContent: "center", alignItems: "center" },
+						{ justifyContent: 'center', alignItems: 'center' },
 					]}
 				>
 					<Text style={[styles.textStyle, { fontSize: 20 }]}>{day()}</Text>
@@ -55,15 +55,15 @@ const QuickViewSub = ({ color }) => {
 		<View
 			style={{
 				flex: 1,
-				justifyContent: "center",
-				alignItems: "center",
+				justifyContent: 'center',
+				alignItems: 'center',
 				paddingBottom: 5,
 			}}
 		>
 			<LottieView
 				autoPlay
 				loop={false}
-				source={require("../../../assets/animations/wellDone.json")}
+				source={require('../../../assets/animations/wellDone.json')}
 			/>
 			{/* <Text style={{ fontSize: 15, color: color.textColor }}>
 				Congrats! All caught up
@@ -76,20 +76,20 @@ const styles = StyleSheet.create({
 	container: {
 		// justifyContent: "center",
 		padding: 10,
-		alignItems: "center",
-		flexDirection: "row",
-		justifyContent: "space-evenly",
+		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
 	},
 	titleContainer: {
-		backgroundColor: "#445168",
+		backgroundColor: '#445168',
 		padding: 6,
 		borderRadius: 10,
 		paddingHorizontal: 10,
 	},
 	textStyle: {
-		color: "white",
+		color: 'white',
 		fontSize: 17,
-		textAlign: "center",
+		textAlign: 'center',
 	},
 	dateHolder: {
 		// backgroundColor: "#445168",

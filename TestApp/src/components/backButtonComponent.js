@@ -1,14 +1,14 @@
-import React from "react";
-import { Platform, SafeAreaView, StyleSheet, Text } from "react-native";
+import React from 'react';
+import { Platform, SafeAreaView, StyleSheet, Text } from 'react-native';
 
 const BackButton = ({ navigation, color }) => {
-	if (Platform.OS === "ios") {
+	if (Platform.OS === 'ios') {
 		return (
 			<SafeAreaView style={styles.container}>
 				<Text
 					style={{
 						color: color.textColor,
-						textDecorationLine: "underline",
+						textDecorationLine: 'underline',
 					}}
 					onPress={() => {
 						navigation.goBack();
@@ -24,7 +24,7 @@ const BackButton = ({ navigation, color }) => {
 
 const styles = StyleSheet.create({
 	container: {
-		position: "absolute",
+		position: 'absolute',
 		top: 10,
 		left: 10,
 		zIndex: 10000,

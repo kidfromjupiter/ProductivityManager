@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { AntDesign } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -19,7 +20,6 @@ import { useSelector } from "react-redux";
 
 const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 	const colors = useSelector((state) => state.colors);
-	const animatedValue = new Animated.Value(0);
 
 	const [expanded, setExpanded] = useState(false);
 
@@ -36,26 +36,14 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 		});
 		const opacity = dragX.interpolate({
 			outputRange: [0, 1],
-			inputRange: [0, 50],
+			inputRange: [0, 100],
 			extrapolate: "clamp",
 		});
 
 		return (
-			<Animated.View
-				style={{
-					flex: 1,
-					backgroundColor: "#FF002D",
-					justifyContent: "center",
-					opacity: opacity,
-				}}
-			>
+			<Animated.View style={[styles.animatedHolder, { opacity: opacity }]}>
 				<Animated.Text
-					style={{
-						color: "white",
-						paddingHorizontal: 10,
-						fontWeight: "600",
-						transform: [{ translateX: trans }],
-					}}
+					style={[styles.animatedText, { transform: [{ translateX: trans }] }]}
 				>
 					<AntDesign name="delete" size={24} color="white" />
 				</Animated.Text>
@@ -67,8 +55,8 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 		<GestureHandlerRootView>
 			<Swipeable
 				renderLeftActions={LeftActions ? LeftActions : null}
-				// friction={1.3}
-				leftThreshold={50}
+				friction={2.8}
+				leftThreshold={100}
 				onSwipeableOpen={(direction) => {
 					if (direction == "left") {
 						swipeRight(index);
@@ -78,6 +66,7 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 				<Pressable
 					style={[
 						styles.outerContainer,
+						// eslint-disable-next-line react-native/no-inline-styles
 						{ backgroundColor: item.completed ? "#6B6B6B" : colors.levelOne },
 					]}
 				>
@@ -85,6 +74,7 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 						<View
 							style={[
 								styles.checkboxHolder,
+								// eslint-disable-next-line react-native/no-inline-styles
 								{
 									height: expanded ? null : 70,
 									paddingVertical: expanded ? 15 : null,
@@ -165,6 +155,16 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		color: "white",
 		paddingVertical: 10,
+	},
+	animatedHolder: {
+		flex: 1,
+		backgroundColor: "#FF002D",
+		justifyContent: "center",
+	},
+	animatedText: {
+		color: "white",
+		paddingHorizontal: 10,
+		fontWeight: "600",
 	},
 });
 

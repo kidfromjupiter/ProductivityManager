@@ -1,7 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const TimerSlice = createSlice({
-	name: "timer",
+	name: 'timer',
 	initialState: {
 		time: 0,
 		isRunning: false,
@@ -33,7 +33,7 @@ export const TimerSlice = createSlice({
 			state.time = 0;
 			state.isRunning = false;
 			state.isFinished = false;
-			console.log("timerReset to zero");
+			console.log('timerReset to zero');
 		},
 	},
 });

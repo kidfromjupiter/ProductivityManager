@@ -1,18 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const ColorSlice = createSlice({
-	name: "colors",
+	name: 'colors',
 	initialState: {
-		//slate moss
-		backgroundColor: "#191F2C",
-		levelOne: "#2B3748",
-		levelTwo: "#445168",
-		levelThree: "#586781",
-		levelFour: "#97A7C2",
-		textColor: "#D7D7D7", //light
-		textColorTwo: "#BECADE", //dark
-		accentColor: "#00D34B",
-		//////////////////////////
+		// slate moss
+		backgroundColor: '#191F2C',
+		levelOne: '#2B3748',
+		levelTwo: '#445168',
+		levelThree: '#586781',
+		levelFour: '#97A7C2',
+		textColor: '#D7D7D7', // light
+		textColorTwo: '#BECADE', // dark
+		accentColor: '#00D34B',
+		// ////////////////////////
 		// rose gold
 		// backgroundColor: "#A86452",
 		// levelOne: "#CDA398",
@@ -22,8 +22,8 @@ export const ColorSlice = createSlice({
 		// textColor: "#E7D0D4",
 		// textColorTwo: "#454545",
 		// accentColor: "#7D4348",
-		///////////////////////////
-		//Pineapple under the sea
+		// /////////////////////////
+		// Pineapple under the sea
 		// backgroundColor: "#00468B",
 		// levelOne: "#118FC8",
 		// levelTwo: "#2ECAE9",
@@ -32,8 +32,8 @@ export const ColorSlice = createSlice({
 		// textColor: "#D9F8FF",
 		// textColorTwo: "#454545",
 		// accentColor: "#FFE35B",
-		/////////////////////////////
-		//very black
+		// ///////////////////////////
+		// very black
 		// backgroundColor: "#000000",
 		// levelOne: "#292A2A",
 		// levelTwo: "#494949",
@@ -42,7 +42,7 @@ export const ColorSlice = createSlice({
 		// textColor: "#D9D9D9",
 		// textColorTwo: "#000000",
 		// accentColor: "#C6C6C6",
-		////////////////////////////////
+		// //////////////////////////////
 
 		// sea green
 		// backgroundColor: "#130050",
@@ -54,7 +54,7 @@ export const ColorSlice = createSlice({
 		// textColorTwo: "#001423",
 		// accentColor: "#38D9DD",
 
-		/////////////////////////////////
+		// ///////////////////////////////
 		// sunset forest
 		// backgroundColor: "#30301B",
 		// levelOne: "#2F4F31",
@@ -83,7 +83,7 @@ export const ColorSlice = createSlice({
 			state.textColor = action.payload;
 		},
 		changeColorScheme: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.backgroundColor = action.payload.backgroundColor;
 			localState.levelOne = action.payload.levelOne;
 			localState.levelTwo = action.payload.levelTwo;

@@ -1,7 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const PomodoroSlice = createSlice({
-	name: "pomodoro",
+	name: 'pomodoro',
 	initialState: {
 		time: 0,
 		isRunning: false,
@@ -13,7 +13,7 @@ export const PomodoroSlice = createSlice({
 	},
 	reducers: {
 		setTime: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			if (action.payload.time == 0) {
 				localState.isSession = !localState.isSession;
 			}
@@ -21,7 +21,7 @@ export const PomodoroSlice = createSlice({
 			return localState;
 		},
 		resetTimer: (state) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.time = 0;
 			localState.isRunning = false;
 			localState.isSession = true;
@@ -29,28 +29,28 @@ export const PomodoroSlice = createSlice({
 			return localState;
 		},
 		toggleTimer: (state) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.isRunning = !localState.isRunning;
 			localState.isPaused = !localState.isPaused;
 			return localState;
 		},
 		incrementNumOfPresets: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.numOfPresets = localState.numOfPresets + action.payload.number;
-			console.log("ran incrementNumOfPresets");
+			console.log('ran incrementNumOfPresets');
 			return localState;
 		},
 		setCycleData: (state, action) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.cycleData = action.payload.array;
 			localState.isFinished = false;
-			console.log("ran setCycleData slice");
+			console.log('ran setCycleData slice');
 			const time = localState.cycleData.shift();
 			localState.time = time * 60;
 			return localState;
 		},
 		setNewCycle: (state) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			let time = 0;
 			if (localState.cycleData.length > 0) {
 				time = localState.cycleData.shift();
@@ -66,7 +66,7 @@ export const PomodoroSlice = createSlice({
 			return localState;
 		},
 		exitCleanup: (state) => {
-			let localState = JSON.parse(JSON.stringify(state));
+			const localState = JSON.parse(JSON.stringify(state));
 			localState.cycleData = [];
 			localState.isRunning = false;
 			localState.isPaused = false;

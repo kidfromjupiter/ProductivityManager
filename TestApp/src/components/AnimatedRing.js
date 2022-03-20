@@ -1,6 +1,6 @@
-import React from "react";
-import { Animated, StyleSheet, View } from "react-native";
-import { useSelector } from "react-redux";
+import React from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
 const AnimatedRing = ({ children, flex, animated, ringColor }) => {
 	const animateValue = new Animated.Value(0);
@@ -64,16 +64,16 @@ const styles = StyleSheet.create({
 		height: 250,
 		borderRadius: 250 / 2,
 		borderWidth: 4,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 	innerCircle: {
-		position: "absolute",
+		position: 'absolute',
 	},
 	childrenContainer: {
 		flex: 2,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 });
 

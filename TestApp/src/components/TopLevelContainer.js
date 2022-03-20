@@ -1,15 +1,15 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect } from "react";
-import { AppState, View } from "react-native";
-import { GoogleSignin } from "react-native-google-signin";
-import { useDispatch, useSelector } from "react-redux";
-import { grabData, updateUserData } from "../extras/BACKEND";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect } from 'react';
+import { AppState, View } from 'react-native';
+import { GoogleSignin } from 'react-native-google-signin';
+import { useDispatch, useSelector } from 'react-redux';
+import { grabData, updateUserData } from '../extras/BACKEND';
 import {
 	setCalID,
 	setGAuthMeta,
 	setIsSignedIn,
-	setToken
-} from "../redux/GAuthSlice";
+	setToken,
+} from '../redux/GAuthSlice';
 
 
 const TopLevelContainer = (props) => {
@@ -21,17 +21,17 @@ const TopLevelContainer = (props) => {
 	const dispatch = useDispatch();
 
 	function sendData(idToken) {
-		AsyncStorage.getItem("pomodoro").then((f) => {
+		AsyncStorage.getItem('pomodoro').then((f) => {
 			updateUserData(idToken, {
 				calID: calID,
 				pomodoros: f,
 				reminders: reminderList,
 				colors: colors,
-			}).then(() => console.log("backed up"));
+			}).then(() => console.log('backed up'));
 		});
 	}
 	const handleAppStateChange = (nextAppState) => {
-		if (nextAppState === "background") {
+		if (nextAppState === 'background') {
 			if (signedIn && shouldSync) {
 				GoogleSignin.signInSilently().then((e) => {
 					sendData(e.idToken);
@@ -40,7 +40,7 @@ const TopLevelContainer = (props) => {
 		}
 	};
 	useEffect(() => {
-		const eventSub = AppState.addEventListener("change", handleAppStateChange);
+		const eventSub = AppState.addEventListener('change', handleAppStateChange);
 		const interval = setInterval(() => {
 			if (signedIn && shouldSync) {
 				GoogleSignin.signInSilently().then((e) => {
@@ -74,7 +74,7 @@ const TopLevelContainer = (props) => {
 							name: name,
 							profile_pic: profile_pic,
 							email: email,
-						})
+						}),
 					);
 					dispatch(setCalID({ calendarID: calId }));
 				});

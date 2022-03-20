@@ -1,6 +1,6 @@
-import React from "react";
-import { Animated, StyleSheet, Text } from "react-native";
-import { View } from "react-native-animatable";
+import React from 'react';
+import { Animated, StyleSheet, Text } from 'react-native';
+import { View } from 'react-native-animatable';
 
 const CustomButton = ({
 	color,
@@ -45,7 +45,7 @@ const CustomButton = ({
 				},
 				customStyles,
 				animatedScaleStyle,
-				{ backgroundColor: disabled ? "grey" : color },
+				{ backgroundColor: disabled ? 'grey' : color },
 			]}
 			onTouchStart={() => {
 				onTouchStart();
@@ -56,7 +56,7 @@ const CustomButton = ({
 				style={[
 					styles.buttonText,
 					{
-						color: textColor ? textColor : "black",
+						color: textColor ? textColor : 'black',
 						marginHorizontal: 0,
 						fontSize: 16,
 					},
@@ -71,12 +71,12 @@ const CustomButton = ({
 const styles = StyleSheet.create({
 	button: {
 		flex: 1,
-		backgroundColor: "#586781",
+		backgroundColor: '#586781',
 		marginHorizontal: 5,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 		borderRadius: 6,
-		flexDirection: "row",
+		flexDirection: 'row',
 	},
 	buttonText: { fontSize: 17 },
 	icon: {

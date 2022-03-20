@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const updateAsyncStorageArray = async (key, value) => {
 	let storedValue;
@@ -19,7 +19,7 @@ const updateAsyncStorageArray = async (key, value) => {
 		console.log(e);
 	}
 
-	console.log("Saved array");
+	console.log('Saved array');
 };
 // const modifyAsyncStorageArray = async
 

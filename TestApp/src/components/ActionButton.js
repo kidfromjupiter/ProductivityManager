@@ -1,10 +1,10 @@
-import { AntDesign } from "@expo/vector-icons";
-import React from "react";
+import { AntDesign } from '@expo/vector-icons';
+import React from 'react';
 import {
 	Animated, Pressable,
-	StyleSheet
-} from "react-native";
-import { useSelector } from "react-redux";
+	StyleSheet,
+} from 'react-native';
+import { useSelector } from 'react-redux';
 
 
 const PressableAnimated = Animated.createAnimatedComponent(Pressable);
@@ -56,15 +56,15 @@ const ActionButton = ({ text, icon, onPressOut }) => {
 
 const styles = StyleSheet.create({
 	actionbutton: {
-		position: "absolute",
+		position: 'absolute',
 		zIndex: 1000,
 		bottom: 20,
 		right: 20,
-		backgroundColor: "#ffc484",
+		backgroundColor: '#ffc484',
 		width: 70,
 		height: 70,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 		borderRadius: 40,
 	},
 });
