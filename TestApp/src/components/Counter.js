@@ -11,6 +11,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
+import { default as BackgroundTimer } from "react-native-background-timer-android";
 
 const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 	const buttonColor = {
@@ -80,19 +81,28 @@ const Timer = ({
 }) => {
 	const colors = useSelector((state) => state.colors);
 	const [sound, setSound] = useState();
+	// console.log(timer);
 
 	useEffect(() => {
+		const soundTimeout = BackgroundTimer.setTimeout(() => {
+			if (timer.isRunning) {
+				playSound();
+			}
+		}, timer.time * 1000);
 		if (timer && timer.isRunning && timer.time !== 0) {
-			const interval = setInterval(() => {
+			const interval = BackgroundTimer.setInterval(() => {
 				let newTime = timer.time - 1;
 				if (newTime == 0) {
 					setTimer({ time: newTime });
-					playSound();
+					// playSound();
 				}
 				setTimer({ time: newTime });
 			}, 1000);
 
-			return () => clearInterval(interval);
+			return () => {
+				BackgroundTimer.clearInterval(interval);
+				BackgroundTimer.clearInterval(soundTimeout);
+			};
 		}
 	});
 
@@ -102,6 +112,7 @@ const Timer = ({
 		Audio.setAudioModeAsync({
 			playsInSilentModeIOS: true,
 			shouldDuckAndroid: true,
+			staysActiveInBackground: true,
 		});
 
 		const { sound } = await Audio.Sound.createAsync(

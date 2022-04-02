@@ -6123,6 +6123,11 @@ react-native-animatable@1.3.3, react-native-animatable@^1.3.3:
   dependencies:
     prop-types "^15.7.2"
 
+react-native-background-timer-android@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-background-timer-android/-/react-native-background-timer-android-1.0.2.tgz#ab8ac9953e2d67aebfcfee33ea0644bd7a5f3372"
+  integrity sha512-tnVld2gWLQgVEEGFyfiDTWZiOuRnr6WP+Be1JiXtZ7DdARFFCAozuzNvof2HXggo3y10WJSJuFQcCWThb6CO2w==
+
 react-native-bouncy-checkbox@^2.1.10:
   version "2.1.10"
   resolved "https://registry.npmjs.org/react-native-bouncy-checkbox/-/react-native-bouncy-checkbox-2.1.10.tgz"
