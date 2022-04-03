@@ -147,6 +147,7 @@ const Timer = ({
 			onPress={() => {
 				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 				LayoutAnimation.configureNext(layoutanimation);
+				dispatch(logData(new Tracker({ type: STATUS_CODES.TIMER_TOGGLE })));
 				StartTimer();
 			}}
 			onLongPress={() => {

@@ -1,29 +1,37 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Haptics from 'expo-haptics';
-import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
-import React, { useEffect, useState } from 'react';
+import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Haptics from "expo-haptics";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
+import React, { useEffect, useState } from "react";
 import {
-	Alert, FlatList,
-	LayoutAnimation, Pressable, StyleSheet, View,
-} from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import AnimatedRing from '../components/AnimatedRing';
-import BackButton from '../components/backButtonComponent';
-import Timer from '../components/Counter';
-import InfoBar from '../components/InfoBar';
-import ListHeader from '../components/ListHeader';
+	Alert,
+	FlatList,
+	LayoutAnimation,
+	Pressable,
+	StyleSheet,
+	View,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import AnimatedRing from "../components/AnimatedRing";
+import BackButton from "../components/backButtonComponent";
+import Timer from "../components/Counter";
+import InfoBar from "../components/InfoBar";
+import ListHeader from "../components/ListHeader";
 import {
 	PresetContainerCondensed,
 	PresetContainerDetails,
-} from '../components/PresetContainerAux';
-import { PomodoroClass } from '../extras/classes/PomodoroCreator';
-import dateParser from '../extras/dateparser';
+} from "../components/PresetContainerAux";
+import { PomodoroClass } from "../extras/classes/PomodoroCreator";
+import dateParser from "../extras/dateparser";
 import {
-	exitCleanup, incrementNumOfPresets, resetTimer, setCycleData, setNewCycle, setTime,
+	exitCleanup,
+	incrementNumOfPresets,
+	resetTimer,
+	setCycleData,
+	setNewCycle,
+	setTime,
 	toggleTimer,
-} from '../redux/PomodoroSlice';
-// import { Tracker } from "../extras/TrackerObject";
+} from "../redux/PomodoroSlice";
 
 const Pomodoro = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
@@ -31,13 +39,13 @@ const Pomodoro = ({ navigation }) => {
 	const pomodoro = useSelector((state) => state.pomodoro);
 	const [pomodoroPresetsList, setPomodoroPresetsList] = useState([]);
 	const [isAod, setisAod] = useState(false);
-	// LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+	const tracker = useSelector((state) => state.tracker);
+	console.log(JSON.stringify(tracker.trackingData));
 
 	const animation = LayoutAnimation.create(
-		// 175,
 		185,
 		LayoutAnimation.Types.easeInEaseOut,
-		LayoutAnimation.Properties.scaleXY,
+		LayoutAnimation.Properties.scaleXY
 	);
 
 	const dispatch = useDispatch();
@@ -54,49 +62,42 @@ const Pomodoro = ({ navigation }) => {
 	const _INCREMENETPRESETNUMBER = (value) => {
 		dispatch(incrementNumOfPresets({ number: value }));
 	};
-	const _SETCYCLEDATA = (value) => {
-		dispatch(setCycleData({ array: value }));
+	const _SETCYCLEDATA = (value, name, id) => {
+		dispatch(setCycleData({ array: value, name: name, id: id }));
 	};
 	const _SETNEWCYCLE = () => {
 		dispatch(setNewCycle());
 	};
 
 	const _CLEANUP = () => {
-		console.log(JSON.stringify(pomodoroPresetsList));
 		try {
-			AsyncStorage.setItem('pomodoro', JSON.stringify(pomodoroPresetsList));
+			AsyncStorage.setItem("pomodoro", JSON.stringify(pomodoroPresetsList));
 			dispatch(exitCleanup());
 		} catch (error) {}
 	};
 	useEffect(
 		() =>
-			navigation ?
-				navigation.addListener('beforeRemove', (e) => {
-					e.preventDefault();
-					Alert.alert(
-						'Leave?',
-						'Leaving will result in loss of productivity and procrastination. Disappointment may follow. Do you wish to proceed?',
-						[
-							{ text: 'No', style: 'cancel', onPress: () => {} },
-							{
-								text: 'Yes',
-								style: 'destructive',
-								onPress: () => {
-									navigation.dispatch(e.data.action);
+			navigation
+				? navigation.addListener("beforeRemove", (e) => {
+						e.preventDefault();
+						Alert.alert(
+							"Leave?",
+							"Leaving will result in loss of productivity and procrastination. Disappointment may follow. Do you wish to proceed?",
+							[
+								{ text: "No", style: "cancel", onPress: () => {} },
+								{
+									text: "Yes",
+									style: "destructive",
+									onPress: () => {
+										navigation.dispatch(e.data.action);
+									},
 								},
-							},
-						],
-					);
-				  }) :
-				null,
-		[],
+							]
+						);
+				  })
+				: null,
+		[]
 	);
-	useEffect(() => {
-		return () => {
-			console.log('running cleanup');
-			_CLEANUP();
-		};
-	}, [pomodoroPresetsList]);
 	useEffect(() => {
 		if (pomodoro.isRunning && !pomodoro.isFinished) {
 			_SETNEWCYCLE();
@@ -107,15 +108,14 @@ const Pomodoro = ({ navigation }) => {
 		const getallObjects = async () => {
 			const newValues = [];
 			try {
-				AsyncStorage.getItem('pomodoro').then((value) => {
+				AsyncStorage.getItem("pomodoro").then((value) => {
 					try {
-						console.log(value);
 						JSON.parse(value).forEach((item) => {
 							newValues.unshift(item);
 						});
 						setPomodoroPresetsList(newValues);
-					} catch {
-						console.log('error in getting pomodoro');
+					} catch (e) {
+						console.log("error in getting pomodoro");
 					}
 				});
 			} catch (e) {
@@ -123,9 +123,10 @@ const Pomodoro = ({ navigation }) => {
 			}
 		};
 		getallObjects();
+		return () => {
+			_CLEANUP();
+		};
 	}, []);
-
-	// console.log(pomodoroPresetsList);
 
 	const renderItem = ({ item, index }) => {
 		const itemObject = item;
@@ -135,42 +136,44 @@ const Pomodoro = ({ navigation }) => {
 				colors={colors}
 				ParentHoldCallback={toggleDetails}
 				index={index}
-				touchEndCallback={(value) => {
+				touchEndCallback={(value, name, id) => {
 					LayoutAnimation.easeInEaseOut();
-					_SETCYCLEDATA(value);
+					if (pomodoro.cycleData.length == 0) {
+						_SETCYCLEDATA(value, name, id);
+					} else {
+						Alert.alert(
+							"Start Pomodoro?",
+							"This will clear the current pomodoro and won't be marked as a complete session. Do you wish to proceed?",
+							[
+								{ text: "No", style: "cancel", onPress: () => {} },
+								{
+									text: "Yes",
+									style: "destructive",
+									onPress: () => {
+										_SETCYCLEDATA(value, name, id);
+									},
+								},
+							]
+						);
+					}
 				}}
 			/>
 		);
 	};
-	const clearAll = async () => {
-		try {
-			await AsyncStorage.clear();
-		} catch (e) {
-			// clear error
-		}
-
-		console.log('Done.');
-	};
-
-	// nuke everything
-	// clearAll();
-
-	// console.log(pomodoro);
 
 	const createPomodoro = () => {
 		const numOfSessions = 3;
 		const breakTime = 10;
 		const sessionTime = 25;
-		const title = 'Pomodoro';
+		const title = "Pomodoro";
 		const pomodoro = new PomodoroClass(
 			title,
 			numOfSessions,
 			sessionTime,
-			breakTime,
+			breakTime
 		);
 		const newArray = [pomodoro].concat(pomodoroPresetsList);
 		setPomodoroPresetsList(newArray);
-		console.log('created and saved');
 		_INCREMENETPRESETNUMBER(1);
 	};
 
@@ -186,13 +189,12 @@ const Pomodoro = ({ navigation }) => {
 
 	const { minutes, seconds } = dateParser(pomodoro.time);
 
-	// console.log(pomodoro.cycleData.length);
 	return (
 		<View
 			style={[
 				styles.container,
 				{
-					backgroundColor: !isAod ? colors.backgroundColor : '#000000',
+					backgroundColor: !isAod ? colors.backgroundColor : "#000000",
 				},
 			]}
 		>
@@ -200,7 +202,7 @@ const Pomodoro = ({ navigation }) => {
 			<View
 				style={[
 					styles.infobarHolder,
-					{ position: 'absolute', right: 10, top: 40 },
+					{ position: "absolute", right: 10, top: 40 },
 				]}
 			>
 				{pomodoro.isRunning ? (
@@ -213,13 +215,13 @@ const Pomodoro = ({ navigation }) => {
 						style={[
 							styles.buttonStyles,
 							{ zIndex: 1000 },
-							{ backgroundColor: isAod ? 'black' : 'white' },
+							{ backgroundColor: isAod ? "black" : "white" },
 						]}
 					>
 						<MaterialIcons
 							name="settings-display"
 							size={30}
-							color={!isAod ? 'black' : 'white'}
+							color={!isAod ? "black" : "white"}
 						/>
 					</Pressable>
 				) : null}
@@ -229,11 +231,11 @@ const Pomodoro = ({ navigation }) => {
 					flex={9}
 					animated={pomodoro.isRunning ? true : false}
 					ringColor={
-						!pomodoro.isFinished ?
-							pomodoro.isRunning ?
-								colors.accentColor :
-								colors.backgroundColor :
-							'orange'
+						!pomodoro.isFinished
+							? pomodoro.isRunning
+								? colors.accentColor
+								: colors.backgroundColor
+							: "orange"
 					}
 				>
 					<Timer
@@ -271,7 +273,7 @@ const Pomodoro = ({ navigation }) => {
 						<InfoBar
 							customstyles={[styles.infobar]}
 							info={
-								Math.round(pomodoro.cycleData.length / 2) + ' sessions left'
+								Math.round(pomodoro.cycleData.length / 2) + " sessions left"
 							}
 						></InfoBar>
 					) : null}
@@ -321,7 +323,7 @@ const Pomodoro = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: 'center',
+		justifyContent: "center",
 	},
 
 	listContainer: {
@@ -332,15 +334,15 @@ const styles = StyleSheet.create({
 	},
 	infobarHolder: {
 		zIndex: 100,
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
+		flexDirection: "row",
+		justifyContent: "flex-end",
 	},
 	buttonStyles: {
-		backgroundColor: 'white',
+		backgroundColor: "white",
 		margin: 5,
 		padding: 10,
 		borderRadius: 25,
-		justifyContent: 'center',
+		justifyContent: "center",
 	},
 });
 

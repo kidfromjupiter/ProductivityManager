@@ -66,7 +66,6 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 				<Pressable
 					style={[
 						styles.outerContainer,
-						// eslint-disable-next-line react-native/no-inline-styles
 						{ backgroundColor: item.completed ? "#6B6B6B" : colors.levelOne },
 					]}
 				>

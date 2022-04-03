@@ -1,14 +1,20 @@
-import { NavigationContainer } from "@react-navigation/native";
+import {
+	NavigationContainer,
+	useNavigationContainerRef,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AppLoading from "expo-app-loading";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
 import { LogBox, NativeModules } from "react-native";
 import { GoogleSignin } from "react-native-google-signin";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import Loading from "./src/components/LottieLoading";
 import { TopLevelContainer } from "./src/components/TopLevelContainer";
+import { Tracker } from "./src/extras/TrackerObject";
 import { persistor, store } from "./src/redux/store";
+import { logData } from "./src/redux/TrackerSlice";
+import Analytics from "./src/screens/Analytics";
 import ColorPickerScreen from "./src/screens/ColorPickerScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import Pomodoro from "./src/screens/PomodoroScreen";
@@ -39,6 +45,7 @@ const animation = "fade";
 
 function StackNav() {
 	const dispatch = useDispatch();
+
 	return (
 		<Stack.Navigator
 			initialRouteName="Home"
@@ -56,13 +63,13 @@ function StackNav() {
 				component={HomeScreen}
 				options={{
 					title: "Productivity Manager",
-					// head
 				}}
 			/>
 			<Stack.Screen name="Timer" component={TimerScreen} />
 			<Stack.Screen name="ColorPicker" component={ColorPickerScreen} />
 			<Stack.Screen name="Pomodoro" component={Pomodoro} />
 			<Stack.Screen name="Reminders" component={ReminderScreen} />
+			<Stack.Screen name="Analytics" component={Analytics} />
 			<Stack.Screen
 				name="CreateEvent"
 				component={CreateEvent}
@@ -75,11 +82,29 @@ function StackNav() {
 }
 
 export default function App() {
+	const navigationRef = useNavigationContainerRef();
+	const routeNameRef = React.useRef();
 	return (
 		<Provider store={store}>
-			<PersistGate loading={<AppLoading />} persistor={persistor}>
+			<PersistGate loading={<Loading />} persistor={persistor}>
 				<TopLevelContainer>
-					<NavigationContainer>
+					<NavigationContainer
+						ref={navigationRef}
+						onReady={() => {
+							routeNameRef.current = navigationRef.getCurrentRoute().name;
+						}}
+						onStateChange={() => {
+							const previousRouteName = routeNameRef.current;
+							const currentRouteName = navigationRef.getCurrentRoute().name;
+
+							if (previousRouteName !== currentRouteName) {
+								store.dispatch(
+									logData(new Tracker({ screen: currentRouteName, type: "6" }))
+								);
+							}
+							routeNameRef.current = currentRouteName;
+						}}
+					>
 						<StackNav />
 					</NavigationContainer>
 				</TopLevelContainer>

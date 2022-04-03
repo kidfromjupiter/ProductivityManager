@@ -1,22 +1,34 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState } from "react";
 import {
-	Alert, Button, Dimensions, Image, ScrollView,
-	StyleSheet, Text, TextInput, View,
-} from 'react-native';
-import { GoogleSignin } from 'react-native-google-signin';
-import Modal from 'react-native-modal';
-import { useDispatch, useSelector } from 'react-redux';
-import ListHeader from '../components/ListHeader';
-import SettingsListItem from '../components/Settings/SettingsListItem';
-import SuccessAlert from '../components/SuccessAnimation';
-import { createUser, grabData, updateUserData } from '../extras/BACKEND';
-import { deleteCalendar } from '../extras/GAuth';
-import { changeColorScheme } from '../redux/ColorSlice';
+	Alert,
+	Button,
+	Dimensions,
+	Image,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
+} from "react-native";
+import { GoogleSignin } from "react-native-google-signin";
+import Modal from "react-native-modal";
+import { useDispatch, useSelector } from "react-redux";
+import ListHeader from "../components/ListHeader";
+import SettingsListItem from "../components/Settings/SettingsListItem";
+import SuccessAlert from "../components/SuccessAnimation";
+import { createUser, grabData, updateUserData } from "../extras/BACKEND";
+import { deleteCalendar } from "../extras/GAuth";
+import { changeColorScheme } from "../redux/ColorSlice";
 import {
-	resetGAuth, setCalID, setGAuthMeta, setIdToken, setIsSignedIn, setShouldSync,
-} from '../redux/GAuthSlice';
-import { batchAdd, deleteAllReminders } from '../redux/ReminderSlice';
+	resetGAuth,
+	setCalID,
+	setGAuthMeta,
+	setIdToken,
+	setIsSignedIn,
+	setShouldSync,
+} from "../redux/GAuthSlice";
+import { batchAdd, deleteAllReminders } from "../redux/ReminderSlice";
 
 function SettingsScreen({ navigation }) {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
@@ -48,10 +60,10 @@ function SettingsScreen({ navigation }) {
 				textColor: data.colors.textColor,
 				textColorTwo: data.colors.textColorTwo,
 				accentColor: data.colors.accentColor,
-			}),
+			})
 		);
-		AsyncStorage.setItem('pomodoro', data.pomodoros).then(() =>
-			setModalVisible(true),
+		AsyncStorage.setItem("pomodoro", data.pomodoros).then(() =>
+			setModalVisible(true)
 		);
 	}
 
@@ -61,48 +73,48 @@ function SettingsScreen({ navigation }) {
 		const minutes = Math.round(seconds / 60);
 		const hours = Math.round(minutes / 60);
 		const days = Math.round(hours / 24);
-		let message = '';
+		let message = "";
 
 		if (seconds > 1) {
 			message =
-				'The last backup was created ' +
+				"The last backup was created " +
 				seconds +
-				' seconds ago. Do you want to restore? Restoring will clear all present data in your app and replace it with the backup';
+				" seconds ago. Do you want to restore? Restoring will clear all present data in your app and replace it with the backup";
 		}
 		if (minutes > 0) {
 			message =
-				'The last backup was created ' +
+				"The last backup was created " +
 				minutes +
-				' minutes ago. Do you want to restore? Restoring will clear all present data in your app and replace it with the backup';
+				" minutes ago. Do you want to restore? Restoring will clear all present data in your app and replace it with the backup";
 		}
 		if (hours > 0) {
 			message =
-				'The last backup was created ' +
+				"The last backup was created " +
 				hours +
-				' hours ago. Do you want to restore? Restoring will clear all present data in your app and replace it with the backup';
+				" hours ago. Do you want to restore? Restoring will clear all present data in your app and replace it with the backup";
 		}
 		if (days > 0) {
 			message =
-				'The last backup was created ' +
+				"The last backup was created " +
 				days +
-				' days ago. Do you want to restore? Restoring will clear all present data in your app and replace it with the backup';
+				" days ago. Do you want to restore? Restoring will clear all present data in your app and replace it with the backup";
 		}
 
-		Alert.alert('Restore?', message, [
+		Alert.alert("Restore?", message, [
 			{
-				text: 'No',
-				style: 'destructive',
+				text: "No",
+				style: "destructive",
 			},
 			{
-				text: 'Yes',
+				text: "Yes",
 				onPress: () => saveData(data),
-				style: 'default',
+				style: "default",
 			},
 		]);
 	}
 
 	function sendData(idToken) {
-		AsyncStorage.getItem('pomodoro').then((f) => {
+		AsyncStorage.getItem("pomodoro").then((f) => {
 			console.log(f);
 			updateUserData(idToken, {
 				calID: calID,
@@ -124,17 +136,17 @@ function SettingsScreen({ navigation }) {
 		});
 	}
 	function dataWipe() {
-		AsyncStorage.removeItem('pomodoro').then(() => {
+		AsyncStorage.removeItem("pomodoro").then(() => {
 			dispatch(resetGAuth());
 		});
 	}
 
-	console.log(calID);
+	// console.log(calID);
 	return (
-		<View style={{ flex: 1, backgroundColor: 'black' }}>
+		<View style={{ flex: 1, backgroundColor: "black" }}>
 			<ScrollView>
 				<View style={styles.top}>
-					<Text style={{ color: 'white', fontSize: 40 }}>Settings</Text>
+					<Text style={{ color: "white", fontSize: 40 }}>Settings</Text>
 				</View>
 				{signedIn ? (
 					<View style={styles.accountInfo}>
@@ -143,7 +155,7 @@ function SettingsScreen({ navigation }) {
 								style={[
 									styles.accountText,
 									styles.name,
-									{ maxWidth: Dimensions.get('window').width - 75 },
+									{ maxWidth: Dimensions.get("window").width - 75 },
 								]}
 								numberOfLines={1}
 								ellipsizeMode="tail"
@@ -165,7 +177,7 @@ function SettingsScreen({ navigation }) {
 						onPressCallback={() => {}}
 					/>
 					<SettingsListItem
-						callback={() => navigation.navigate('ColorPicker')}
+						callback={() => navigation.navigate("ColorPicker")}
 						text="Colors"
 						subText="Change the look and feel"
 					/>
@@ -203,8 +215,8 @@ function SettingsScreen({ navigation }) {
 					/>
 					<SettingsListItem
 						callback={() => {
-							AsyncStorage.removeItem('pomodoro').then(() =>
-								setModalVisible(true),
+							AsyncStorage.removeItem("pomodoro").then(() =>
+								setModalVisible(true)
 							);
 						}}
 						text="Nuke Pomodoros"
@@ -243,7 +255,7 @@ function SettingsScreen({ navigation }) {
 												name: name,
 												profile_pic: profile_pic,
 												email: email,
-											}),
+											})
 										);
 										dispatch(setCalID({ calendarID: calId }));
 										dispatch(setShouldSync({ shouldSync: true }));
@@ -276,6 +288,15 @@ function SettingsScreen({ navigation }) {
 							/>
 							<SettingsListItem
 								callback={() => {
+									GoogleSignin.signInSilently().then((e) => {
+										console.log(e.idToken);
+									});
+								}}
+								text="List Idtoken"
+								// subText="Manual Backup"
+							/>
+							<SettingsListItem
+								callback={() => {
 									GoogleSignin.signInSilently()
 										.then((e) => {
 											createUser(e.idToken).then(() => {
@@ -288,14 +309,14 @@ function SettingsScreen({ navigation }) {
 										})
 										.catch(() =>
 											Alert.alert(
-												'Sign in Required',
-												'Google sign in required to authenticate to GetItDone servers',
-											),
+												"Sign in Required",
+												"Google sign in required to authenticate to GetItDone servers"
+											)
 										);
 								}}
 								text="Sync"
 								subText={
-									shouldSync ? 'Sync is turned on' : 'Sync is turned off'
+									shouldSync ? "Sync is turned on" : "Sync is turned off"
 								}
 							/>
 							<SettingsListItem
@@ -322,7 +343,7 @@ function SettingsScreen({ navigation }) {
 					isVisible={calIdVisible}
 					useNativeDriver
 					useNativeDriverForBackdrop
-					style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
 				>
 					<View style={styles.modal}>
 						<Text style={styles.text}>Type in a custom google calendar ID</Text>
@@ -352,39 +373,39 @@ function SettingsScreen({ navigation }) {
 const styles = StyleSheet.create({
 	listheader: {
 		padding: 10,
-		backgroundColor: '#262626',
+		backgroundColor: "#262626",
 		marginHorizontal: 3,
 		marginTop: 5,
 		borderRadius: 10,
 	},
 	modal: {
-		backgroundColor: '#2B3748',
+		backgroundColor: "#2B3748",
 		height: 250,
 		width: 250,
 		borderRadius: 7,
-		justifyContent: 'space-evenly',
+		justifyContent: "space-evenly",
 		padding: 10,
 	},
 	textInput: {
-		backgroundColor: '#445168',
+		backgroundColor: "#445168",
 		padding: 10,
 		borderRadius: 5,
-		color: 'white',
+		color: "white",
 	},
 	text: {
 		fontSize: 20,
-		color: 'white',
+		color: "white",
 	},
 	top: {
 		minHeight: 250,
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 	},
 	accountInfo: {
 		minHeight: 100,
-		justifyContent: 'space-around',
-		flexDirection: 'row',
-		alignItems: 'center',
+		justifyContent: "space-around",
+		flexDirection: "row",
+		alignItems: "center",
 	},
 	profile_pic: {
 		width: 60,
@@ -393,7 +414,7 @@ const styles = StyleSheet.create({
 	},
 	accountText: {
 		padding: 2,
-		color: 'white',
+		color: "white",
 		fontSize: 15,
 	},
 	name: {

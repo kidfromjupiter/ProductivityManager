@@ -1,6 +1,6 @@
-import { AntDesign, Ionicons } from '@expo/vector-icons';
-import Slider from '@react-native-community/slider';
-import React, { useState } from 'react';
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import Slider from "@react-native-community/slider";
+import React, { useState } from "react";
 import {
 	Dimensions,
 	StyleSheet,
@@ -8,12 +8,12 @@ import {
 	TextInput,
 	TouchableOpacity,
 	View,
-} from 'react-native';
-import { useSelector } from 'react-redux';
-import { PomodoroClass } from '../extras/classes/PomodoroCreator';
-import sessionArrayGen from '../extras/sessionArrayGen';
-import PomodoroPresetContainer from './PomodoroPresetContainer';
-import Square from './square';
+} from "react-native";
+import { useSelector } from "react-redux";
+import { PomodoroClass } from "../extras/classes/PomodoroCreator";
+import sessionArrayGen from "../extras/sessionArrayGen";
+import PomodoroPresetContainer from "./PomodoroPresetContainer";
+import Square from "./square";
 
 const PresetContainerDetails = ({
 	details,
@@ -25,7 +25,7 @@ const PresetContainerDetails = ({
 	const [detailsObjectSD, setDetailsObjectSD] = useState(details.sessionTime);
 	const [detailsObjectBD, setDetailsObjectBD] = useState(details.breakTime);
 	const [detailsObjectNOS, setDetailsObjectNOS] = useState(
-		details.numOfSessions,
+		details.numOfSessions
 	);
 	const [detailsObjectT, setDetailsObjectT] = useState(details.title);
 
@@ -35,7 +35,7 @@ const PresetContainerDetails = ({
 			detailsObjectNOS,
 			detailsObjectSD,
 			detailsObjectBD,
-			details.id,
+			details.id
 		);
 		const objList = [];
 		pomodoroList.forEach((element) => {
@@ -47,7 +47,7 @@ const PresetContainerDetails = ({
 		});
 		setPomodoroPresetsList(objList);
 
-		console.log('Done.');
+		console.log("Done.");
 	};
 	const _deletePreset = () => {
 		const objList = [];
@@ -110,15 +110,15 @@ const PresetContainerDetails = ({
 					suffix="min"
 				/>
 			</View>
-			<View style={{ flex: 1, flexDirection: 'row' }}>
+			<View style={{ flex: 1, flexDirection: "row" }}>
 				<TouchableOpacity
 					onPress={() => {
 						showDetailsSetter();
 					}}
 					style={{
 						flex: 1,
-						justifyContent: 'center',
-						alignItems: 'center',
+						justifyContent: "center",
+						alignItems: "center",
 						padding: 10,
 					}}
 				>
@@ -131,8 +131,8 @@ const PresetContainerDetails = ({
 					}}
 					style={{
 						flex: 1,
-						justifyContent: 'center',
-						alignItems: 'center',
+						justifyContent: "center",
+						alignItems: "center",
 						padding: 10,
 					}}
 				>
@@ -154,7 +154,7 @@ const SliderObject = ({ max, min, parentCallback, value, text, suffix }) => {
 					style={[
 						styles.text,
 						{
-							backgroundColor: isSliding ? 'white' : 'transparent',
+							backgroundColor: isSliding ? "white" : "transparent",
 							paddingHorizontal: 5,
 							borderRadius: 5,
 							transform: [{ scale: isSliding ? 1.25 : 1 }],
@@ -162,7 +162,7 @@ const SliderObject = ({ max, min, parentCallback, value, text, suffix }) => {
 						},
 					]}
 				>
-					{value} {suffix ? suffix : ''}
+					{value} {suffix ? suffix : ""}
 				</Text>
 			</View>
 			<SliderHolder
@@ -243,8 +243,10 @@ const PresetContainerCondensed = ({
 							sessionArrayGen(
 								itemObject.sessionTime,
 								itemObject.breakTime,
-								itemObject.numOfSessions,
+								itemObject.numOfSessions
 							),
+							itemObject.title,
+							itemObject.id
 						);
 					}}
 				/>
@@ -256,63 +258,63 @@ const PresetContainerCondensed = ({
 const styles = StyleSheet.create({
 	list: {
 		flex: 1,
-		flexDirection: 'row',
-		width: Dimensions.get('window').width,
+		flexDirection: "row",
+		width: Dimensions.get("window").width,
 	},
 	listItem: {
 		borderBottomWidth: 0,
 		borderRadius: 10,
 		width: 200,
 		flex: 1,
-		justifyContent: 'center',
-		overflow: 'hidden',
+		justifyContent: "center",
+		overflow: "hidden",
 	},
 	container: {
 		flex: 1,
-		position: 'absolute',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: 'white',
+		position: "absolute",
+		flexDirection: "column",
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "white",
 		bottom: 20,
 		left: 5,
 		right: 5,
 		borderRadius: 15,
-		overflow: 'hidden',
+		overflow: "hidden",
 	},
 	rows: {
 		flex: 1,
-		justifyContent: 'center',
-		width: Dimensions.get('window').width - 20,
+		justifyContent: "center",
+		width: Dimensions.get("window").width - 20,
 		paddingHorizontal: 10,
 	},
 	text: {
 		fontSize: 16,
-		fontWeight: 'bold',
+		fontWeight: "bold",
 	},
 	headerContainer: {
 		padding: 8,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
 	},
 	textHolder: {
 		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
+		flexDirection: "row",
+		justifyContent: "space-between",
 	},
 	headerText: {
-		borderBottomColor: 'grey',
+		borderBottomColor: "grey",
 		borderBottomWidth: 2,
 		padding: 10,
 		fontSize: 25,
 	},
 	iconStyle: {
 		borderRadius: 7,
-		backgroundColor: '#E71F1F',
+		backgroundColor: "#E71F1F",
 		padding: 3,
-		textAlign: 'center',
-		textAlignVertical: 'center',
+		textAlign: "center",
+		textAlignVertical: "center",
 	},
 });
 

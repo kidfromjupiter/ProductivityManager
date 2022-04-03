@@ -10,6 +10,8 @@ export const PomodoroSlice = createSlice({
 		isFinished: false,
 		numOfPresets: 0,
 		cycleData: [],
+		pomodoroName: "",
+		pomodoroID: null,
 	},
 	reducers: {
 		setTime: (state, action) => {
@@ -42,6 +44,8 @@ export const PomodoroSlice = createSlice({
 		setCycleData: (state, action) => {
 			const localState = JSON.parse(JSON.stringify(state));
 			localState.cycleData = action.payload.array;
+			localState.pomodoroName = action.payload.name;
+			localState.pomodoroID = action.payload.id;
 			localState.isFinished = false;
 			const time = localState.cycleData.shift();
 			localState.time = time * 60;

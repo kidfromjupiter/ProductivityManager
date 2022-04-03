@@ -1,8 +1,8 @@
-import { AntDesign } from '@expo/vector-icons';
-import React, { useEffect } from 'react';
-import { Animated, FlatList, StyleSheet, Text, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { AntDesign } from "@expo/vector-icons";
+import React, { useEffect } from "react";
+import { Animated, FlatList, StyleSheet, Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Swipeable from "react-native-gesture-handler/Swipeable";
 import {
 	default as Anim,
 	useAnimatedStyle,
@@ -10,9 +10,9 @@ import {
 	withRepeat,
 	withSequence,
 	withTiming,
-} from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
-import { deleteEvent } from '../../extras/GAuth';
+} from "react-native-reanimated";
+import { useSelector } from "react-redux";
+import { deleteEvent } from "../../extras/GAuth";
 
 const Tags = ({ name }) => {
 	return <Text style={styles.tag}>{name}</Text>;
@@ -21,25 +21,35 @@ const Tags = ({ name }) => {
 const LeftActions = (progress, dragX) => {
 	const trans = dragX.interpolate({
 		inputRange: [0, 50, 100, 101],
-		outputRange: [-40, 0, 0, 1],
-		extrapolate: 'clamp',
+		outputRange: [-40, 5, 5, 6],
+		extrapolate: "clamp",
+	});
+	const opacity = dragX.interpolate({
+		outputRange: [0, 1],
+		inputRange: [0, 75],
+		extrapolate: "clamp",
 	});
 
 	return (
-		<View
-			style={{ flex: 1, backgroundColor: '#FF002D', justifyContent: 'center' }}
+		<Animated.View
+			style={{
+				flex: 1,
+				backgroundColor: "#FF002D",
+				justifyContent: "center",
+				opacity: opacity,
+			}}
 		>
 			<Animated.Text
 				style={{
-					color: 'white',
+					color: "white",
 					paddingHorizontal: 10,
-					fontWeight: '600',
+					fontWeight: "600",
 					transform: [{ translateX: trans }],
 				}}
 			>
 				<AntDesign name="delete" size={24} color="white" />
 			</Animated.Text>
-		</View>
+		</Animated.View>
 	);
 };
 
@@ -71,22 +81,22 @@ const SpacedRepListItem = ({
 
 	useEffect(() => {
 		if (daysTill == 0) {
-			onPressCallback ?
-				onPressCallback({
-					today: true,
-					title: title,
-					id: id,
-					accessToken: accessToken,
-					calendarId: calendarId,
-					tags: tags,
-					reps: reps,
-					daysTill: daysTill,
-					totalreps: totalreps,
-					spacedRepId: spacedRepId,
-					percentFinished: percentFinished,
-					repsRemaining: repsRemaining,
-				  }) :
-				null;
+			onPressCallback
+				? onPressCallback({
+						today: true,
+						title: title,
+						id: id,
+						accessToken: accessToken,
+						calendarId: calendarId,
+						tags: tags,
+						reps: reps,
+						daysTill: daysTill,
+						totalreps: totalreps,
+						spacedRepId: spacedRepId,
+						percentFinished: percentFinished,
+						repsRemaining: repsRemaining,
+				  })
+				: null;
 		} else {
 			onPressCallback ? onPressCallback(null) : null;
 		}
@@ -97,11 +107,11 @@ const SpacedRepListItem = ({
 			<Swipeable
 				renderLeftActions={slideDelete ? LeftActions : null}
 				friction={2.5}
-				leftThreshold={50}
+				leftThreshold={75}
 				onSwipeableOpen={() => {
 					updateObjectArray(index);
 					deleteEvent(accessToken, id, calID).catch((e) =>
-						console.log(e.response),
+						console.log(e.response)
 					);
 				}}
 			>
@@ -111,24 +121,24 @@ const SpacedRepListItem = ({
 						rotation.value = withSequence(
 							withTiming(-1, { duration: 50 }),
 							withRepeat(withTiming(0.7, { duration: 100 }), 4, true),
-							withTiming(0, { duration: 50 }),
+							withTiming(0, { duration: 50 })
 						);
-						onPressCallback ?
-							onPressCallback({
-								today: false,
-								title: title,
-								id: id,
-								accessToken: accessToken,
-								calendarId: calendarId,
-								tags: tags,
-								reps: reps,
-								daysTill: daysTill,
-								totalreps: totalreps,
-								spacedRepId: spacedRepId,
-								percentFinished: percentFinished,
-								repsRemaining: repsRemaining,
-							  }) :
-							null;
+						onPressCallback
+							? onPressCallback({
+									today: false,
+									title: title,
+									id: id,
+									accessToken: accessToken,
+									calendarId: calendarId,
+									tags: tags,
+									reps: reps,
+									daysTill: daysTill,
+									totalreps: totalreps,
+									spacedRepId: spacedRepId,
+									percentFinished: percentFinished,
+									repsRemaining: repsRemaining,
+							  })
+							: null;
 					}}
 				>
 					<View style={styles.metaContainer}>
@@ -179,8 +189,8 @@ const SpacedRepListItem = ({
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: '#2B3748',
-		flexDirection: 'row',
+		backgroundColor: "#2B3748",
+		flexDirection: "row",
 		height: 85,
 		borderRadius: 8,
 		// marginTop: 10,
@@ -188,46 +198,46 @@ const styles = StyleSheet.create({
 	},
 	leftAction: {
 		flex: 1,
-		backgroundColor: '#497AFC',
-		justifyContent: 'center',
+		backgroundColor: "#497AFC",
+		justifyContent: "center",
 	},
 	metaContainer: {
 		flex: 5,
-		justifyContent: 'space-evenly',
+		justifyContent: "space-evenly",
 		paddingHorizontal: 20,
 	},
 	titleContainer: {},
-	tagContainer: { flexDirection: 'row', paddingVertical: 5 },
+	tagContainer: { flexDirection: "row", paddingVertical: 5 },
 	counterHolder: {
 		flex: 3,
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 	},
 	counter: {
 		paddingHorizontal: 20,
-		backgroundColor: '#00D34B',
+		backgroundColor: "#00D34B",
 		paddingVertical: 10,
 		marginRight: 10,
 		borderRadius: 10,
 	},
 	tag: {
-		color: '#D7D7D7',
+		color: "#D7D7D7",
 		marginHorizontal: 5,
-		backgroundColor: '#445168',
+		backgroundColor: "#445168",
 		paddingHorizontal: 10,
 		borderRadius: 5,
-		textAlignVertical: 'center',
-		textAlign: 'center',
+		textAlignVertical: "center",
+		textAlign: "center",
 	},
 	counterText: {
 		fontSize: 15,
-		fontWeight: 'bold',
-		color: 'black',
+		fontWeight: "bold",
+		color: "black",
 	},
 	titleText: {
 		fontSize: 22,
-		fontWeight: 'bold',
-		color: '#D7D7D7',
+		fontWeight: "bold",
+		color: "#D7D7D7",
 		// textAlign: "center",
 	},
 });
