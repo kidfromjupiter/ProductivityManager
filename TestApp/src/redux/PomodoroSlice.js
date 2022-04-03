@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const PomodoroSlice = createSlice({
-	name: 'pomodoro',
+	name: "pomodoro",
 	initialState: {
 		time: 0,
 		isRunning: false,
@@ -37,14 +37,12 @@ export const PomodoroSlice = createSlice({
 		incrementNumOfPresets: (state, action) => {
 			const localState = JSON.parse(JSON.stringify(state));
 			localState.numOfPresets = localState.numOfPresets + action.payload.number;
-			console.log('ran incrementNumOfPresets');
 			return localState;
 		},
 		setCycleData: (state, action) => {
 			const localState = JSON.parse(JSON.stringify(state));
 			localState.cycleData = action.payload.array;
 			localState.isFinished = false;
-			console.log('ran setCycleData slice');
 			const time = localState.cycleData.shift();
 			localState.time = time * 60;
 			return localState;
@@ -62,7 +60,6 @@ export const PomodoroSlice = createSlice({
 			localState.isRunning = false;
 			localState.isSession = !localState.isSession;
 			localState.time = time * 60;
-			console.log(localState);
 			return localState;
 		},
 		exitCleanup: (state) => {
