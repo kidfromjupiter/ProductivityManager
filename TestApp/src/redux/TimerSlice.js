@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const TimerSlice = createSlice({
-	name: 'timer',
+	name: "timer",
 	initialState: {
 		time: 0,
 		isRunning: false,
@@ -10,6 +10,7 @@ export const TimerSlice = createSlice({
 		isStopped: false,
 		isStarted: false,
 		isFinished: false,
+		initialValue: 0,
 	},
 	reducers: {
 		startTimer: (state) => {
@@ -33,11 +34,20 @@ export const TimerSlice = createSlice({
 			state.time = 0;
 			state.isRunning = false;
 			state.isFinished = false;
-			console.log('timerReset to zero');
+		},
+		setInitialValue: (state, action) => {
+			let localState = JSON.parse(JSON.stringify(state));
+			localState.initialValue = action.payload.initialValue;
+			return localState;
 		},
 	},
 });
 
-export const { startTimer, timerFinished, setTimer, resetTimer } =
-	TimerSlice.actions;
+export const {
+	startTimer,
+	timerFinished,
+	setTimer,
+	resetTimer,
+	setInitialValue,
+} = TimerSlice.actions;
 export default TimerSlice.reducer;

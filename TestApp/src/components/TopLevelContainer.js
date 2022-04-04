@@ -88,7 +88,7 @@ const TopLevelContainer = (props) => {
 		<View
 			style={{
 				flex: 1,
-				paddingTop: 25,
+				// paddingTop: 25,
 				backgroundColor: colors.backgroundColor,
 			}}
 		>

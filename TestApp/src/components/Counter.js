@@ -12,8 +12,12 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { default as BackgroundTimer } from "react-native-background-timer-android";
+import { logData } from "../redux/TrackerSlice";
+import { Tracker } from "../extras/TrackerObject";
+import { STATUS_CODES } from "../extras/TrackerObject";
+import TimesUp from "./TimesUp";
 
-const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
+const Presets = ({ colors, resetTimer, setTimer, initialTime }) => {
 	const buttonColor = {
 		backgroundColor: colors.accentColor,
 	};
@@ -23,6 +27,7 @@ const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 	const textColor = {
 		color: "#D7D7D7",
 	};
+
 	return (
 		<>
 			<View style={styles.buttonHolder}>
@@ -31,6 +36,7 @@ const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 					onPress={() => {
 						resetTimer(0);
 						setTimer({ time: 1 * 60 });
+						initialTime(1 * 60);
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>1</Text>
@@ -40,6 +46,7 @@ const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 					onPress={() => {
 						resetTimer(0);
 						setTimer({ time: 2 * 60 });
+						initialTime(2 * 60);
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>2</Text>
@@ -49,6 +56,7 @@ const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 					onPress={() => {
 						resetTimer(0);
 						setTimer({ time: 5 * 60 });
+						initialTime(5 * 60);
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>5</Text>
@@ -58,6 +66,7 @@ const Presets = ({ colors, resetTimer, dispatch, setTimer }) => {
 					onPress={() => {
 						resetTimer(0);
 						setTimer({ time: 10 * 60 });
+						initialTime(10 * 60);
 					}}
 				>
 					<Text style={[styles.textStyles, buttonTextColor]}>10</Text>
@@ -78,15 +87,28 @@ const Timer = ({
 	timer,
 	setTimer,
 	layoutanimation,
+	timerEndCallback,
 }) => {
 	const colors = useSelector((state) => state.colors);
-	const [sound, setSound] = useState();
-	// console.log(timer);
+	const [SOUND, setSOUND] = useState(new Audio.Sound());
+	const [playing, setPlaying] = useState(false);
+	const [modalVisible, setModalVisible] = useState(false);
+
+	const dispatch = useDispatch();
+
+	Audio.setIsEnabledAsync(true);
+
+	Audio.setAudioModeAsync({
+		playsInSilentModeIOS: true,
+		shouldDuckAndroid: true,
+		staysActiveInBackground: true,
+	});
 
 	useEffect(() => {
 		const soundTimeout = BackgroundTimer.setTimeout(() => {
 			if (timer.isRunning) {
 				playSound();
+				// setBackgroundTimerSet(true);
 			}
 		}, timer.time * 1000);
 		if (timer && timer.isRunning && timer.time !== 0) {
@@ -94,7 +116,7 @@ const Timer = ({
 				let newTime = timer.time - 1;
 				if (newTime == 0) {
 					setTimer({ time: newTime });
-					// playSound();
+					setModalVisible(true);
 				}
 				setTimer({ time: newTime });
 			}, 1000);
@@ -104,42 +126,38 @@ const Timer = ({
 				BackgroundTimer.clearInterval(soundTimeout);
 			};
 		}
-	});
+	}, [timer]);
 
 	async function playSound() {
-		Audio.setIsEnabledAsync(true);
-
-		Audio.setAudioModeAsync({
-			playsInSilentModeIOS: true,
-			shouldDuckAndroid: true,
-			staysActiveInBackground: true,
-		});
-
-		const { sound } = await Audio.Sound.createAsync(
-			require("../../assets/Phobos.mp3")
-		);
-		sound.setOnPlaybackStatusUpdate(({ didJustFinish }) => {
-			if (didJustFinish == true) {
-				sound.unloadAsync();
+		SOUND.getStatusAsync().then((e) => {
+			if (!e.isPlaying) {
+				SOUND.loadAsync(require("../../assets/Phobos.mp3")).then(() => {
+					SOUND.setIsLoopingAsync(true);
+					SOUND.playAsync();
+				});
 			}
 		});
-
-		setSound(sound);
-
-		console.log("Playing Sound");
-
-		await sound.playAsync();
 	}
 	useEffect(() => {
 		return () => {
-			sound
+			SOUND
 				? () => {
 						console.log("Unloading Sound");
-						sound.unloadAsync();
+						SOUND.unloadAsync();
+						setPlaying(false);
+						// setBackgroundTimerSet(false);
 				  }
 				: undefined;
 		};
-	}, [sound]);
+	}, [SOUND, playing]);
+
+	useEffect(() => {
+		if (modalVisible == false && SOUND) {
+			console.log("stopping and unloading Sound");
+			SOUND.unloadAsync();
+			setPlaying(false);
+		}
+	}, [modalVisible, SOUND]);
 
 	return (
 		<Pressable
@@ -155,7 +173,7 @@ const Timer = ({
 				LayoutAnimation.configureNext(layoutanimation);
 				ResetTimer();
 			}}
-			// android_ripple={{ color: "grey", borderless: true }}
+			android_ripple={{ color: "grey", borderless: true }}
 			disabled={isDisabled || timer.time === 0}
 		>
 			<View style={{ flex: 8, justifyContent: "center" }}>
@@ -180,9 +198,21 @@ const Timer = ({
 					</Text>
 				</View>
 			</View>
-			{context == "timer" ? (
-				<Presets colors={colors} resetTimer={ResetTimer} setTimer={setTimer} />
-			) : null}
+			<TimesUp
+				isVisible={modalVisible}
+				setIsVisible={() => {
+					setModalVisible(false);
+					timerEndCallback ? timerEndCallback() : null;
+				}}
+			/>
+			{/* {context == "timer" ? (
+				<Presets
+					colors={colors}
+					resetTimer={ResetTimer}
+					setTimer={setTimer}
+					initialTime={initialTime}
+				/>
+			) : null} */}
 		</Pressable>
 	);
 };
@@ -230,3 +260,4 @@ const styles = StyleSheet.create({
 	},
 });
 export default Timer;
+export { Presets };

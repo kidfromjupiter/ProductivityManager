@@ -39,8 +39,6 @@ const Pomodoro = ({ navigation }) => {
 	const pomodoro = useSelector((state) => state.pomodoro);
 	const [pomodoroPresetsList, setPomodoroPresetsList] = useState([]);
 	const [isAod, setisAod] = useState(false);
-	const tracker = useSelector((state) => state.tracker);
-	console.log(JSON.stringify(tracker.trackingData));
 
 	const animation = LayoutAnimation.create(
 		185,
@@ -68,13 +66,6 @@ const Pomodoro = ({ navigation }) => {
 	const _SETNEWCYCLE = () => {
 		dispatch(setNewCycle());
 	};
-
-	const _CLEANUP = () => {
-		try {
-			AsyncStorage.setItem("pomodoro", JSON.stringify(pomodoroPresetsList));
-			dispatch(exitCleanup());
-		} catch (error) {}
-	};
 	useEffect(
 		() =>
 			navigation
@@ -98,11 +89,17 @@ const Pomodoro = ({ navigation }) => {
 				: null,
 		[]
 	);
+
+	// cleanup
 	useEffect(() => {
-		if (pomodoro.isRunning && !pomodoro.isFinished) {
-			_SETNEWCYCLE();
-		}
-	}, [pomodoro.isSession]);
+		return () => {
+			AsyncStorage.setItem(
+				"pomodoro",
+				JSON.stringify(pomodoroPresetsList)
+			).then(() => console.log("saved"));
+			dispatch(exitCleanup());
+		};
+	}, [pomodoroPresetsList]);
 
 	useEffect(() => {
 		const getallObjects = async () => {
@@ -123,9 +120,6 @@ const Pomodoro = ({ navigation }) => {
 			}
 		};
 		getallObjects();
-		return () => {
-			_CLEANUP();
-		};
 	}, []);
 
 	const renderItem = ({ item, index }) => {
@@ -186,9 +180,7 @@ const Pomodoro = ({ navigation }) => {
 			setShowDetails(null);
 		}
 	};
-
 	const { minutes, seconds } = dateParser(pomodoro.time);
-
 	return (
 		<View
 			style={[
@@ -248,6 +240,7 @@ const Pomodoro = ({ navigation }) => {
 						minutes={minutes}
 						seconds={seconds}
 						layoutanimation={animation}
+						timerEndCallback={_SETNEWCYCLE}
 					/>
 				</AnimatedRing>
 			) : (
@@ -261,6 +254,7 @@ const Pomodoro = ({ navigation }) => {
 					isDisabled={pomodoro.isRunning ? true : false}
 					minutes={minutes}
 					seconds={seconds}
+					timerEndCallback={_SETNEWCYCLE}
 				/>
 			)}
 

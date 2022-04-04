@@ -149,7 +149,7 @@ function HomeScreen({ navigation }) {
 						customStyles={{ backgroundColor: color.levelOne }}
 						titleStyle={{ color: color.accentColor }}
 					/>
-					<Square
+					{/* <Square
 						flex={2}
 						text="Analytics"
 						startColor="#9D50BB"
@@ -158,7 +158,7 @@ function HomeScreen({ navigation }) {
 						showTitle
 						customStyles={{ backgroundColor: color.levelOne }}
 						titleStyle={{ color: color.accentColor }}
-					/>
+					/> */}
 				</View>
 				<Square
 					flex={1}
