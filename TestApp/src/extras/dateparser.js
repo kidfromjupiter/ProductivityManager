@@ -1,4 +1,5 @@
-import CalendarEvent from './classes/EventsResourceClass';
+import CalendarEvent from "./classes/EventsResourceClass";
+import { SpacedRep } from "./classes/SpacedRep";
 
 let minutes;
 let seconds;
@@ -40,6 +41,8 @@ function DateTimeGenerator(startingDate, dateArray, title, tags) {
 		repCountArray[index] = index + 1;
 	}
 
+	console.log(dateArray);
+
 	dateArray.forEach((element, index) => {
 		const newDate = new Date(year, month, today.getDate() + element);
 		const endDate = new Date(year, month, today.getDate() + element);
@@ -56,14 +59,19 @@ function DateTimeGenerator(startingDate, dateArray, title, tags) {
 					repNumber: repCountArray[index],
 					numberOfReps: dateArray.length,
 					id: spacedRepId,
-				},
-			),
+				}
+			)
 		);
 		DateTimeArray[index] = Cal;
 		markedDates[index] = endDate.toISOString().substring(0, 10);
 	});
-	return [DateTimeArray, markedDates];
+	console.log(DateTimeArray);
+	const CalendarEventObj = new SpacedRep(
+		DateTimeArray,
+		spacedRepId,
+		dateArray.length
+	);
+	return [DateTimeArray, markedDates, CalendarEventObj];
 }
-
 export { spacedRepDateGen, DateTimeGenerator };
 export default dateParser;

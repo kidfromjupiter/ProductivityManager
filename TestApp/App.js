@@ -87,27 +87,27 @@ export default function App() {
 	return (
 		<Provider store={store}>
 			<PersistGate loading={<Loading />} persistor={persistor}>
-				<TopLevelContainer>
-					<NavigationContainer
-						ref={navigationRef}
-						onReady={() => {
-							routeNameRef.current = navigationRef.getCurrentRoute().name;
-						}}
-						onStateChange={() => {
-							const previousRouteName = routeNameRef.current;
-							const currentRouteName = navigationRef.getCurrentRoute().name;
+				<NavigationContainer
+					ref={navigationRef}
+					onReady={() => {
+						routeNameRef.current = navigationRef.getCurrentRoute().name;
+					}}
+					onStateChange={() => {
+						const previousRouteName = routeNameRef.current;
+						const currentRouteName = navigationRef.getCurrentRoute().name;
 
-							if (previousRouteName !== currentRouteName) {
-								store.dispatch(
-									logData(new Tracker({ screen: currentRouteName, type: "6" }))
-								);
-							}
-							routeNameRef.current = currentRouteName;
-						}}
-					>
+						if (previousRouteName !== currentRouteName) {
+							store.dispatch(
+								logData(new Tracker({ screen: currentRouteName, type: "6" }))
+							);
+						}
+						routeNameRef.current = currentRouteName;
+					}}
+				>
+					<TopLevelContainer>
 						<StackNav />
-					</NavigationContainer>
-				</TopLevelContainer>
+					</TopLevelContainer>
+				</NavigationContainer>
 			</PersistGate>
 			<StatusBar style="light" />
 		</Provider>

@@ -1,21 +1,21 @@
-import React from 'react';
+import React from "react";
 import {
 	FlatList,
 	LayoutAnimation,
 	StyleSheet,
 	Text,
 	View,
-} from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { editReminder } from '../redux/ReminderSlice';
-import ListItemGeneric from './ListItemGeneric';
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { editReminder } from "../redux/ReminderSlice";
+import ListItemGeneric from "./ListItemGeneric";
 const ListEmpty = ({ emptyText, colors }) => {
 	return (
 		<View style={styles.emptyContainer}>
 			<Text
 				style={[
 					styles.emptyText,
-					{ color: colors ? colors.textColor : 'white' },
+					{ color: colors ? colors.textColor : "white" },
 				]}
 			>
 				{emptyText}
@@ -80,12 +80,12 @@ const MiniReminderView = ({ navigation }) => {
 const styles = StyleSheet.create({
 	emptyContainer: {
 		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 	},
 	emptyText: {
-		textAlign: 'center',
-		textAlignVertical: 'center',
+		textAlign: "center",
+		textAlignVertical: "center",
 		padding: 30,
 
 		fontSize: 19,
@@ -95,11 +95,11 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 		marginHorizontal: 10,
 		marginBottom: 10,
-		overflow: 'hidden',
+		overflow: "hidden",
 	},
 	innerContainer: {
 		flex: 1,
-		backgroundColor: '#445168',
+		backgroundColor: "#445168",
 		elevation: 2,
 	},
 });

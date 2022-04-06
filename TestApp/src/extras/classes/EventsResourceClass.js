@@ -8,13 +8,13 @@ class CalendarEvent {
 			date: endDate,
 		};
 		this.summary = Title;
-		this.transparency = 'opaque';
-		this.reminders = !reminders ?
-			{
-				useDefault: false,
-				overrides: [{ method: 'popup', minutes: 6 * 60 }],
-			  } :
-			reminders;
+		this.transparency = "opaque";
+		this.reminders = !reminders
+			? {
+					useDefault: false,
+					overrides: [{ method: "popup", minutes: 6 * 60 }],
+			  }
+			: reminders;
 		this.extendedProperties = {
 			private: tags,
 		};

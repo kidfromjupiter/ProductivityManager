@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { LayoutAnimation, StyleSheet, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import ActionButton from '../components/ActionButton';
-import DialogBox from '../components/DialogBox';
-import ReminderList from '../components/ReminderList';
-import { ReminderClass } from '../extras/classes/ReminderClass';
-import { batchAdd } from '../redux/ReminderSlice';
+import React, { useEffect, useState } from "react";
+import { LayoutAnimation, StyleSheet, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import ActionButton from "../components/ActionButton";
+import DialogBox from "../components/DialogBox";
+import ReminderList from "../components/ReminderList";
+import { ReminderClass } from "../extras/classes/ReminderClass";
+import { batchAdd } from "../redux/ReminderSlice";
 
 export const ReminderScreen = ({ navigation }) => {
 	const dispatch = useDispatch();
 	const [reminderList, setReminderList] = useState(
-		useSelector((state) => state.reminders.reminders),
+		useSelector((state) => state.reminders.reminders)
 	);
 	const colors = useSelector((state) => state.colors);
 	const [DialogBoxShow, setDialogBoxShow] = React.useState(false);
@@ -80,8 +80,8 @@ export const ReminderScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 2,
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 	},
 });
 

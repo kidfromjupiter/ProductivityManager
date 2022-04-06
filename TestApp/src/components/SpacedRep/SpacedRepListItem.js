@@ -11,8 +11,10 @@ import {
 	withSequence,
 	withTiming,
 } from "react-native-reanimated";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { SpacedRep } from "../../extras/classes/SpacedRep";
 import { deleteEvent } from "../../extras/GAuth";
+import { setEvents } from "../../redux/CalendarSlice";
 
 const Tags = ({ name }) => {
 	return <Text style={styles.tag}>{name}</Text>;
@@ -70,15 +72,17 @@ const SpacedRepListItem = ({
 	index,
 	updateObjectArray,
 	slideDelete,
+	startDate,
 }) => {
 	const calID = useSelector((state) => state.gauth.calendarID);
+	const calendarEvents = useSelector((state) => state.calendar.events);
 	const rotation = useSharedValue(0);
 	const animatedStyle = useAnimatedStyle(() => {
 		return {
 			transform: [{ rotate: `${rotation.value}deg` }],
 		};
 	});
-
+	const dispatch = useDispatch();
 	useEffect(() => {
 		if (daysTill == 0) {
 			onPressCallback
@@ -102,6 +106,23 @@ const SpacedRepListItem = ({
 		}
 	}, []);
 
+	const onDelete = () => {
+		for (const obj of calendarEvents[spacedRepId].events) {
+			if (obj.start.date == startDate) {
+				const index = calendarEvents[spacedRepId].events.indexOf(obj);
+				calendarEvents[spacedRepId].events.splice(index, 1);
+				const spacedRepObj = new SpacedRep(
+					calendarEvents[spacedRepId].events,
+					spacedRepId,
+					calendarEvents[spacedRepId].totalReps
+				);
+				dispatch(setEvents({ id: spacedRepId, spacedRep: spacedRepObj }));
+			}
+		}
+	};
+
+	console.log(calendarEvents[spacedRepId]);
+
 	return (
 		<GestureHandlerRootView>
 			<Swipeable
@@ -109,6 +130,7 @@ const SpacedRepListItem = ({
 				friction={2.5}
 				leftThreshold={75}
 				onSwipeableOpen={() => {
+					onDelete();
 					updateObjectArray(index);
 					deleteEvent(accessToken, id, calID).catch((e) =>
 						console.log(e.response)
@@ -133,10 +155,14 @@ const SpacedRepListItem = ({
 									tags: tags,
 									reps: reps,
 									daysTill: daysTill,
-									totalreps: totalreps,
+									totalreps: calendarEvents[spacedRepId].totalReps,
 									spacedRepId: spacedRepId,
-									percentFinished: percentFinished,
-									repsRemaining: repsRemaining,
+									percentFinished:
+										((calendarEvents[spacedRepId].totalReps -
+											calendarEvents[spacedRepId].numOfEvents) /
+											calendarEvents[spacedRepId].totalReps) *
+										100,
+									repsRemaining: calendarEvents[spacedRepId].events.length,
 							  })
 							: null;
 					}}

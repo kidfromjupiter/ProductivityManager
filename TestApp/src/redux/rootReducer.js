@@ -1,6 +1,7 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import CalendarSlice from "./CalendarSlice";
 import ColorSlice from "./ColorSlice";
+import DeadlineSlice from "./DeadlineSlice";
 import GAuth from "./GAuthSlice";
 import PomodoroSlice from "./PomodoroSlice";
 import ReminderSlice from "./ReminderSlice";
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
 	gauth: GAuth,
 	calendar: CalendarSlice,
 	tracker: TrackerSlice,
+	deadline: DeadlineSlice,
 });
 
 export default rootReducer;

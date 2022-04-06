@@ -1,8 +1,8 @@
-import React from 'react';
-import { Dimensions, FlatList, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import ListItem from './ListItem';
-import { ListEmpty } from './MiniReminderView';
+import React from "react";
+import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import ListItem from "./ListItem";
+import { ListEmpty } from "./MiniReminderView";
 
 const ReminderList = ({ DATA, setComplete, deleteItem }) => {
 	const Color = useSelector((state) => state.colors);
@@ -33,7 +33,7 @@ const ReminderList = ({ DATA, setComplete, deleteItem }) => {
 			/>
 			{DATA.length > 0 ? (
 				<Text
-					style={{ textAlign: 'center', color: Color.textColor, padding: 6 }}
+					style={{ textAlign: "center", color: Color.textColor, padding: 6 }}
 				>
 					Press and hold reminder to see more detials
 				</Text>
@@ -45,13 +45,14 @@ const ReminderList = ({ DATA, setComplete, deleteItem }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#000023',
+		backgroundColor: "#000023",
+		paddingTop: 25,
 	},
 	list: {
 		flex: 3,
-		alignSelf: 'center',
-		height: Dimensions.get('window').height,
-		width: Dimensions.get('window').width,
+		alignSelf: "center",
+		height: Dimensions.get("window").height,
+		width: Dimensions.get("window").width,
 	},
 });
 export default ReminderList;

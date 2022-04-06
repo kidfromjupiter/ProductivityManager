@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import CountDown from "../components/Countdown";
 import Timer from "../components/Counter";
 import Loading from "../components/LottieLoading";
 import MiniReminderView from "../components/MiniReminderView";
@@ -21,6 +22,8 @@ function HomeScreen({ navigation }) {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
 	const calID = useSelector((state) => state.gauth.calendarID);
 	const [eventData, setEventData] = useState(null);
+	const [showCountdown, setShowCountdown] = useState(false);
+	const deadline = useSelector((state) => state.deadline.deadline);
 	const dispatch = useDispatch();
 
 	const fadeAnim = {
@@ -49,7 +52,7 @@ function HomeScreen({ navigation }) {
 		if (time.getHours() >= 15) {
 			return "Evening";
 		}
-		if (time.getHours() == 11 && time.getMinutes() == 59) {
+		if (time.getHours() >= 23) {
 			return "grief. Go to sleep";
 		}
 	}
@@ -86,6 +89,10 @@ function HomeScreen({ navigation }) {
 			duration: 900,
 			useNativeDriver: true,
 		}).start();
+		const interval = setTimeout(() => {
+			setShowCountdown(true);
+		}, 2700);
+		return () => clearTimeout(interval);
 	}, []);
 
 	const { minutes, seconds } = dateParser(timer.time);
@@ -93,17 +100,22 @@ function HomeScreen({ navigation }) {
 		<View
 			style={[styles.rootContainer, { backgroundColor: color.backgroundColor }]}
 		>
-			<Animated.View
-				style={[
-					styles.section,
-					styles.intro,
-					{ backgroundColor: null },
-					fadeAnim,
-				]}
-			>
-				<Text style={styles.introText}>Good</Text>
-				<Text style={styles.introText}>{getTimePrompt()}</Text>
-			</Animated.View>
+			{showCountdown && deadline > 0 ? (
+				<CountDown deadlineTime={deadline} />
+			) : (
+				<Animated.View
+					style={[
+						styles.section,
+						styles.intro,
+						{ backgroundColor: null },
+						fadeAnim,
+					]}
+				>
+					<Text style={styles.introText}>Good</Text>
+					<Text style={styles.introText}>{getTimePrompt()}</Text>
+				</Animated.View>
+			)}
+
 			<View style={styles.container}>
 				<Square
 					flex={5}

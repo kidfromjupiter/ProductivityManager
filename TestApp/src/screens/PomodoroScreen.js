@@ -10,7 +10,9 @@ import {
 	Pressable,
 	StyleSheet,
 	View,
+	Dimensions,
 } from "react-native";
+import Svg, { Circle } from "react-native-svg";
 import { useDispatch, useSelector } from "react-redux";
 import AnimatedRing from "../components/AnimatedRing";
 import BackButton from "../components/backButtonComponent";
@@ -32,6 +34,17 @@ import {
 	setTime,
 	toggleTimer,
 } from "../redux/PomodoroSlice";
+import Animated, {
+	useAnimatedProps,
+	useSharedValue,
+	withTiming,
+} from "react-native-reanimated";
+
+const CIRCLE_LENGTH = 880;
+const R = CIRCLE_LENGTH / (2 * Math.PI);
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+const width = Dimensions.get("window").width;
+const height = Dimensions.get("window").height;
 
 const Pomodoro = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
@@ -39,6 +52,12 @@ const Pomodoro = ({ navigation }) => {
 	const pomodoro = useSelector((state) => state.pomodoro);
 	const [pomodoroPresetsList, setPomodoroPresetsList] = useState([]);
 	const [isAod, setisAod] = useState(false);
+	const PROGRESS = useSharedValue(0);
+	const [layout, setLayout] = useState({ width: 0, height: 0 });
+	function onLayout(event) {
+		const { width, height } = event.nativeEvent.layout;
+		setLayout({ width, height });
+	}
 
 	const animation = LayoutAnimation.create(
 		185,
@@ -122,6 +141,15 @@ const Pomodoro = ({ navigation }) => {
 		getallObjects();
 	}, []);
 
+	useEffect(() => {
+		// if (pomodoro.cycleData) {
+		PROGRESS.value = withTiming(
+			pomodoro.cycleData.length / pomodoro.numOfTotalSessions
+		);
+		// }
+	}, [pomodoro.cycleData, pomodoro.numOfTotalSessions]);
+	console.log(PROGRESS.value);
+
 	const renderItem = ({ item, index }) => {
 		const itemObject = item;
 		return (
@@ -180,6 +208,9 @@ const Pomodoro = ({ navigation }) => {
 			setShowDetails(null);
 		}
 	};
+	const animatedProp = useAnimatedProps(() => ({
+		strokeDashoffset: CIRCLE_LENGTH * PROGRESS.value,
+	}));
 	const { minutes, seconds } = dateParser(pomodoro.time);
 	return (
 		<View
@@ -190,6 +221,31 @@ const Pomodoro = ({ navigation }) => {
 				},
 			]}
 		>
+			{layout.width != 0 ? (
+				<Svg
+					style={{
+						position: "absolute",
+						right: 0,
+						left: 0,
+						top: 0,
+						bottom: 0,
+						// zIndex: 100,
+					}}
+				>
+					<AnimatedCircle
+						cx={layout.width / 2}
+						cy={layout.height / 2}
+						r={R}
+						stroke={colors.levelThree}
+						strokeWidth={5}
+						strokeDasharray={CIRCLE_LENGTH}
+						animatedProps={animatedProp}
+						strokeLinecap={"round"}
+						transform={`rotate(-90 ${layout.width / 2} ${layout.height / 2})`}
+					/>
+				</Svg>
+			) : null}
+
 			<BackButton navigation={navigation} color={colors} />
 			<View
 				style={[
@@ -229,6 +285,7 @@ const Pomodoro = ({ navigation }) => {
 								: colors.backgroundColor
 							: "orange"
 					}
+					onLayout={onLayout}
 				>
 					<Timer
 						timeSize={70}

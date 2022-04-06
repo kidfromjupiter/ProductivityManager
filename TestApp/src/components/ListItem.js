@@ -101,17 +101,6 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 								<Text style={styles.descriptionStyle}>{item.description}</Text>
 							) : null}
 						</View>
-						{/* <View
-					style={styles.expand}
-					onTouchEnd={() => {
-						swipeRight(index);
-						LayoutAnimation.configureNext(
-							LayoutAnimation.Presets.easeInEaseOut
-						);
-					}}
-				>
-					<AntDesign name="minus" size={24} color="white" />
-				</View> */}
 					</View>
 				</Pressable>
 			</Swipeable>

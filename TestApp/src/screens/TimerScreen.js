@@ -101,7 +101,6 @@ const TimerScreen = () => {
 						id="grad"
 						x1="0"
 						animatedProps={animatedGradientProps}
-						// x2="1.3"
 						y2="-1"
 					>
 						<Stop
@@ -109,11 +108,6 @@ const TimerScreen = () => {
 							stopColor={colors.backgroundColor}
 							stopOpacity="1"
 						/>
-						{/* <Stop
-							offset="0"
-							stopColor={colors.backgroundColor}
-							stopOpacity="1"
-						/> */}
 						<Stop
 							offset="1"
 							stopColor={colors.accentColor}
@@ -198,6 +192,7 @@ const styles = StyleSheet.create({
 	rootContainer: {
 		flex: 1,
 		justifyContent: "center",
+		zIndex: 10,
 		// alignItems: "center",
 	},
 	progressContainer: {

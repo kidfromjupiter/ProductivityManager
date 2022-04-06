@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	Alert,
 	Button,
@@ -16,10 +16,12 @@ import Modal from "react-native-modal";
 import { useDispatch, useSelector } from "react-redux";
 import ListHeader from "../components/ListHeader";
 import SettingsListItem from "../components/Settings/SettingsListItem";
+import CustomButton from "../components/SpacedRep/CustomButton";
 import SuccessAlert from "../components/SuccessAnimation";
 import { createUser, grabData, updateUserData } from "../extras/BACKEND";
 import { deleteCalendar } from "../extras/GAuth";
 import { changeColorScheme } from "../redux/ColorSlice";
+import DatePicker from "react-native-date-picker";
 import {
 	resetGAuth,
 	setCalID,
@@ -29,6 +31,7 @@ import {
 	setShouldSync,
 } from "../redux/GAuthSlice";
 import { batchAdd, deleteAllReminders } from "../redux/ReminderSlice";
+import { setDeadline } from "../redux/DeadlineSlice";
 
 function SettingsScreen({ navigation }) {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
@@ -44,6 +47,8 @@ function SettingsScreen({ navigation }) {
 	const IdToken = useSelector((state) => state.gauth.IdToken);
 	const colors = useSelector((state) => state.colors);
 	const reminderList = useSelector((state) => state.reminders);
+	const [deadLineModal, setDeadLineModal] = useState(false);
+	const [date, setDate] = useState(new Date());
 	const [text, setText] = useState();
 	const dispatch = useDispatch();
 
@@ -141,6 +146,12 @@ function SettingsScreen({ navigation }) {
 		});
 	}
 
+	useEffect(() => {
+		return () => {
+			dispatch(setDeadline({ deadline: date }));
+		};
+	}, [date]);
+
 	// console.log(calID);
 	return (
 		<View style={{ flex: 1, backgroundColor: "black" }}>
@@ -212,6 +223,13 @@ function SettingsScreen({ navigation }) {
 						extraStyle={styles.listheader}
 						iconName="swap"
 						onPressCallback={() => {}}
+					/>
+					<SettingsListItem
+						callback={() => {
+							setDeadLineModal(true);
+						}}
+						text="Deadline"
+						subText="Set a deadline for the homescreen"
 					/>
 					<SettingsListItem
 						callback={() => {
@@ -361,6 +379,33 @@ function SettingsScreen({ navigation }) {
 									}
 									setModalVisible(true);
 								}}
+								color="#00D34B"
+							/>
+						</View>
+					</View>
+				</Modal>
+				<Modal
+					isVisible={deadLineModal}
+					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+				>
+					<View
+						style={{
+							backgroundColor: "white",
+							padding: 20,
+							borderRadius: 10,
+							justifyContent: "space-evenly",
+						}}
+					>
+						<DatePicker
+							minimumDate={new Date()}
+							mode="date"
+							date={date}
+							onDateChange={(e) => setDate(new Date(e))}
+						/>
+						<View style={{ maxHeight: 50, marginTop: 10 }}>
+							<CustomButton
+								text="Set Deadline"
+								callback={() => setDeadLineModal(false)}
 								color="#00D34B"
 							/>
 						</View>

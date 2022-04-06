@@ -27,9 +27,9 @@ const SpacedRepHome = ({ navigation }) => {
 	const signedIn = useSelector((state) => state.gauth.isSignedIn);
 	const [selectedData, setSelectedData] = useState(null);
 	const [eventsObjectArray, setObjectArray] = useState(null);
-	const [almostFinished, setAlmostFinished] = useState(null);
 	const [refreshing, setRefresh] = useState(false);
 	const colors = useSelector((state) => state.colors);
+	const calendarEvents = useSelector((state) => state.calendar.events);
 
 	function creatingObjectArray(e) {
 		const events = [];
@@ -68,22 +68,7 @@ const SpacedRepHome = ({ navigation }) => {
 				}
 			});
 		});
-		const ID_ARRAY = [];
-		spacedRepIdArray.forEach((e) => {
-			if (!ID_ARRAY.includes(e.id)) {
-				ID_ARRAY.push(e.id);
-			}
-		});
-		ID_ARRAY.forEach((id) => {
-			const i = events.find((v) => v.extendedProperties.private.id == id);
-			spacedRepEvents.push(i);
-		});
 		events.sort((a, b) => a.daysTill() - b.daysTill());
-		events.forEach((e) => {
-			if (e.extendedProperties.private.percentFinished > 50) {
-				setAlmostFinished([e]);
-			}
-		});
 		setObjectArray(events);
 		setRefresh(false);
 	}
@@ -128,6 +113,7 @@ const SpacedRepHome = ({ navigation }) => {
 				spacedRepId={item.extendedProperties.private.id}
 				daysTill={item.daysTill()}
 				id={item.id}
+				startDate={item.start.date}
 				calendarId={calID}
 				accessToken={accessToken}
 				onPressCallback={setSelectedData}
@@ -312,6 +298,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
+		paddingTop: 25,
 	},
 	topBar: {
 		flex: 1,

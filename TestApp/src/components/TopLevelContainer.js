@@ -11,7 +11,7 @@ import {
 	setToken,
 } from "../redux/GAuthSlice";
 
-const TopLevelContainer = (props) => {
+const TopLevelContainer = ({ children }) => {
 	const signedIn = useSelector((state) => state.gauth.isSignedIn);
 	const shouldSync = useSelector((state) => state.gauth.shouldSync);
 	const calID = useSelector((state) => state.gauth.calendarID);
@@ -85,15 +85,18 @@ const TopLevelContainer = (props) => {
 	}, [signedIn]);
 
 	return (
-		<View
-			style={{
-				flex: 1,
-				// paddingTop: 25,
-				backgroundColor: colors.backgroundColor,
-			}}
-		>
-			{props.children}
-		</View>
+		<>
+			<View
+				style={{
+					// flex: 1,
+					// height: 25,
+					// paddingTop: 25,
+					backgroundColor: colors.backgroundColor,
+					zIndex: -10,
+				}}
+			></View>
+			{children}
+		</>
 	);
 };
 

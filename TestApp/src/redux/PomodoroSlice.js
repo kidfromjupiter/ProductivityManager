@@ -12,6 +12,8 @@ export const PomodoroSlice = createSlice({
 		cycleData: [],
 		pomodoroName: "",
 		pomodoroID: null,
+		numOfTotalSessions: 0,
+		// activeCycleIndex: 0,
 	},
 	reducers: {
 		setTime: (state, action) => {
@@ -47,6 +49,7 @@ export const PomodoroSlice = createSlice({
 			localState.pomodoroName = action.payload.name;
 			localState.pomodoroID = action.payload.id;
 			localState.isFinished = false;
+			localState.numOfTotalSessions = localState.cycleData.length;
 			const time = localState.cycleData.shift();
 			localState.time = time * 60;
 			return localState;
@@ -75,6 +78,7 @@ export const PomodoroSlice = createSlice({
 			localState.isSession = true;
 			localState.numOfPresets = 0;
 			localState.isFinished = false;
+			// localState.activeCycleIndex = 0;
 			return localState;
 		},
 	},

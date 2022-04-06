@@ -1,8 +1,8 @@
-import React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { Animated, StyleSheet, View } from "react-native";
+import { useSelector } from "react-redux";
 
-const AnimatedRing = ({ children, flex, animated, ringColor }) => {
+const AnimatedRing = ({ children, flex, animated, ringColor, onLayout }) => {
 	const animateValue = new Animated.Value(0);
 	const colors = useSelector((state) => state.colors);
 	// const ringColor = colors.accentColor;
@@ -31,7 +31,10 @@ const AnimatedRing = ({ children, flex, animated, ringColor }) => {
 	};
 	animated ? fadeOutScaleUp() : null;
 	return (
-		<View style={[styles.childrenContainer, { flex: flex }]}>
+		<View
+			style={[styles.childrenContainer, { flex: flex }]}
+			onLayout={onLayout}
+		>
 			<View
 				style={[
 					styles.circle,
@@ -64,16 +67,16 @@ const styles = StyleSheet.create({
 		height: 250,
 		borderRadius: 250 / 2,
 		borderWidth: 4,
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 	},
 	innerCircle: {
-		position: 'absolute',
+		position: "absolute",
 	},
 	childrenContainer: {
 		flex: 2,
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 	},
 });
 
