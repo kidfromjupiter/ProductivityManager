@@ -44,6 +44,7 @@ function SettingsScreen({ navigation }) {
 	const family_name = useSelector((state) => state.gauth.family_name);
 	const calID = useSelector((state) => state.gauth.calendarID);
 	const shouldSync = useSelector((state) => state.gauth.shouldSync);
+	const deadline = useSelector((state) => state.deadline.deadline);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [calIdVisible, setCalIdVisible] = useState(false);
 	const IdToken = useSelector((state) => state.gauth.IdToken);
@@ -57,7 +58,12 @@ function SettingsScreen({ navigation }) {
 
 	function saveData(data) {
 		dispatch(setCalID({ calendarID: data.calID }));
-		dispatch(batchAdd({ data: data.reminders.reminders }));
+		dispatch(
+			batchAdd({
+				reminders: data.reminders.reminders,
+				completed: data.reminders.completed,
+			})
+		);
 		dispatch(
 			changeColorScheme({
 				backgroundColor: data.colors.backgroundColor,
@@ -76,7 +82,7 @@ function SettingsScreen({ navigation }) {
 	}
 
 	function setData(data, timeSince) {
-		console.log(timeSince);
+		setLoading(true);
 		const seconds = Math.round(timeSince / 1000);
 		const minutes = Math.round(seconds / 60);
 		const hours = Math.round(minutes / 60);
@@ -112,24 +118,30 @@ function SettingsScreen({ navigation }) {
 			{
 				text: "No",
 				style: "destructive",
+				onPress: () => {
+					setLoading(false);
+				},
 			},
 			{
 				text: "Yes",
-				onPress: () => saveData(data),
+				onPress: () => {
+					saveData(data);
+				},
 				style: "default",
 			},
 		]);
 	}
 
 	function sendData(idToken) {
+		setLoading(true);
 		AsyncStorage.getItem("pomodoro").then((f) => {
-			console.log(f);
 			updateUserData(idToken, {
 				calID: calID,
 				pomodoros: f,
 				reminders: reminderList,
 				colors: colors,
-			});
+				deadline: deadline,
+			}).then(() => setLoading(false));
 		});
 	}
 	function fullBackupRestore() {
@@ -314,7 +326,7 @@ function SettingsScreen({ navigation }) {
 								text="Backup now"
 								subText="Manual Backup"
 							/>
-							<SettingsListItem
+							{/* <SettingsListItem
 								callback={() => {
 									setLoading(true);
 									GoogleSignin.signInSilently().then((e) => {
@@ -323,7 +335,7 @@ function SettingsScreen({ navigation }) {
 								}}
 								text="List Idtoken"
 								// subText="Manual Backup"
-							/>
+							/> */}
 							<SettingsListItem
 								callback={() => {
 									setLoading(true);

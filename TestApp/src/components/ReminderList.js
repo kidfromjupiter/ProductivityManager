@@ -56,8 +56,6 @@ const ReminderList = ({
 		return "rgb(" + g() + "," + g() + "," + g() + ")";
 	}
 
-	console.log(DATA);
-
 	return (
 		<View style={[styles.container, customStyles]}>
 			<ListHeader
@@ -72,9 +70,9 @@ const ReminderList = ({
 			<FlatList
 				contentContainerStyle={{
 					flexDirection: "column",
-					padding: 10,
+					padding: 5,
 				}}
-				numColumns={3}
+				numColumns={2}
 				style={styles.list}
 				data={DATA}
 				renderItem={renderItem}

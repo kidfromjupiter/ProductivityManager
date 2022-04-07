@@ -37,7 +37,7 @@ const DialogBox = ({
 						autoFocus
 						onChangeText={(input) => (text = input)}
 						value={text}
-						maxLength={200}
+						maxLength={35}
 					/>
 					<Text style={styles.titleTexts}>Description</Text>
 					{isDescription ? (

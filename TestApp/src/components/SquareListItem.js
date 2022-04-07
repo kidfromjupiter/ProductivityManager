@@ -23,7 +23,7 @@ export default function SquareListItem({
 	deleteItem,
 }) {
 	const [expanded, setExpanded] = useState({
-		width: WIDTH / 3 - 20,
+		width: WIDTH / 2 - 10,
 		height: 0,
 		translateX: 0,
 	});
@@ -33,16 +33,13 @@ export default function SquareListItem({
 
 	const setExpandedProps = () => {
 		expanded.height > 0
-			? setExpanded({ width: WIDTH / 3 - 20, height: 0 })
-			: setExpanded({ width: WIDTH / 2, height: EXPAND_HEIGHT / 4 });
+			? setExpanded({ width: WIDTH / 2 - 10, height: 0 })
+			: setExpanded({ width: WIDTH / 2 + 10, height: EXPAND_HEIGHT / 4 });
 	};
 
 	const setTranslations = () => {
-		if (expanded.height > 0 && index % 3 == 0) {
-			return 0;
-		}
-		if (expanded.height > 0 && index % 3 == 2) {
-			return -85;
+		if (expanded.height > 0 && index % 2 == 1) {
+			return -35;
 		}
 		return 0;
 	};
@@ -67,8 +64,10 @@ export default function SquareListItem({
 					marginVertical: 0,
 					borderWidth: expanded.height > 0 ? 2 : 0,
 					borderColor: color.levelThree,
+					marginHorizontal: 3,
+					padding: 0,
 				}}
-				titleStyle={{ color: "white" }}
+				titleStyle={{ color: "white", padding: 10 }}
 				showTitle
 				touchEndCallback={() => touchEndCallBack(index)}
 				enableLongPress
@@ -133,6 +132,7 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 		padding: 7,
 		marginVertical: 5,
+
 		// zIndex: ,
 		// flex: 1,
 		// wid,

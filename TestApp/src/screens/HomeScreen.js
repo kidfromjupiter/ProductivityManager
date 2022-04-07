@@ -95,12 +95,13 @@ function HomeScreen({ navigation }) {
 		return () => clearTimeout(interval);
 	}, []);
 
+	console.log(deadline);
 	const { minutes, seconds } = dateParser(timer.time);
 	return (
 		<View
 			style={[styles.rootContainer, { backgroundColor: color.backgroundColor }]}
 		>
-			{showCountdown && deadline > 0 ? (
+			{showCountdown && deadline != 0 ? (
 				<CountDown deadlineTime={deadline} />
 			) : (
 				<Animated.View

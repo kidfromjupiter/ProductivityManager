@@ -79,7 +79,13 @@ const Square = ({
 		>
 			<View style={styles.childrenContainer}>
 				{showTitle ? (
-					<Text style={[styles.text, titleStyle]}>{text}</Text>
+					<Text
+						style={[styles.text, titleStyle]}
+						numberOfLines={10}
+						ellipsizeMode="tail"
+					>
+						{text}
+					</Text>
 				) : null}
 				{children}
 			</View>
