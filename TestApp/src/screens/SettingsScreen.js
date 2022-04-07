@@ -32,6 +32,8 @@ import {
 } from "../redux/GAuthSlice";
 import { batchAdd, deleteAllReminders } from "../redux/ReminderSlice";
 import { setDeadline } from "../redux/DeadlineSlice";
+import LottieView from "lottie-react-native";
+import LoadingPopup from "../components/LoadingIndicator";
 
 function SettingsScreen({ navigation }) {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
@@ -50,6 +52,7 @@ function SettingsScreen({ navigation }) {
 	const [deadLineModal, setDeadLineModal] = useState(false);
 	const [date, setDate] = useState(new Date());
 	const [text, setText] = useState();
+	const [loading, setLoading] = useState(false);
 	const dispatch = useDispatch();
 
 	function saveData(data) {
@@ -199,7 +202,8 @@ function SettingsScreen({ navigation }) {
 						onPressCallback={() => {}}
 					/>
 					<SettingsListItem
-						callback={() =>
+						callback={() => {
+							setLoading(true);
 							deleteCalendar(accessToken, calID)
 								.then(() => {
 									dispatch(setCalID({ calendarID: null }));
@@ -208,8 +212,8 @@ function SettingsScreen({ navigation }) {
 								.catch(() => {
 									dispatch(setCalID({ calendarID: null }));
 									setModalVisible(true);
-								})
-						}
+								});
+						}}
 						text="Nuke Calendar"
 						subText="Delete my spaced repetition calendar and all its events"
 					/>
@@ -227,12 +231,14 @@ function SettingsScreen({ navigation }) {
 					<SettingsListItem
 						callback={() => {
 							setDeadLineModal(true);
+							setModalVisible(true);
 						}}
 						text="Deadline"
 						subText="Set a deadline for the homescreen"
 					/>
 					<SettingsListItem
 						callback={() => {
+							setLoading(true);
 							AsyncStorage.removeItem("pomodoro").then(() =>
 								setModalVisible(true)
 							);
@@ -242,6 +248,7 @@ function SettingsScreen({ navigation }) {
 					/>
 					<SettingsListItem
 						callback={() => {
+							setLoading(true);
 							setModalVisible(true);
 							dispatch(deleteAllReminders());
 						}}
@@ -258,6 +265,7 @@ function SettingsScreen({ navigation }) {
 					{!signedIn ? (
 						<SettingsListItem
 							callback={() => {
+								setLoading(true);
 								GoogleSignin.signIn().then((e) => {
 									dispatch(setIsSignedIn({ isSignedIn: true }));
 									grabData(e.idToken).then((e) => {
@@ -290,6 +298,7 @@ function SettingsScreen({ navigation }) {
 						<>
 							<SettingsListItem
 								callback={() => {
+									setLoading(true);
 									fullBackupRestore();
 								}}
 								text="Restore"
@@ -297,6 +306,7 @@ function SettingsScreen({ navigation }) {
 							/>
 							<SettingsListItem
 								callback={() => {
+									setLoading(true);
 									GoogleSignin.signInSilently().then((e) => {
 										sendData(e.idToken);
 									});
@@ -306,6 +316,7 @@ function SettingsScreen({ navigation }) {
 							/>
 							<SettingsListItem
 								callback={() => {
+									setLoading(true);
 									GoogleSignin.signInSilently().then((e) => {
 										console.log(e.idToken);
 									});
@@ -315,6 +326,7 @@ function SettingsScreen({ navigation }) {
 							/>
 							<SettingsListItem
 								callback={() => {
+									setLoading(true);
 									GoogleSignin.signInSilently()
 										.then((e) => {
 											createUser(e.idToken).then(() => {
@@ -339,6 +351,7 @@ function SettingsScreen({ navigation }) {
 							/>
 							<SettingsListItem
 								callback={() => {
+									setLoading(true);
 									GoogleSignin.signInSilently().then((e) => {
 										sendData(e.idToken);
 										GoogleSignin.signOut().then((e) => {
@@ -355,7 +368,10 @@ function SettingsScreen({ navigation }) {
 				</View>
 				<SuccessAlert
 					modalVisible={modalVisible}
-					setModalVisible={setModalVisible}
+					setModalVisible={() => {
+						setModalVisible(false);
+						setLoading(false);
+					}}
 				/>
 				<Modal
 					isVisible={calIdVisible}
@@ -412,6 +428,7 @@ function SettingsScreen({ navigation }) {
 					</View>
 				</Modal>
 			</ScrollView>
+			{loading ? <LoadingPopup /> : null}
 		</View>
 	);
 }

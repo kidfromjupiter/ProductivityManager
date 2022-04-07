@@ -30,7 +30,7 @@ const MiniReminderView = ({ navigation }) => {
 	const dispatch = useDispatch();
 
 	function setComplete(index) {
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 		dispatch(editReminder({ index: index }));
 	}
 	const renderItem = ({ item, index }) => {

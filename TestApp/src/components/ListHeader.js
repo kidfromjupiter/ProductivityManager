@@ -1,10 +1,14 @@
-import { AntDesign } from '@expo/vector-icons';
-import React from 'react';
+import { AntDesign } from "@expo/vector-icons";
+import React from "react";
 import {
-	Animated, LayoutAnimation, Pressable, StyleSheet, Text,
+	Animated,
+	LayoutAnimation,
+	Pressable,
+	StyleSheet,
+	Text,
 	View,
-} from 'react-native';
-import { useSelector } from 'react-redux';
+} from "react-native";
+import { useSelector } from "react-redux";
 
 const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
 
@@ -16,6 +20,7 @@ const ListHeader = ({
 	iconName,
 	iconColor,
 	iconSize,
+	textStyles,
 }) => {
 	const animatedValue = new Animated.Value(1);
 
@@ -44,6 +49,7 @@ const ListHeader = ({
 					{
 						color: colors.accentColor,
 					},
+					textStyles,
 				]}
 			>
 				{text}
@@ -76,17 +82,17 @@ const ListHeader = ({
 
 const styles = StyleSheet.create({
 	container: {
-		flexDirection: 'row',
-		alignItems: 'center',
+		flexDirection: "row",
+		alignItems: "center",
 	},
 	text: {
 		fontSize: 20,
-		fontWeight: 'bold',
+		fontWeight: "bold",
 	},
 	iconContainer: {
 		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'flex-end',
+		justifyContent: "center",
+		alignItems: "flex-end",
 		paddingRight: 5,
 	},
 	iconStyle: {

@@ -1,9 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const RemiderSlice = createSlice({
-	name: 'reminders',
+	name: "reminders",
 	initialState: {
 		reminders: [],
+		completed: [],
 	},
 	reducers: {
 		addReminder: (state, action) => {
@@ -17,15 +18,15 @@ export const RemiderSlice = createSlice({
 			if (completedState == false) {
 				const RemovedReminder = localState.reminders.splice(
 					action.payload.index,
-					1,
+					1
 				);
 				RemovedReminder[0].completed = !completedState;
-				localState.reminders.push(RemovedReminder[0]);
+				localState.completed.push(RemovedReminder[0]);
 			} else {
 				localState.reminders[action.payload.index].completed = !completedState;
 				const toggledReminder = localState.reminders.splice(
 					action.payload.index,
-					1,
+					1
 				);
 				localState.reminders.unshift(toggledReminder[0]);
 			}
@@ -36,16 +37,19 @@ export const RemiderSlice = createSlice({
 		},
 		batchAdd: (state, action) => {
 			const localstate = JSON.parse(JSON.stringify(state));
-			if (!action.payload.data) {
+			if (!(action.payload.completed || action.payload.reminders)) {
 				localstate.reminders = [];
+				localstate.completed = [];
 				return localstate;
 			}
-			localstate.reminders = action.payload.data;
+			localstate.reminders = action.payload.reminders;
+			localstate.completed = action.payload.completed;
 			return localstate;
 		},
 		deleteAllReminders: (state, action) => {
 			const localstate = JSON.parse(JSON.stringify(state));
 			localstate.reminders = [];
+			localstate.completed = [];
 			return localstate;
 		},
 	},

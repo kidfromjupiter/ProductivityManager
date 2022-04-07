@@ -1,7 +1,7 @@
-import LottieView from 'lottie-react-native';
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Modal from 'react-native-modal';
+import LottieView from "lottie-react-native";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import Modal from "react-native-modal";
 
 const SuccessAlert = ({
 	navigation,
@@ -21,17 +21,17 @@ const SuccessAlert = ({
 			<View style={styles.container}>
 				<View>
 					<LottieView
-						source={require('../../assets/animations/success3.json')}
+						source={require("../../assets/animations/success3.json")}
 						autoPlay
 						loop={false}
 						progress={progress}
 						style={{
-							backgroundColor: 'transparent',
+							backgroundColor: "transparent",
 							height: 200,
 							width: 200,
 						}}
 						onAnimationFinish={() => {
-							setModalVisible(false);
+							setModalVisible();
 							// console.log("called");
 							navigation ? navigation.navigate(destination) : null;
 						}}
@@ -56,11 +56,11 @@ const SuccessAlert = ({
 };
 const styles = StyleSheet.create({
 	container: {
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 		borderRadius: 10,
 		// overflow: "hidden",
-		alignSelf: 'center',
+		alignSelf: "center",
 		maxHeight: 100,
 		maxWidth: 100,
 	},

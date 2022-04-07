@@ -18,7 +18,13 @@ import { useSelector } from "react-redux";
 
 // const Vector
 
-const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
+const ListItem = ({
+	item,
+	index,
+	setCompleteCallback,
+	swipeRight,
+	customCheckBoxColor,
+}) => {
 	const colors = useSelector((state) => state.colors);
 
 	const [expanded, setExpanded] = useState(false);
@@ -51,11 +57,13 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 		);
 	};
 
+	console.log("rerendered", index);
+
 	return (
 		<GestureHandlerRootView>
 			<Swipeable
 				renderLeftActions={LeftActions ? LeftActions : null}
-				friction={2.8}
+				friction={1.8}
 				leftThreshold={100}
 				onSwipeableOpen={(direction) => {
 					if (direction == "left") {
@@ -73,7 +81,6 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 						<View
 							style={[
 								styles.checkboxHolder,
-								// eslint-disable-next-line react-native/no-inline-styles
 								{
 									height: expanded ? null : 70,
 									paddingVertical: expanded ? 15 : null,
@@ -91,7 +98,9 @@ const ListItem = ({ item, index, setCompleteCallback, swipeRight }) => {
 								text={item.title}
 								textStyle={styles.text}
 								useNativeDriver
-								fillColor={colors.accentColor}
+								fillColor={
+									customCheckBoxColor ? customCheckBoxColor : colors.accentColor
+								}
 								onLongPress={() => {
 									setExpanded(!expanded);
 									LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);

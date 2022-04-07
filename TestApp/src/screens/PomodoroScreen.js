@@ -221,7 +221,7 @@ const Pomodoro = ({ navigation }) => {
 				},
 			]}
 		>
-			{layout.width != 0 ? (
+			{layout.width != 0 && !isAod ? (
 				<Svg
 					style={{
 						position: "absolute",

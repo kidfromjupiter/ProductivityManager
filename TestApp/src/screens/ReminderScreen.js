@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { LayoutAnimation, StyleSheet, View } from "react-native";
+import {
+	LayoutAnimation,
+	StyleSheet,
+	View,
+	Text,
+	Dimensions,
+	ScrollView,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import ActionButton from "../components/ActionButton";
 import DialogBox from "../components/DialogBox";
@@ -9,7 +16,10 @@ import { batchAdd } from "../redux/ReminderSlice";
 
 export const ReminderScreen = ({ navigation }) => {
 	const dispatch = useDispatch();
-	const [reminderList, setReminderList] = useState(
+	const [completedReminders, setCompletedReminders] = useState(
+		useSelector((state) => state.reminders.completed)
+	);
+	const [onGoingReminder, setOnGoingReminders] = useState(
 		useSelector((state) => state.reminders.reminders)
 	);
 	const colors = useSelector((state) => state.colors);
@@ -21,49 +31,100 @@ export const ReminderScreen = ({ navigation }) => {
 	};
 
 	function setComplete(index) {
-		const localDataList = [...reminderList];
+		const localDataList = [...onGoingReminder];
 		const completedState = localDataList[index].completed;
-		if (completedState == false) {
-			const RemovedReminder = localDataList.splice(index, 1);
-			RemovedReminder[0].completed = !completedState;
-			localDataList.push(RemovedReminder[0]);
-		} else {
-			localDataList[index].completed = !completedState;
-			const toggledReminder = localDataList.splice(index, 1);
-			localDataList.unshift(toggledReminder[0]);
-		}
-		setReminderList(localDataList);
+
+		const selectedReminder = localDataList.splice(index, 1);
+		selectedReminder[0].completed = !completedState;
+
+		const completedReminder = [...completedReminders, selectedReminder[0]];
+		setCompletedReminders(completedReminder);
+		setOnGoingReminders(localDataList);
+		// setReminderList([...localDataList, selectedReminder]);
+
+		// localDataList[index].completed = !completedState;
 	}
-	function deleteItem(index) {
+	function setOngoing(index) {
+		const localDataList = [...completedReminders];
+		const completedState = localDataList[index].completed;
+
+		const selectedReminder = localDataList.splice(index, 1);
+		selectedReminder[0].completed = !completedState;
+
+		setCompletedReminders(localDataList);
+		setOnGoingReminders([...onGoingReminder, selectedReminder[0]]);
+
+		// setReminderList([...localDataList, selectedReminder]);
+
+		// localDataList[index].completed = !completedState;
+	}
+
+	console.log("ongoing", onGoingReminder);
+
+	function deleteItemOngoing(index) {
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-		const localDataList = [...reminderList];
+		const localDataList = [...onGoingReminder];
 		localDataList.splice(index, 1);
-		setReminderList(localDataList);
+		setOnGoingReminders(localDataList);
+	}
+	function deleteItemCompleted(index) {
+		LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+		const localDataList = [...completedReminders];
+		localDataList.splice(index, 1);
+		setCompletedReminders(localDataList);
 	}
 
 	const submit = (text, description) => {
 		const reminder = new ReminderClass(text, description);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 		// let reminders = reminderList ? [...reminderList] : [];
-		const reminders = reminderList?.length ? [...reminderList] : [];
+		const reminders = onGoingReminder?.length ? [...onGoingReminder] : [];
 		reminders.unshift(reminder.objectify());
-		console.log(reminders);
-		setReminderList(reminders);
+		setOnGoingReminders(reminders);
 		setDialogBoxShow(false);
 	};
 	useEffect(() => {
 		return () => {
-			dispatch(batchAdd({ data: reminderList }));
+			dispatch(
+				batchAdd({ reminders: onGoingReminder, completed: completedReminders })
+			);
 		};
-	}, [reminderList]);
+	}, [onGoingReminder, completedReminders]);
 
 	return (
-		<View style={styles.container}>
+		<View
+			style={[styles.container, { backgroundColor: colors.backgroundColor }]}
+		>
+			<View
+				style={[
+					{
+						backgroundColor: colors.levelOne,
+					},
+					styles.header,
+				]}
+			>
+				<Text style={styles.headerText}>Reminders</Text>
+			</View>
+			{/* <ScrollView automaticallyAdjustContentInsets={false}> */}
+
 			<ReminderList
-				DATA={reminderList}
-				deleteItem={deleteItem}
+				title="For You"
+				DATA={onGoingReminder}
+				deleteItem={deleteItemOngoing}
 				setComplete={setComplete}
+				add={add}
+				actionButton
+				emptyPrompt
+				// customStyles={{ flex: 2 }}
 			/>
+			<ReminderList
+				title="Completed"
+				DATA={completedReminders}
+				deleteItem={deleteItemCompleted}
+				setComplete={setOngoing}
+				add={() => {}}
+			/>
+			{/* </ScrollView> */}
 			{DialogBoxShow ? (
 				<DialogBox
 					onCancel={setDialogBoxShow}
@@ -72,16 +133,28 @@ export const ReminderScreen = ({ navigation }) => {
 					color={colors}
 				/>
 			) : null}
-			{DialogBoxShow ? null : <ActionButton text="Hello" onPressOut={add} />}
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 2,
+		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
+		// paddingTop: 25,
+	},
+	headerText: {
+		fontSize: 30,
+		fontWeight: "bold",
+		color: "white",
+		padding: 10,
+		paddingLeft: 20,
+	},
+	header: {
+		width: Dimensions.get("screen").width,
+		height: 100,
+		justifyContent: "flex-end",
 	},
 });
 
