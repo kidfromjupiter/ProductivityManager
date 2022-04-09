@@ -95,7 +95,6 @@ function HomeScreen({ navigation }) {
 		return () => clearTimeout(interval);
 	}, []);
 
-	console.log(deadline);
 	const { minutes, seconds } = dateParser(timer.time);
 	return (
 		<View

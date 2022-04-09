@@ -25,7 +25,8 @@ const ListEmpty = ({ emptyText, colors }) => {
 };
 
 const MiniReminderView = ({ navigation }) => {
-	const reminders = useSelector((state) => state.reminders.reminders);
+	// const reminders = useSelector((state) => state.reminders.reminders);
+	const reminders = [];
 	const colors = useSelector((state) => state.colors);
 	const dispatch = useDispatch();
 

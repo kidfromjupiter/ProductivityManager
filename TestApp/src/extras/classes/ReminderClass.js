@@ -1,9 +1,10 @@
 class ReminderClass {
-	constructor(text, description) {
+	constructor(text, description, category) {
 		this.id = new Date().toJSON();
 		this.title = text;
 		this.description = description;
 		this.completed = false;
+		this.category = category;
 		function generateColor(ranges) {
 			if (!ranges) {
 				ranges = [

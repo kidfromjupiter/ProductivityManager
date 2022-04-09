@@ -66,6 +66,7 @@ export default function SquareListItem({
 					borderColor: color.levelThree,
 					marginHorizontal: 3,
 					padding: 0,
+					minHeight: 90,
 				}}
 				titleStyle={{ color: "white", padding: 10 }}
 				showTitle

@@ -20,7 +20,6 @@ const DialogBox = ({
 	let description;
 	return (
 		<View style={styles.OuterContainer}>
-			<View style={styles.Overlay}></View>
 			<View
 				style={[
 					styles.container,
@@ -37,7 +36,7 @@ const DialogBox = ({
 						autoFocus
 						onChangeText={(input) => (text = input)}
 						value={text}
-						maxLength={35}
+						maxLength={80}
 					/>
 					<Text style={styles.titleTexts}>Description</Text>
 					{isDescription ? (
@@ -55,13 +54,7 @@ const DialogBox = ({
 				</View>
 				<View style={styles.buttonContainer}>
 					<TouchableOpacity
-						style={[
-							styles.button,
-							{
-								// borderRightWidth: 1,
-								// borderRightColor: "#CCCCCC",
-							},
-						]}
+						style={[styles.button]}
 						onPress={() => {
 							onCancel(false);
 							LayoutAnimation.configureNext(
@@ -93,16 +86,11 @@ const styles = StyleSheet.create({
 		textAlign: "left",
 		marginVertical: 10,
 	},
-	Overlay: {
-		backgroundColor: "rgba(0,0,0,0.5)",
-		position: "absolute",
-		height: Dimensions.get("window").height,
-		width: Dimensions.get("window").width,
-	},
 
 	OuterContainer: {
 		flex: 1,
-		position: "absolute",
+		// position: "absolute",
+		maxHeight: 350,
 		alignItems: "center",
 		justifyContent: "center",
 	},
@@ -128,7 +116,7 @@ const styles = StyleSheet.create({
 	buttonContainer: {
 		flex: 1,
 		flexDirection: "row",
-		maxHeight: 75,
+		maxHeight: 50,
 	},
 	button: {
 		width: 150,

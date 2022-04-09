@@ -1,3 +1,4 @@
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React, { useEffect, useState } from "react";
 import {
 	LayoutAnimation,
@@ -6,90 +7,104 @@ import {
 	Text,
 	Dimensions,
 	ScrollView,
+	TextInput,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import ActionButton from "../components/ActionButton";
 import DialogBox from "../components/DialogBox";
 import ReminderList from "../components/ReminderList";
 import { ReminderClass } from "../extras/classes/ReminderClass";
-import { batchAdd } from "../redux/ReminderSlice";
+import {
+	addReminder,
+	batchAdd,
+	addCategory as adc,
+	setEditMode,
+} from "../redux/ReminderSlice";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
+import Modal from "react-native-modal";
+import CustomButton from "../components/SpacedRep/CustomButton";
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withRepeat,
+	withTiming,
+	withSequence,
+} from "react-native-reanimated";
+import { createAnimatableComponent } from "react-native-animatable";
+
+const Tab = createMaterialTopTabNavigator();
+const AnimatedIcon = createAnimatableComponent(AntDesign);
 
 export const ReminderScreen = ({ navigation }) => {
 	const dispatch = useDispatch();
-	const [completedReminders, setCompletedReminders] = useState(
-		useSelector((state) => state.reminders.completed)
-	);
-	const [onGoingReminder, setOnGoingReminders] = useState(
-		useSelector((state) => state.reminders.reminders)
-	);
 	const colors = useSelector((state) => state.colors);
-	const [DialogBoxShow, setDialogBoxShow] = React.useState(false);
-
-	const add = (text) => {
+	const [DialogBoxShow, setDialogBoxShow] = React.useState({
+		visible: false,
+		category: null,
+	});
+	const [categoryModal, setCategoryModal] = useState(false);
+	const editMode = useSelector((state) => state.reminders.editmode);
+	const rotation = useSharedValue(0);
+	const add = (category) => {
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-		setDialogBoxShow(true);
+		setDialogBoxShow({ visible: true, category: category });
 	};
-
-	function setComplete(index) {
-		const localDataList = [...onGoingReminder];
-		const completedState = localDataList[index].completed;
-
-		const selectedReminder = localDataList.splice(index, 1);
-		selectedReminder[0].completed = !completedState;
-
-		const completedReminder = [...completedReminders, selectedReminder[0]];
-		setCompletedReminders(completedReminder);
-		setOnGoingReminders(localDataList);
-		// setReminderList([...localDataList, selectedReminder]);
-
-		// localDataList[index].completed = !completedState;
-	}
-	function setOngoing(index) {
-		const localDataList = [...completedReminders];
-		const completedState = localDataList[index].completed;
-
-		const selectedReminder = localDataList.splice(index, 1);
-		selectedReminder[0].completed = !completedState;
-
-		setCompletedReminders(localDataList);
-		setOnGoingReminders([...onGoingReminder, selectedReminder[0]]);
-
-		// setReminderList([...localDataList, selectedReminder]);
-
-		// localDataList[index].completed = !completedState;
-	}
-
-	console.log("ongoing", onGoingReminder);
-
-	function deleteItemOngoing(index) {
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-		const localDataList = [...onGoingReminder];
-		localDataList.splice(index, 1);
-		setOnGoingReminders(localDataList);
-	}
-	function deleteItemCompleted(index) {
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-		const localDataList = [...completedReminders];
-		localDataList.splice(index, 1);
-		setCompletedReminders(localDataList);
-	}
-
 	const submit = (text, description) => {
-		const reminder = new ReminderClass(text, description);
+		const reminder = new ReminderClass(
+			text,
+			description,
+			DialogBoxShow.category
+		);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-		// let reminders = reminderList ? [...reminderList] : [];
-		const reminders = onGoingReminder?.length ? [...onGoingReminder] : [];
-		reminders.unshift(reminder.objectify());
-		setOnGoingReminders(reminders);
-		setDialogBoxShow(false);
+		dispatch(
+			addReminder({ category: DialogBoxShow.category, reminder: reminder })
+		);
+		setDialogBoxShow({ visible: false, category: null });
 	};
-	useEffect(() => {
-		return () => {
-			dispatch(
-				batchAdd({ reminders: onGoingReminder, completed: completedReminders })
-			);
+
+	const addCategory = (text) => {
+		dispatch(adc({ categoryName: text }));
+	};
+
+	const screenOptions = ({ route }) => ({
+		tabBarIcon: ({ focused, color, size }) => {
+			let iconName;
+
+			if (route.name === "CompletedReminders") {
+				iconName = focused
+					? "checkmark-done-circle"
+					: "checkmark-done-circle-outline";
+			} else if (route.name === "OngoingReminders") {
+				iconName = focused ? "list-circle" : "list-circle-outline";
+			}
+
+			return <Ionicons name={iconName} size={25} color={color} />;
+		},
+		tabBarActiveTintColor: colors.accentColor,
+		tabBarInactiveTintColor: "gray",
+		tabBarIndicatorStyle: { backgroundColor: colors.accentColor },
+		tabBarStyle: { backgroundColor: colors.levelOne },
+		tabBarShowIcon: false,
+		tabBarLabelStyle: { fontSize: 15, fontWeight: "bold" },
+	});
+
+	const animatedStyle = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{
+					rotate: `${rotation.value}deg`,
+				},
+			],
 		};
-	}, [onGoingReminder, completedReminders]);
+	});
+
+	useEffect(() => {
+		rotation.value = withSequence(
+			withTiming(-10, { duration: 100 }),
+			withRepeat(withTiming(5, { duration: 150 }), -1, true),
+			withTiming(0, { duration: 200 })
+		);
+	}, [editMode]);
 
 	return (
 		<View
@@ -98,41 +113,146 @@ export const ReminderScreen = ({ navigation }) => {
 			<View
 				style={[
 					{
-						backgroundColor: colors.levelOne,
+						backgroundColor: editMode ? "red" : colors.levelOne,
 					},
 					styles.header,
 				]}
 			>
 				<Text style={styles.headerText}>Reminders</Text>
-			</View>
-			{/* <ScrollView automaticallyAdjustContentInsets={false}> */}
+				<View
+					style={{
+						flex: 1,
+						justifyContent: "flex-end",
+						alignItems: "center",
 
-			<ReminderList
-				title="For You"
-				DATA={onGoingReminder}
-				deleteItem={deleteItemOngoing}
-				setComplete={setComplete}
-				add={add}
-				actionButton
-				emptyPrompt
-				// customStyles={{ flex: 2 }}
-			/>
-			<ReminderList
-				title="Completed"
-				DATA={completedReminders}
-				deleteItem={deleteItemCompleted}
-				setComplete={setOngoing}
-				add={() => {}}
-			/>
-			{/* </ScrollView> */}
-			{DialogBoxShow ? (
+						flexDirection: "row",
+					}}
+				>
+					<Animated.View
+						style={
+							editMode ? animatedStyle : { transform: [{ rotate: "0deg" }] }
+						}
+					>
+						<AntDesign
+							name={"edit"}
+							size={29}
+							color={"white"}
+							onPress={() => dispatch(setEditMode())}
+							style={[{ paddingHorizontal: 20 }]}
+						/>
+					</Animated.View>
+					<AntDesign
+						name={"plus"}
+						size={29}
+						color="white"
+						onPress={() => setCategoryModal(true)}
+					/>
+				</View>
+			</View>
+
+			<Tab.Navigator screenOptions={screenOptions}>
+				<Tab.Screen
+					component={ReminderList}
+					name="OngoingReminders"
+					options={({ route }) => {
+						route.params = {
+							type: "ongoing",
+							actionButton: "true",
+							add: add,
+						};
+						return {
+							tabBarShowLabel: true,
+							tabBarLabel: "Ongoing",
+						};
+					}}
+				/>
+				<Tab.Screen
+					component={ReminderList}
+					name="CompletedReminders"
+					options={({ route }) => {
+						route.params = {
+							type: "completed",
+						};
+						return {
+							tabBarShowLabel: true,
+							tabBarLabel: "Completed",
+						};
+					}}
+				/>
+			</Tab.Navigator>
+
+			<Modal
+				isVisible={DialogBoxShow.visible}
+				backdropColor="black"
+				backdropOpacity={0.5}
+			>
 				<DialogBox
 					onCancel={setDialogBoxShow}
 					onSubmit={submit}
 					isDescription
 					color={colors}
 				/>
-			) : null}
+			</Modal>
+			<Modal
+				isVisible={categoryModal}
+				backdropColor="black"
+				backdropOpacity={0.5}
+				style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+			>
+				<TextInputModal
+					colors={colors}
+					title={"Make a category"}
+					callback={(value) => {
+						addCategory(value);
+						setCategoryModal(false);
+					}}
+					cancelCallback={() => setCategoryModal(false)}
+				/>
+			</Modal>
+			{/* ) : null} */}
+		</View>
+	);
+};
+
+const TextInputModal = ({ colors, title, callback, cancelCallback }) => {
+	const [text, setText] = useState("");
+	return (
+		<View style={[styles.modalContainer, { backgroundColor: colors.levelTwo }]}>
+			<View>
+				<Text style={styles.titleText}>{title}</Text>
+			</View>
+			<View style={styles.inputHolder}>
+				<TextInput
+					style={{
+						padding: 10,
+						borderBottomColor: "grey",
+						borderBottomWidth: 2,
+						backgroundColor: colors.levelThree,
+						color: "white",
+					}}
+					placeholder="Category Name"
+					onChangeText={(text) => setText(text)}
+					placeholderTextColor={"grey"}
+				/>
+			</View>
+			<View style={styles.buttonHolder}>
+				<CustomButton
+					callback={cancelCallback}
+					text="Cancel"
+					color="#FC3030"
+					textColor={"white"}
+					customStyles={{ padding: 10, margin: 0 }}
+				/>
+				<CustomButton
+					callback={() => {
+						callback(text);
+					}}
+					text="Confirm"
+					color="#00C300"
+					textColor={"white"}
+					customStyles={{ padding: 10, margin: 0 }}
+				/>
+			</View>
 		</View>
 	);
 };
@@ -140,21 +260,46 @@ export const ReminderScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		// paddingTop: 25,
 	},
 	headerText: {
 		fontSize: 30,
 		fontWeight: "bold",
 		color: "white",
-		padding: 10,
-		paddingLeft: 20,
 	},
 	header: {
 		width: Dimensions.get("screen").width,
-		height: 100,
-		justifyContent: "flex-end",
+		height: 75,
+		alignItems: "center",
+		padding: 15,
+
+		flexDirection: "row",
+		paddingTop: 25,
+	},
+	buttonHolder: {
+		// maxHeight: 80,
+		height: 45,
+		// overflow: "hidden",
+		flexDirection: "row",
+	},
+	modalContainer: {
+		width: 300,
+		backgroundColor: "white",
+		borderRadius: 10,
+		padding: 5,
+	},
+	titleText: {
+		fontSize: 20,
+		padding: 20,
+		paddingBottom: 0,
+		fontWeight: "bold",
+		color: "white",
+	},
+	inputHolder: {
+		// backgroundColor: "white",
+		margin: 10,
+		marginVertical: 20,
+		borderRadius: 10,
+		overflow: "hidden",
 	},
 });
 

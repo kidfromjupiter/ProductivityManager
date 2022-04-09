@@ -8,6 +8,7 @@ import {
 	Text,
 	View,
 } from "react-native";
+
 import { useSelector } from "react-redux";
 
 const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
@@ -16,6 +17,7 @@ const ListHeader = ({
 	extraStyle,
 	text,
 	onPressCallback,
+	titleHoldCallback,
 	animation,
 	iconName,
 	iconColor,
@@ -23,6 +25,7 @@ const ListHeader = ({
 	textStyles,
 }) => {
 	const animatedValue = new Animated.Value(1);
+	const animatedValueText = new Animated.Value(1);
 
 	const colors = useSelector((state) => state.colors);
 	LayoutAnimation.configureNext(animation);
@@ -41,19 +44,43 @@ const ListHeader = ({
 			// mass: 1,
 		}).start();
 	};
+
+	const onTouchStartText = () => {
+		Animated.spring(animatedValueText, {
+			toValue: 0.8,
+			useNativeDriver: true,
+			mass: 0.1,
+		}).start();
+	};
+	const onTouchEndText = () => {
+		Animated.spring(animatedValueText, {
+			toValue: 1,
+			useNativeDriver: true,
+		}).start();
+	};
+
 	return (
-		<View style={[styles.container, extraStyle]}>
-			<Text
+		<Pressable
+			style={[styles.container, extraStyle]}
+			onLongPress={titleHoldCallback ? titleHoldCallback : () => {}}
+			onPressIn={onTouchStartText}
+			onPressOut={onTouchEndText}
+		>
+			<Animated.Text
 				style={[
 					styles.text,
 					{
 						color: colors.accentColor,
 					},
 					textStyles,
+					{ transform: [{ scale: animatedValueText }] },
 				]}
+				// onLongPress={titleHoldCallback ? titleHoldCallback : () => {}}
+				// onPressIn={() => console.log("pressin")}
+				// onPressIn={onTouchStartText}
 			>
 				{text}
-			</Text>
+			</Animated.Text>
 
 			<View style={styles.iconContainer}>
 				<Pressable
@@ -76,7 +103,7 @@ const ListHeader = ({
 					/>
 				</Pressable>
 			</View>
-		</View>
+		</Pressable>
 	);
 };
 
