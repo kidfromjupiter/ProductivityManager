@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
 	FlatList,
 	LayoutAnimation,
@@ -7,7 +7,7 @@ import {
 	View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { editReminder } from "../redux/ReminderSlice";
+import { setCompleted } from "../redux/ReminderSlice";
 import ListItemGeneric from "./ListItemGeneric";
 const ListEmpty = ({ emptyText, colors }) => {
 	return (
@@ -25,15 +25,31 @@ const ListEmpty = ({ emptyText, colors }) => {
 };
 
 const MiniReminderView = ({ navigation }) => {
-	// const reminders = useSelector((state) => state.reminders.reminders);
-	const reminders = [];
+	const reminders_redux = useSelector((state) => state.reminders.reminders);
+	const [reminders, setReminders] = useState(() =>
+		getReminders(reminders_redux)
+	);
 	const colors = useSelector((state) => state.colors);
 	const dispatch = useDispatch();
 
-	function setComplete(index) {
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-		dispatch(editReminder({ index: index }));
+	// console.log(Object.keys(reminders2));
+	function getReminders(list) {
+		let totalReminders = [];
+		for (const key in list) {
+			totalReminders = totalReminders.concat(list[key].reminders);
+		}
+		return totalReminders;
 	}
+
+	useEffect(() => {
+		setReminders(getReminders(reminders_redux));
+	}, [reminders_redux]);
+	function setComplete(index, category) {
+		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+		dispatch(setCompleted({ index: index, category: category }));
+	}
+	console.log(colors);
+
 	const renderItem = ({ item, index }) => {
 		return (
 			<ListItemGeneric
@@ -41,10 +57,11 @@ const MiniReminderView = ({ navigation }) => {
 				checkboxColor={colors.accentColor}
 				text={item.title}
 				checkboxTextColor={colors.textColorTwo}
-				onCheck={setComplete}
+				onCheck={() => setComplete(index, item.category)}
 				index={index}
 				isCompleted={item.completed}
 			/>
+			// <View></View>
 		);
 	};
 

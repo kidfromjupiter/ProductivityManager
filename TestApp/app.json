@@ -23,7 +23,7 @@
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#FFFFFF"
 			},
-			"package": "getitdone.com"
+			"package": "getitdonetest.com"
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"

@@ -10,7 +10,7 @@ import QuickView, {
 } from "../components/SpacedRep/HomeScreenQuickView";
 import Square from "../components/square";
 import dateParser from "../extras/dateparser";
-import { getMostRecentEvent } from "../extras/GAuth";
+import { getMostRecentEvent } from "../extras/calendar";
 import { resetTimer, setTimer, startTimer } from "../redux/TimerSlice";
 
 // import Animated, { FadeInDown } from "react-native-reanimated";
@@ -20,6 +20,7 @@ function HomeScreen({ navigation }) {
 	const timer = useSelector((state) => state.time);
 	const color = useSelector((state) => state.colors);
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
+	const idtoken = useSelector((state) => state.gauth);
 	const calID = useSelector((state) => state.gauth.calendarID);
 	const [eventData, setEventData] = useState(null);
 	const [showCountdown, setShowCountdown] = useState(false);
@@ -41,6 +42,7 @@ function HomeScreen({ navigation }) {
 		],
 	};
 
+	// console.log(idtoken);
 	function getTimePrompt() {
 		const time = new Date();
 		if (time.getHours() <= 12) {
@@ -59,7 +61,6 @@ function HomeScreen({ navigation }) {
 
 	function getEvent() {
 		getMostRecentEvent(accessToken, calID)
-			// .then((e) => console.log(e.data))
 			.then((e) => {
 				e.data.items.length > 0
 					? setEventData(e.data.items[0])
@@ -82,7 +83,7 @@ function HomeScreen({ navigation }) {
 
 	useEffect(() => {
 		getEvent();
-	});
+	}, []);
 	useEffect(() => {
 		Animated.timing(fadeAnimValue, {
 			toValue: 1,
@@ -93,15 +94,16 @@ function HomeScreen({ navigation }) {
 			setShowCountdown(true);
 		}, 2700);
 		return () => clearTimeout(interval);
-	}, []);
+	}, [deadline]);
 
 	const { minutes, seconds } = dateParser(timer.time);
+	console.log("deadline time: ", deadline);
 	return (
 		<View
 			style={[styles.rootContainer, { backgroundColor: color.backgroundColor }]}
 		>
 			{showCountdown && deadline != 0 ? (
-				<CountDown deadlineTime={deadline} />
+				<CountDown />
 			) : (
 				<Animated.View
 					style={[

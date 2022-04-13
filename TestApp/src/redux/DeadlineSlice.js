@@ -12,8 +12,14 @@ export const DeadlineSlice = createSlice({
 			localState.deadline = action.payload.deadline;
 			return localState;
 		},
+		clearDeadline: (state, action) => {
+			let localState = JSON.parse(JSON.stringify(state));
+
+			localState.deadline = 0;
+			return localState;
+		},
 	},
 });
 
-export const { setDeadline } = DeadlineSlice.actions;
+export const { setDeadline, clearDeadline } = DeadlineSlice.actions;
 export default DeadlineSlice.reducer;

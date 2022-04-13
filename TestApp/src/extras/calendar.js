@@ -1,13 +1,22 @@
 import axios from "axios";
+import { store } from "../redux/store";
+import { refreshAccessToken } from "./AuthHandler";
 
 axios.defaults.baseURL = "https://www.googleapis.com/calendar/v3";
 
 axios.interceptors.response.use(null, function (error) {
-	console.log(Object.keys(error));
 	if (error.response.status == 403) {
+		//retrying after too many requests
 		return axios(error.config);
 	} else if (error.response.status == 401) {
-		// console.log(error.config);
+		if (store.getState().gauth.isSignedIn) {
+			console.log("running this");
+			const authState = refreshAccessToken();
+			authState.then((e) => {
+				error.config.headers.Authorization = "Bearer " + e.accessToken;
+				return axios(error.config);
+			});
+		}
 		return Promise.reject(error);
 	} else {
 		return Promise.reject(error);
@@ -108,6 +117,7 @@ async function listCalendars(accesstoken) {
 		url: "/users/me/calendarList",
 	});
 }
+
 export {
 	getEvents,
 	addEvent,

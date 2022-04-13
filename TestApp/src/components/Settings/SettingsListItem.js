@@ -4,41 +4,46 @@ import {
 	Text,
 	StyleSheet,
 	Dimensions,
-	TouchableHighlight,
+	TouchableOpacity,
 } from "react-native";
+import { useSelector } from "react-redux";
 
-const SettingsListItem = ({ callback, text, subText }) => {
+const SettingsListItem = ({
+	callback,
+	text,
+	subText,
+	customStyles,
+	subTextColor,
+}) => {
+	const color = useSelector((state) => state.colors);
 	return (
-		<TouchableHighlight
-			style={styles.container}
+		<TouchableOpacity
+			style={[styles.container, customStyles]}
 			onPress={() => (callback ? callback() : null)}
 		>
 			<View style={{ maxWidth: Dimensions.get("window").width - 80 }}>
 				<View style={styles.titleHolder}>
-					<Text style={{ color: "white", fontSize: 18 }}>{text}</Text>
+					<Text style={{ color: color.textColor, fontSize: 18 }}>{text}</Text>
 				</View>
 				<View style={styles.subTextHolder}>
-					<Text style={{ color: "grey" }}>{subText}</Text>
+					<Text style={[{ color: subTextColor ? subTextColor : "grey" }]}>
+						{subText}
+					</Text>
 				</View>
 			</View>
-		</TouchableHighlight>
+		</TouchableOpacity>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
 		width: Dimensions.get("window").width,
-		backgroundColor: "black",
-		borderBottomWidth: 1,
-		borderBottomColor: "grey",
 		padding: 10,
 	},
 	titleHolder: {
 		paddingBottom: 5,
 	},
-	subTextHolder: {
-		paddingBottom: 5,
-	},
+	subTextHolder: {},
 });
 
 export default SettingsListItem;

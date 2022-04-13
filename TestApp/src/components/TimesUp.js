@@ -9,6 +9,7 @@ import Animated, {
 	withTiming,
 	withRepeat,
 	withSpring,
+	runOnJS,
 } from "react-native-reanimated";
 import Modal from "react-native-modal";
 import {
@@ -19,6 +20,7 @@ import { AntDesign } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import LinearGradient from "react-native-linear-gradient";
+import notifee from "@notifee/react-native";
 
 const TimesUp = ({ navigation, isVisible, setIsVisible }) => {
 	const x = useSharedValue(0);
@@ -108,6 +110,7 @@ const TimesUp = ({ navigation, isVisible, setIsVisible }) => {
 									) > 200
 								) {
 									Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+									notifee.cancelNotification("timerFinished");
 									setIsVisible();
 								}
 							}}

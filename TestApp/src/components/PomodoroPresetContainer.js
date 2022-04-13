@@ -1,7 +1,7 @@
-import * as Haptics from 'expo-haptics';
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import InfoCircle from './Circle';
+import * as Haptics from "expo-haptics";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import InfoCircle from "./Circle";
 
 const PomodoroPresetContainer = ({
 	colors,
@@ -77,17 +77,17 @@ const PomodoroPresetContainer = ({
 						styles.titleText,
 						styles.BottomText,
 						{
-							color: 'black',
-							backgroundColor: colors.textColor,
+							color: "black",
+							backgroundColor: colors.levelFour,
 							paddingHorizontal: 30,
 							paddingVertical: 2,
 							borderRadius: 10,
 						},
 					]}
 				>
-					{title.length > 8 ? title.slice(0, 8) + '...' : title}
+					{title.length > 8 ? title.slice(0, 8) + "..." : title}
 				</Text>
-				<View style={{ flexDirection: 'row' }}>
+				<View style={{ flexDirection: "row" }}>
 					<Text
 						style={[
 							styles.titleText,
@@ -116,13 +116,13 @@ const PomodoroPresetContainer = ({
 
 const styles = StyleSheet.create({
 	Presets: {
-		justifyContent: 'space-around',
-		alignItems: 'center',
-		flexDirection: 'row',
+		justifyContent: "space-around",
+		alignItems: "center",
+		flexDirection: "row",
 	},
 	PresetTop: {
 		flex: 4,
-		alignItems: 'center',
+		alignItems: "center",
 		borderBottomWidth: 1,
 	},
 	PresetMiddle: {
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
 	},
 	PresetBottom: {
 		flex: 3,
-		flexDirection: 'column',
+		flexDirection: "column",
 	},
 	circleStyle: {
 		borderWidth: 3,
@@ -139,11 +139,11 @@ const styles = StyleSheet.create({
 		fontSize: 25,
 	},
 	BottomBottomText: {
-		textAlign: 'left',
-		alignSelf: 'flex-end',
+		textAlign: "left",
+		alignSelf: "flex-end",
 		fontSize: 14,
 		paddingHorizontal: 10,
-		textAlignVertical: 'center',
+		textAlignVertical: "center",
 	},
 	PresetInfoContainer: {
 		flex: 1,

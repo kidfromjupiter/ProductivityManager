@@ -1,7 +1,8 @@
-import LottieView from 'lottie-react-native';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import CircularProgress from 'react-native-circular-progress-indicator';
+import LottieView from "lottie-react-native";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import CircularProgress from "react-native-circular-progress-indicator";
+import { useSelector } from "react-redux";
 
 const QuickView = ({
 	navigation,
@@ -9,8 +10,8 @@ const QuickView = ({
 	numberOfReps,
 	repNumber,
 	startDate,
-	colors,
 }) => {
+	const colors = useSelector((state) => state.colors);
 	function day() {
 		const day = new Date(startDate);
 		return day.toUTCString().substring(0, 3);
@@ -22,19 +23,36 @@ const QuickView = ({
 	return (
 		<View style={styles.container}>
 			<View>
-				<View style={styles.titleContainer}>
-					<Text style={[styles.textStyle, { fontWeight: 'bold' }]}>
+				<View
+					style={[
+						styles.titleContainer,
+						{ backgroundColor: colors.accentColor },
+					]}
+				>
+					<Text style={[styles.textStyle, { fontWeight: "bold" }]}>
 						{title}
 					</Text>
 				</View>
 				<View
 					style={[
 						styles.dateHolder,
-						{ justifyContent: 'center', alignItems: 'center' },
+						{ justifyContent: "center", alignItems: "center" },
 					]}
 				>
-					<Text style={[styles.textStyle, { fontSize: 20 }]}>{day()}</Text>
-					<Text style={[styles.textStyle, { fontSize: 14 }]}>
+					<Text
+						style={[
+							styles.textStyle,
+							{ fontSize: 20, color: colors.textColor },
+						]}
+					>
+						{day()}
+					</Text>
+					<Text
+						style={[
+							styles.textStyle,
+							{ fontSize: 14, color: colors.textColor },
+						]}
+					>
 						{MonthandDate()}
 					</Text>
 				</View>
@@ -42,6 +60,8 @@ const QuickView = ({
 			<View>
 				<CircularProgress
 					radius={50}
+					activeStrokeColor={colors.accentColor}
+					inActiveStrokeColor={colors.levelThree}
 					value={(repNumber / numberOfReps) * 100}
 					valueSuffix="%"
 				/>
@@ -55,15 +75,15 @@ const QuickViewSub = ({ color }) => {
 		<View
 			style={{
 				flex: 1,
-				justifyContent: 'center',
-				alignItems: 'center',
+				justifyContent: "center",
+				alignItems: "center",
 				paddingBottom: 5,
 			}}
 		>
 			<LottieView
 				autoPlay
 				loop={false}
-				source={require('../../../assets/animations/wellDone.json')}
+				source={require("../../../assets/animations/wellDone.json")}
 			/>
 			{/* <Text style={{ fontSize: 15, color: color.textColor }}>
 				Congrats! All caught up
@@ -76,20 +96,20 @@ const styles = StyleSheet.create({
 	container: {
 		// justifyContent: "center",
 		padding: 10,
-		alignItems: 'center',
-		flexDirection: 'row',
-		justifyContent: 'space-evenly',
+		alignItems: "center",
+		flexDirection: "row",
+		justifyContent: "space-evenly",
 	},
 	titleContainer: {
-		backgroundColor: '#445168',
+		backgroundColor: "#445168",
 		padding: 6,
 		borderRadius: 10,
 		paddingHorizontal: 10,
 	},
 	textStyle: {
-		color: 'white',
+		color: "white",
 		fontSize: 17,
-		textAlign: 'center',
+		textAlign: "center",
 	},
 	dateHolder: {
 		// backgroundColor: "#445168",

@@ -13,7 +13,7 @@ import {
 } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { SpacedRep } from "../../extras/classes/SpacedRep";
-import { deleteEvent } from "../../extras/GAuth";
+import { deleteEvent } from "../../extras/calendar";
 import { setEvents } from "../../redux/CalendarSlice";
 
 const Tags = ({ name }) => {

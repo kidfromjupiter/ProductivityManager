@@ -15,7 +15,7 @@ import {
 	GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
-import { deleteEvent } from "../../extras/GAuth";
+import { deleteEvent } from "../../extras/calendar";
 import InfoBar from "../InfoBar";
 import CustomButton from "./CustomButton";
 

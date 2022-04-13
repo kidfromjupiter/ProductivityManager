@@ -17,8 +17,10 @@ const DigitContainer = ({ digit, text }) => {
 	const colors = useSelector((state) => state.colors);
 	return (
 		<View style={[styles.digitContainer, { backgroundColor: colors.levelTwo }]}>
-			<Text style={styles.textStyles}>{digit < 10 ? "0" + digit : digit}</Text>
-			<Text style={{ color: "white", paddingBottom: 5 }}>{text}</Text>
+			<Text style={[styles.textStyles, { color: colors.textColor }]}>
+				{digit < 10 ? "0" + digit : digit}
+			</Text>
+			<Text style={{ color: colors.textColor, paddingBottom: 5 }}>{text}</Text>
 			<View
 				style={{
 					position: "absolute",
@@ -33,12 +35,12 @@ const DigitContainer = ({ digit, text }) => {
 	);
 };
 
-export default function CountDown({ deadlineTime }) {
+export default function CountDown() {
 	const today = new Date();
-	const timeLeft = new Date(deadlineTime) - today.getTime();
-	const [time, setTime] = useState(timeLeft);
+	// const timeLeft = new Date(deadlineTime) - today.getTime();
+	const deadline = useSelector((state) => state.deadline.deadline);
+	const [time, setTime] = useState(new Date(deadline) - today.getTime());
 	const dispatch = useDispatch();
-	// const [parsed, setParsed] = useState({days:0, hours:0, minutes:0, seconds:0});
 
 	useEffect(() => {
 		const interval = BackgroundTimer.setInterval(() => {
@@ -50,6 +52,11 @@ export default function CountDown({ deadlineTime }) {
 			BackgroundTimer.clearInterval(interval);
 		};
 	}, [time]);
+
+	useEffect(() => {
+		const timeLeft = new Date(deadline) - today.getTime();
+		setTime(timeLeft);
+	}, [deadline]);
 
 	const d = moment.duration(time);
 	function gettime() {

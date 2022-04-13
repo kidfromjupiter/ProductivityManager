@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const GSlice = createSlice({
-	name: 'gauth',
+	name: "gauth",
 	initialState: {
 		AuthToken: null,
 		calendarID: null,
@@ -15,6 +15,8 @@ export const GSlice = createSlice({
 		profile_pic: null,
 		family_name: null,
 		name: null,
+		state: null,
+		refresh_token: null,
 	},
 	reducers: {
 		setToken: (state, action) => {
@@ -27,9 +29,12 @@ export const GSlice = createSlice({
 			localState.AuthToken = action.payload.AuthToken;
 			// localState.profilepic = action.payload.profilepic;
 			// localState.email = action.payload.email;
-			// localState.refresh_token = action.payload.refresh_token;
+			!localState.refresh_token
+				? (localState.refresh_token = action.payload.refresh_token)
+				: null;
 			localState.expiry = action.payload.expiry;
-			localState.issuedAt = action.payload.issuedAt;
+			localState.state = action.payload.state;
+			localState.IdToken = action.payload.IdToken;
 			return localState;
 		},
 		setGAuthMeta: (state, action) => {
@@ -75,6 +80,11 @@ export const GSlice = createSlice({
 			localState.isSignedIn = false;
 			localState.IdToken = null;
 			localState.shouldSync = false;
+			localState.email = null;
+			localState.profile_pic = null;
+			localState.name = null;
+			localState.family_name = null;
+			localState.state = null;
 			return localState;
 		},
 	},

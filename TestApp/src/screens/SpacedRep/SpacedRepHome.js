@@ -17,13 +17,16 @@ import SearchBar from "../../components/SearchBar";
 import SpacedRepListItem from "../../components/SpacedRep/SpacedRepListItem";
 import TodayInfo from "../../components/SpacedRep/TodayInfoContainer";
 import CalendarEvent from "../../extras/classes/EventsResourceClass";
-import { addCalendar, getEvents } from "../../extras/GAuth";
+import { addCalendar, getEvents } from "../../extras/calendar";
 import { setCalID, setIdToken, setToken } from "../../redux/GAuthSlice";
+import { getCalId } from "../../extras/BACKEND";
 
 const SpacedRepHome = ({ navigation }) => {
 	const dispatch = useDispatch();
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
-	const calID = useSelector((state) => state.gauth.calendarID);
+	const idToken = useSelector((state) => state.gauth.IdToken);
+	// const calID = useSelector((state) => state.gauth.calendarID);
+	const [calID, setCalID] = useState(null);
 	const signedIn = useSelector((state) => state.gauth.isSignedIn);
 	const [selectedData, setSelectedData] = useState(null);
 	const [eventsObjectArray, setObjectArray] = useState(null);
@@ -72,25 +75,18 @@ const SpacedRepHome = ({ navigation }) => {
 		setObjectArray(events);
 		setRefresh(false);
 	}
+
+	// console.log(calID);
 	function refresh() {
-		getEvents(accessToken, calID)
-			.then((e) => {
-				creatingObjectArray(e);
-			})
-			.catch((e) => {
-				if (e.response.data.error.status == "UNAUTHENTICATED") {
-					GoogleSignin.getTokens().then((e) => {
-						dispatch(setToken({ AuthToken: e.accessToken }));
-						dispatch(setIdToken({ IdToken: e.idToken }));
-					});
-				} else if (e.response.data.error.code == 404) {
-					if (accessToken) {
-						addCalendar(accessToken).then((e) => {
-							dispatch(setCalID({ calendarID: e.data.id }));
-						});
-					}
-				}
+		if (!calID) {
+			getCalId(accessToken, idToken).then((e) => {
+				setCalID(e.data.calendarId);
 			});
+		} else {
+			getEvents(accessToken, calID).then((e) => {
+				creatingObjectArray(e);
+			});
+		}
 	}
 	useEffect(() => {
 		if (signedIn) {

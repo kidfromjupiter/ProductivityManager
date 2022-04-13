@@ -61,14 +61,15 @@ export default function SquareListItem({
 				customStyles={{
 					width: expanded.width,
 					height: expanded.height != 0 ? expanded.height : null,
-					marginVertical: 0,
+					marginVertical: 5,
 					borderWidth: expanded.height > 0 ? 2 : 0,
 					borderColor: color.levelThree,
 					marginHorizontal: 3,
 					padding: 0,
 					minHeight: 90,
+					backgroundColor: color.levelOne,
 				}}
-				titleStyle={{ color: "white", padding: 10 }}
+				titleStyle={{ color: color.textColor, padding: 10 }}
 				showTitle
 				touchEndCallback={() => touchEndCallBack(index)}
 				enableLongPress
@@ -90,7 +91,11 @@ export default function SquareListItem({
 							hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
 							style={[styles.iconStyle, { backgroundColor: color.levelThree }]}
 						>
-							<Ionicons name="ios-trash-outline" size={28} color="white" />
+							<Ionicons
+								name="ios-trash-outline"
+								size={28}
+								color={color.textColorTwo}
+							/>
 						</TouchableOpacity>
 						<TouchableOpacity
 							onPress={() => {
@@ -99,13 +104,17 @@ export default function SquareListItem({
 							hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
 							style={[styles.iconStyle, { backgroundColor: color.levelThree }]}
 						>
-							<AntDesign name="check" size={28} color="white" />
+							<AntDesign name="check" size={28} color={color.textColorTwo} />
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.iconStyle, { backgroundColor: color.levelThree }]}
 							hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
 						>
-							<AntDesign name="clockcircleo" size={28} color="white" />
+							<AntDesign
+								name="clockcircleo"
+								size={28}
+								color={color.textColorTwo}
+							/>
 						</TouchableOpacity>
 					</View>
 				) : null}

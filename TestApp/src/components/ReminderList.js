@@ -234,7 +234,7 @@ const ListItem = ({
 					<ListEmpty colors={Color} emptyText="All done! Add a new reminder." />
 				) : null
 			}
-			ItemSeparatorComponent={() => <View style={{ height: 10 }}></View>}
+			// ItemSeparatorComponent={() => <View style={{ height: 10 }}></View>}
 		/>
 	);
 };

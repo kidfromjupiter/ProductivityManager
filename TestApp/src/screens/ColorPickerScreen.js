@@ -1,12 +1,22 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import { StatusBar } from "expo-status-bar";
+import React from "react";
 import {
 	Dimensions,
-	Pressable, StyleSheet, Text, View, VirtualizedList,
-} from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { changeColorScheme } from '../redux/ColorSlice';
-import Pomodoro from './PomodoroScreen';
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+	VirtualizedList,
+	FlatList,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { changeColorScheme } from "../redux/ColorSlice";
+import HomeScreen from "./HomeScreen";
+import Pomodoro from "./PomodoroScreen";
+import ReminderScreen from "./ReminderScreen";
+import SettingsScreen from "./SettingsScreen";
+import TimerScreen from "./TimerScreen";
 
 const ColorPickerScreen = () => {
 	const dispatch = useDispatch();
@@ -14,74 +24,92 @@ const ColorPickerScreen = () => {
 	// let color = "hello";
 	const Data = [
 		{
-			name: 'Slate moss',
-			backgroundColor: '#191F2C',
-			levelOne: '#2B3748',
-			levelTwo: '#445168',
-			levelThree: '#586781',
-			levelFour: '#97A7C2',
-			textColor: '#D7D7D7', // light
-			textColorTwo: '#BECADE', // dark
-			accentColor: '#00D34B',
+			name: "Slate moss",
+			backgroundColor: "#191F2C",
+			levelOne: "#2B3748",
+			levelTwo: "#445168",
+			levelThree: "#586781",
+			levelFour: "#97A7C2",
+			textColor: "#D7D7D7", // light
+			textColorTwo: "#BECADE", // dark
+			accentColor: "#00D34B",
+			statusbarTheme: "light",
 		},
 		{
-			name: 'Rose gold',
-			backgroundColor: '#A86452',
-			levelOne: '#CDA398',
-			levelTwo: '#FDC3B8',
-			levelThree: '#EFCAC3',
-			levelFour: '#FBCEC5',
-			textColor: '#E7D0D4',
-			textColorTwo: '#454545',
-			accentColor: '#7D4348',
+			name: "Rose gold",
+			backgroundColor: "#8E344F",
+			levelOne: "#A25268",
+			levelTwo: "#B5707F",
+			levelThree: "#D092A1",
+			levelFour: "#ECB6BF",
+			textColor: "#FFFFFF",
+			textColorTwo: "#D4BFBA",
+			accentColor: "#4B0C29",
+			statusbarTheme: "light",
 		},
 		{
 			// Pineapple under the sea
-			name: 'Pineapple under the sea',
-			backgroundColor: '#00468B',
-			levelOne: '#118FC8',
-			levelTwo: '#2ECAE9',
-			levelThree: '#8EECFE',
-			levelFour: '#A6EBF8',
-			textColor: '#D9F8FF',
-			textColorTwo: '#454545',
-			accentColor: '#FFE35B',
+			name: "Pineapple under the sea",
+			backgroundColor: "#00468B",
+			levelOne: "#118FC8",
+			levelTwo: "#2ECAE9",
+			levelThree: "#8EECFE",
+			levelFour: "#A6EBF8",
+			textColor: "#D9F8FF",
+			textColorTwo: "#454545",
+			accentColor: "#FFE35B",
+			statusbarTheme: "light",
 		},
 		{
 			// very black
-			name: 'Very black',
-			backgroundColor: '#000000',
-			levelOne: '#292A2A',
-			levelTwo: '#494949',
-			levelThree: '#656565',
-			levelFour: '#767676',
-			textColor: '#D9D9D9',
-			textColorTwo: '#000000',
-			accentColor: '#C6C6C6',
+			name: "Very black",
+			backgroundColor: "#000000",
+			levelOne: "#292A2A",
+			levelTwo: "#494949",
+			levelThree: "#656565",
+			levelFour: "#767676",
+			textColor: "#D9D9D9",
+			textColorTwo: "#000000",
+			accentColor: "#C6C6C6",
+			statusbarTheme: "light",
 		},
 		{
-			// sea green
-			name: 'Sea green',
-			backgroundColor: '#130050',
-			levelOne: '#152068',
-			levelTwo: '#25497F',
-			levelThree: '#367997',
-			levelFour: '#4EADAF',
-			textColor: '#B3CFF7',
-			textColorTwo: '#001423',
-			accentColor: '#38D9DD',
+			//white
+			name: "Regal White",
+			backgroundColor: "#F9F9FA",
+			levelOne: "#EBEEEF",
+			levelTwo: "#DDE1E3",
+			levelThree: "#CED3D7",
+			levelFour: "#BDC5C9",
+			textColor: "#000000",
+			textColorTwo: "#343434",
+			accentColor: "#344047",
+			statusbarTheme: "dark",
 		},
 		{
 			// sunset forest
-			name: 'Sunset forest',
-			backgroundColor: '#30301B',
-			levelOne: '#2F4F31',
-			levelTwo: '#698366',
-			levelThree: '#D6B16F',
-			levelFour: '#E2822C',
-			textColor: '#FFD8C5',
-			textColorTwo: '#311600',
-			accentColor: '#DB5B1E',
+			name: "Halloween",
+			backgroundColor: "#30301B",
+			levelOne: "#2F4F31",
+			levelTwo: "#698366",
+			levelThree: "#D6B16F",
+			levelFour: "#E2822C",
+			textColor: "#FFD8C5",
+			textColorTwo: "#311600",
+			accentColor: "#DB5B1E",
+			statusbarTheme: "light",
+		},
+		{
+			name: "Muted Forest",
+			backgroundColor: "#162F20",
+			levelOne: "#2F573B",
+			levelTwo: "#83A684",
+			levelThree: "#6C8D9A",
+			levelFour: "#C3D0D6",
+			textColor: "#E6F2F7",
+			textColorTwo: "#D7FAE1",
+			accentColor: "#001000",
+			statusbarTheme: "light",
 		},
 	];
 
@@ -95,6 +123,7 @@ const ColorPickerScreen = () => {
 		textColorTwo,
 		accentColor,
 		name,
+		statusbarTheme
 	) => {
 		dispatch(
 			changeColorScheme({
@@ -107,7 +136,8 @@ const ColorPickerScreen = () => {
 				textColorTwo: textColorTwo,
 				accentColor: accentColor,
 				name: name,
-			}),
+				statusbarTheme: statusbarTheme,
+			})
 		);
 	};
 
@@ -128,15 +158,17 @@ const ColorPickerScreen = () => {
 						object.textColorTwo,
 						object.accentColor,
 						object.name,
+						object.statusbarTheme
 					);
 				}}
 				style={{
-					flexDirection: 'row',
+					flexDirection: "row",
 					height: 50,
 					width: 50,
 					borderRadius: 50,
-					overflow: 'hidden',
+					overflow: "hidden",
 					marginHorizontal: 20,
+					elevation: 3,
 				}}
 			>
 				<View style={{ flex: 1, backgroundColor: object.levelOne }}></View>
@@ -146,22 +178,66 @@ const ColorPickerScreen = () => {
 		);
 	};
 
-	return (
-		<View style={styles.rootContainer}>
-			<View style={styles.previewContainer}>
-				<View style={styles.container} pointerEvents="none">
-					<Pomodoro />
-				</View>
-				{/* <View style={styles.container} pointerEvents="none">
-						<HomeScreen />
-					</View> */}
+	const data = [
+		{
+			component: <Pomodoro />,
+			id: 1,
+		},
+		{
+			component: <ReminderScreen />,
+			id: 2,
+		},
+		{
+			component: <HomeScreen />,
+			id: 3,
+		},
+		{
+			component: <SettingsScreen />,
+			id: 4,
+		},
+		{
+			component: <TimerScreen />,
+			id: 5,
+		},
+	];
+
+	const renderItemComponent = ({ item }) => {
+		return (
+			<View
+				style={[
+					styles.container,
+					{ borderWidth: 4, borderColor: color.textColor },
+				]}
+				pointerEvents="none"
+			>
+				{item.component}
 			</View>
-			<Text style={styles.titleText}>{color.name}</Text>
-			<View style={styles.colorHolder}>
+		);
+	};
+	return (
+		<View
+			style={[styles.rootContainer, { backgroundColor: color.backgroundColor }]}
+		>
+			<View style={[styles.previewContainer]}>
+				<FlatList
+					data={data}
+					style={{ maxHeight: Dimensions.get("window").height - 100 }}
+					renderItem={renderItemComponent}
+					horizontal
+					keyExtractor={(item) => item.id}
+					showsHorizontalScrollIndicator={false}
+					initialNumToRender={1}
+				/>
+			</View>
+			<Text style={{ color: color.textColor, paddingBottom: 5 }}>
+				Try swiping right or left
+			</Text>
+			<View style={[styles.colorHolder]}>
+				<Text style={styles.titleText}>{color.name}</Text>
 				<VirtualizedList
 					contentContainerStyle={{
-						alignItems: 'center',
-						justifyContent: 'space-evenly',
+						alignItems: "center",
+						justifyContent: "space-evenly",
 						// flex: 1,
 					}}
 					horizontal
@@ -172,7 +248,6 @@ const ColorPickerScreen = () => {
 					keyExtractor={(item) => item.backgroundColor}
 				/>
 			</View>
-			<StatusBar style="dark" />
 		</View>
 	);
 };
@@ -180,45 +255,44 @@ const ColorPickerScreen = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		width: Dimensions.get('screen').width,
-		height: Dimensions.get('screen').height,
-		transform: [{ scale: 0.72 }],
+		width: Dimensions.get("screen").width,
+		height: Dimensions.get("screen").height,
+		transform: [{ scale: 0.7 }],
 		borderRadius: 30,
-		overflow: 'hidden',
-		// alignSelf: "center"
-
-		elevation: 10,
+		overflow: "hidden",
+		alignSelf: "center",
+		elevation: 15,
 	},
 	rootContainer: {
 		flex: 1,
-		marginTop: 20,
-		justifyContent: 'center',
-		alignContent: 'center',
-		alignItems: 'center',
-		// marginTop: 30,
+		justifyContent: "center",
+		alignContent: "center",
+		alignItems: "center",
 	},
 	previewContainer: {
 		// paddingTop: 30,
-		flex: 6,
-		justifyContent: 'center',
-		alignContent: 'center',
-		flexDirection: 'row',
-		alignItems: 'center',
+		// flex: 6,
+		flex: 10,
+		justifyContent: "center",
+		alignContent: "center",
+		flexDirection: "row",
+		alignItems: "center",
 	},
 	colorHolder: {
-		flex: 1,
+		flex: 2,
 		// backgroundColor: "red",
+		// marginTop: 30,
 	},
 	scrollview: {
 		// justifyContent: "center",
-		alignItems: 'center',
+		alignItems: "center",
 	},
 	titleText: {
 		padding: 10,
-		backgroundColor: '#DDDDDD',
-		textAlign: 'center',
+		backgroundColor: "#DDDDDD",
+		textAlign: "center",
 		borderRadius: 10,
-		fontWeight: 'bold',
+		fontWeight: "bold",
 		fontSize: 20,
 		// elevation: 4,
 	},

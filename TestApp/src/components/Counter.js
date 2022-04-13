@@ -16,6 +16,8 @@ import { logData } from "../redux/TrackerSlice";
 import { Tracker } from "../extras/TrackerObject";
 import { STATUS_CODES } from "../extras/TrackerObject";
 import TimesUp from "./TimesUp";
+import Notify from "../notifee/test";
+import notifee from "@notifee/react-native";
 
 const Presets = ({ colors, resetTimer, setTimer, initialTime }) => {
 	const buttonColor = {
@@ -117,6 +119,7 @@ const Timer = ({
 				if (newTime == 0) {
 					setTimer({ time: newTime });
 					setModalVisible(true);
+					Notify("Times Up", "Time is up!");
 				}
 				setTimer({ time: newTime });
 			}, 1000);
@@ -182,6 +185,7 @@ const Timer = ({
 						style={[
 							styles.timeStyles,
 							context ? { fontSize: timeSize } : { fontSize: 150 },
+							{ color: colors.textColor },
 						]}
 					>
 						{minutes}
@@ -192,6 +196,7 @@ const Timer = ({
 						style={[
 							styles.timeStyles,
 							context ? { fontSize: timeSize } : { fontSize: 150 },
+							{ color: colors.textColor },
 						]}
 					>
 						{seconds}

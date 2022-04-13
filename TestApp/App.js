@@ -3,7 +3,6 @@ import {
 	useNavigationContainerRef,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StatusBar } from "expo-status-bar";
 import * as React from "react";
 import { LogBox, NativeModules } from "react-native";
 import { GoogleSignin } from "react-native-google-signin";
@@ -23,13 +22,16 @@ import SettingsScreen from "./src/screens/SettingsScreen";
 import CreateEvent from "./src/screens/SpacedRep/SpacedRepCreateEvent";
 import SpacedRepHome from "./src/screens/SpacedRep/SpacedRepHome";
 import TimerScreen from "./src/screens/TimerScreen";
+
+// signIn();
+
 LogBox.ignoreLogs(["Setting a timer"]);
 const { UIManager } = NativeModules;
 
 UIManager.setLayoutAnimationEnabledExperimental &&
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 
-const Stack = createNativeStackNavigator();
+// signIn().then(() => refreshAccessToken());
 GoogleSignin.configure({
 	scopes: [
 		"https://www.googleapis.com/auth/calendar",
@@ -40,6 +42,7 @@ GoogleSignin.configure({
 	offlineAccess: true,
 	profileImageSize: 120,
 });
+const Stack = createNativeStackNavigator();
 
 const animation = "fade";
 
@@ -84,6 +87,7 @@ function StackNav() {
 export default function App() {
 	const navigationRef = useNavigationContainerRef();
 	const routeNameRef = React.useRef();
+
 	return (
 		<Provider store={store}>
 			<PersistGate loading={<Loading />} persistor={persistor}>
@@ -109,7 +113,7 @@ export default function App() {
 					</TopLevelContainer>
 				</NavigationContainer>
 			</PersistGate>
-			<StatusBar style="light" />
+			{/* <StatusBar style="light" /> */}
 		</Provider>
 	);
 }

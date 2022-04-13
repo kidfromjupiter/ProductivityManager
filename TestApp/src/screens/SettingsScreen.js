@@ -6,6 +6,7 @@ import {
 	Dimensions,
 	Image,
 	ScrollView,
+	SectionList,
 	StyleSheet,
 	Text,
 	TextInput,
@@ -19,9 +20,10 @@ import SettingsListItem from "../components/Settings/SettingsListItem";
 import CustomButton from "../components/SpacedRep/CustomButton";
 import SuccessAlert from "../components/SuccessAnimation";
 import { createUser, grabData, updateUserData } from "../extras/BACKEND";
-import { deleteCalendar } from "../extras/GAuth";
+import { deleteCalendar } from "../extras/calendar";
 import { changeColorScheme } from "../redux/ColorSlice";
 import DatePicker from "react-native-date-picker";
+import { signIn, signOut } from "../extras/AuthHandler";
 import {
 	resetGAuth,
 	setCalID,
@@ -30,9 +32,9 @@ import {
 	setIsSignedIn,
 	setShouldSync,
 } from "../redux/GAuthSlice";
+import { saveData } from "../extras/AuthHandler";
 import { batchAdd, deleteAllReminders } from "../redux/ReminderSlice";
-import { setDeadline } from "../redux/DeadlineSlice";
-import LottieView from "lottie-react-native";
+import { clearDeadline, setDeadline } from "../redux/DeadlineSlice";
 import LoadingPopup from "../components/LoadingIndicator";
 
 function SettingsScreen({ navigation }) {
@@ -49,37 +51,12 @@ function SettingsScreen({ navigation }) {
 	const [calIdVisible, setCalIdVisible] = useState(false);
 	const IdToken = useSelector((state) => state.gauth.IdToken);
 	const colors = useSelector((state) => state.colors);
-	const reminderList = useSelector((state) => state.reminders);
+	const reminderData = useSelector((state) => state.reminders);
 	const [deadLineModal, setDeadLineModal] = useState(false);
 	const [date, setDate] = useState(new Date());
 	const [text, setText] = useState();
 	const [loading, setLoading] = useState(false);
 	const dispatch = useDispatch();
-
-	function saveData(data) {
-		dispatch(setCalID({ calendarID: data.calID }));
-		dispatch(
-			batchAdd({
-				reminders: data.reminders.reminders,
-				completed: data.reminders.completed,
-			})
-		);
-		dispatch(
-			changeColorScheme({
-				backgroundColor: data.colors.backgroundColor,
-				levelOne: data.colors.levelOne,
-				levelTwo: data.colors.levelTwo,
-				levelThree: data.colors.levelThree,
-				levelFour: data.colors.levelFour,
-				textColor: data.colors.textColor,
-				textColorTwo: data.colors.textColorTwo,
-				accentColor: data.colors.accentColor,
-			})
-		);
-		AsyncStorage.setItem("pomodoro", data.pomodoros).then(() =>
-			setModalVisible(true)
-		);
-	}
 
 	function setData(data, timeSince) {
 		setLoading(true);
@@ -138,22 +115,22 @@ function SettingsScreen({ navigation }) {
 			updateUserData(idToken, {
 				calID: calID,
 				pomodoros: f,
-				reminders: reminderList,
+				reminders: reminderData,
 				colors: colors,
 				deadline: deadline,
 			}).then(() => setLoading(false));
 		});
 	}
 	function fullBackupRestore() {
-		GoogleSignin.signInSilently().then((e) => {
-			grabData(e.idToken).then((e) => {
+		grabData(IdToken)
+			.then((e) => {
 				const data = e.data.data;
 				const date = new Date(data.dateUpdated);
 				const dateNow = new Date();
 				const timeSince = dateNow.getTime() - date.getTime();
 				setData(data.data, timeSince);
-			});
-		});
+			})
+			.then(() => setLoading(false));
 	}
 	function dataWipe() {
 		AsyncStorage.removeItem("pomodoro").then(() => {
@@ -161,285 +138,235 @@ function SettingsScreen({ navigation }) {
 		});
 	}
 
-	useEffect(() => {
-		return () => {
-			dispatch(setDeadline({ deadline: date }));
-		};
-	}, [date]);
+	// useEffect(() => {
+	// 	return () => {
+	// 		dispatch(setDeadline({ deadline: date }));
+	// 	};
+	// }, [date]);
+
+	const renderItem = ({ item }) => {
+		return (
+			<SettingsListItem
+				callback={item.callback}
+				text={item.title}
+				subText={item.subText}
+				customStyles={{ backgroundColor: colors.backgroundColor }}
+				subTextColor={colors.textColorTwo}
+			/>
+		);
+	};
 
 	// console.log(calID);
 	return (
-		<View style={{ flex: 1, backgroundColor: "black" }}>
-			<ScrollView>
-				<View style={styles.top}>
-					<Text style={{ color: "white", fontSize: 40 }}>Settings</Text>
+		<View style={{ flex: 1, backgroundColor: colors.backgroundColor }}>
+			<View style={styles.top}>
+				<Text style={{ color: colors.textColor, fontSize: 40 }}>Settings</Text>
+			</View>
+			{signedIn ? (
+				<View style={styles.accountInfo}>
+					<View>
+						<Text
+							style={[
+								styles.accountText,
+								styles.name,
+								{
+									maxWidth: Dimensions.get("window").width - 75,
+									color: colors.textColor,
+								},
+							]}
+							numberOfLines={1}
+							ellipsizeMode="tail"
+						>
+							{name} {family_name}
+						</Text>
+						<Text style={[styles.accountText, { color: colors.textColor }]}>
+							{email}
+						</Text>
+					</View>
+					<View>
+						<Image style={styles.profile_pic} source={{ uri: profile_pic }} />
+					</View>
 				</View>
-				{signedIn ? (
-					<View style={styles.accountInfo}>
-						<View>
-							<Text
-								style={[
-									styles.accountText,
-									styles.name,
-									{ maxWidth: Dimensions.get("window").width - 75 },
+			) : null}
+			<View style={{ flex: 1 }}>
+				<SectionList
+					renderItem={renderItem}
+					sections={[
+						{
+							title: "Theming",
+							iconName: "appstore1",
+							data: [
+								{
+									title: "Colors",
+									subText: "Change the look and feel",
+									callback: () => navigation.navigate("ColorPicker"),
+								},
+							],
+						},
+						{
+							title: "General",
+							iconName: "swap",
+							data: [
+								{
+									title: "Deadline",
+									subText: "Set deadline for homescreen",
+									callback: () => {
+										setDeadLineModal(true);
+										setModalVisible(true);
+									},
+								},
+								{
+									title: "Clear Deadline",
+									subText: "Reset deadline timer",
+									callback: () => {
+										dispatch(clearDeadline());
+										setModalVisible(true);
+									},
+								},
+								{
+									callback: () => {
+										setLoading(true);
+										AsyncStorage.removeItem("pomodoro").then(() =>
+											setModalVisible(true)
+										);
+									},
+									title: "Nuke Pomodoros",
+									subText: "Delete all pomodoro presets",
+								},
+							],
+						},
+						{
+							title: "Accounts",
+							iconName: "google",
+							data: signedIn
+								? [
+										{
+											callback: () => {
+												setLoading(true);
+												fullBackupRestore();
+											},
+											title: "Restore",
+											subText: "Restore your data",
+										},
+										{
+											callback: () => {
+												setLoading(true);
+												sendData(IdToken);
+											},
+											title: "Backup now",
+											subText: "Manual Backup",
+										},
+										{
+											callback: () => {
+												setLoading(true);
+												signOut();
+												setModalVisible(true);
+												dataWipe();
+											},
+											title: "Sign out",
+											subText:
+												"Sign out of you google account. This will disable spaced repetition, and syncing",
+										},
+								  ]
+								: [
+										{
+											callback: () => {
+												setLoading(true);
+												signIn().then(() => setModalVisible(true));
+											},
+											title: "Sign in",
+											subText: "Sign in to your google account",
+										},
+								  ],
+						},
+					]}
+					renderSectionHeader={({ section }) => {
+						return (
+							<ListHeader
+								text={section.title}
+								extraStyle={[
+									styles.listheader,
+									{ backgroundColor: colors.levelOne },
 								]}
-								numberOfLines={1}
-								ellipsizeMode="tail"
-							>
-								{name} {family_name}
-							</Text>
-							<Text style={[styles.accountText]}>{email}</Text>
-						</View>
-						<View>
-							<Image style={styles.profile_pic} source={{ uri: profile_pic }} />
-						</View>
-					</View>
-				) : null}
-				<View style={{ marginTop: 0 }}>
-					<ListHeader
-						text="Themes"
-						extraStyle={styles.listheader}
-						iconName="appstore1"
-						onPressCallback={() => {}}
-					/>
-					<SettingsListItem
-						callback={() => navigation.navigate("ColorPicker")}
-						text="Colors"
-						subText="Change the look and feel"
-					/>
-					<ListHeader
-						text="Calendar"
-						extraStyle={styles.listheader}
-						iconName="calendar"
-						onPressCallback={() => {}}
-					/>
-					<SettingsListItem
-						callback={() => {
-							setLoading(true);
-							deleteCalendar(accessToken, calID)
-								.then(() => {
-									dispatch(setCalID({ calendarID: null }));
-									setModalVisible(true);
-								})
-								.catch(() => {
-									dispatch(setCalID({ calendarID: null }));
-									setModalVisible(true);
-								});
-						}}
-						text="Nuke Calendar"
-						subText="Delete my spaced repetition calendar and all its events"
-					/>
-					<SettingsListItem
-						callback={() => setCalIdVisible(true)}
-						text="Add Custom Calendar"
-						subText="Add custom google calendar."
-					/>
-					<ListHeader
-						text="General"
-						extraStyle={styles.listheader}
-						iconName="swap"
-						onPressCallback={() => {}}
-					/>
-					<SettingsListItem
-						callback={() => {
-							setDeadLineModal(true);
-							setModalVisible(true);
-						}}
-						text="Deadline"
-						subText="Set a deadline for the homescreen"
-					/>
-					<SettingsListItem
-						callback={() => {
-							setLoading(true);
-							AsyncStorage.removeItem("pomodoro").then(() =>
-								setModalVisible(true)
-							);
-						}}
-						text="Nuke Pomodoros"
-						subText="Delete all pomodoro presets"
-					/>
-					<SettingsListItem
-						callback={() => {
-							setLoading(true);
-							setModalVisible(true);
-							dispatch(deleteAllReminders());
-						}}
-						text="Nuke Reminders"
-						subText="Delete all reminders"
-					/>
-					<ListHeader
-						text="Accounts"
-						extraStyle={styles.listheader}
-						iconName="google"
-						onPressCallback={() => {}}
-					/>
-
-					{!signedIn ? (
-						<SettingsListItem
-							callback={() => {
-								setLoading(true);
-								GoogleSignin.signIn().then((e) => {
-									dispatch(setIsSignedIn({ isSignedIn: true }));
-									grabData(e.idToken).then((e) => {
-										const data = e.data.data.data;
-										const family_name = e.data.data.family_name;
-										const name = e.data.data.name;
-										const profile_pic = e.data.data.profile_pic;
-										const email = e.data.data.email;
-										const calId = e.data.data.data.calID;
-										dispatch(
-											setGAuthMeta({
-												family_name: family_name,
-												name: name,
-												profile_pic: profile_pic,
-												email: email,
-											})
-										);
-										dispatch(setCalID({ calendarID: calId }));
-										dispatch(setShouldSync({ shouldSync: true }));
-										saveData(data);
-									});
-								});
-							}}
-							text="Sign in"
-							subText="Sign in to your google account"
-						/>
-					) : null}
-
-					{signedIn ? (
-						<>
-							<SettingsListItem
-								callback={() => {
-									setLoading(true);
-									fullBackupRestore();
-								}}
-								text="Restore"
-								subText="Restore your data"
+								iconName={section.iconName}
+								onPressCallback={() => {}}
 							/>
-							<SettingsListItem
-								callback={() => {
-									setLoading(true);
-									GoogleSignin.signInSilently().then((e) => {
-										sendData(e.idToken);
-									});
-								}}
-								text="Backup now"
-								subText="Manual Backup"
-							/>
-							{/* <SettingsListItem
-								callback={() => {
-									setLoading(true);
-									GoogleSignin.signInSilently().then((e) => {
-										console.log(e.idToken);
-									});
-								}}
-								text="List Idtoken"
-								// subText="Manual Backup"
-							/> */}
-							<SettingsListItem
-								callback={() => {
-									setLoading(true);
-									GoogleSignin.signInSilently()
-										.then((e) => {
-											createUser(e.idToken).then(() => {
-												sendData(e.idToken);
-												dispatch(setShouldSync({ shouldSync: !shouldSync }));
-											});
-
-											dispatch(setIdToken({ IdToken: e.idToken }));
-											setModalVisible(true);
-										})
-										.catch(() =>
-											Alert.alert(
-												"Sign in Required",
-												"Google sign in required to authenticate to GetItDone servers"
-											)
-										);
-								}}
-								text="Sync"
-								subText={
-									shouldSync ? "Sync is turned on" : "Sync is turned off"
-								}
-							/>
-							<SettingsListItem
-								callback={() => {
-									setLoading(true);
-									GoogleSignin.signInSilently().then((e) => {
-										sendData(e.idToken);
-										GoogleSignin.signOut().then((e) => {
-											dataWipe();
-											setModalVisible(true);
-										});
-									});
-								}}
-								text="Sign out"
-								subText="Sign out of you google account. This will disable spaced repetition, and syncing"
-							/>
-						</>
-					) : null}
-				</View>
-				<SuccessAlert
-					modalVisible={modalVisible}
-					setModalVisible={() => {
-						setModalVisible(false);
-						setLoading(false);
+						);
 					}}
+					keyExtractor={(item, index) => item.title + item.subText}
+					stickySectionHeadersEnabled
 				/>
-				<Modal
-					isVisible={calIdVisible}
-					useNativeDriver
-					useNativeDriverForBackdrop
-					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-				>
-					<View style={styles.modal}>
-						<Text style={styles.text}>Type in a custom google calendar ID</Text>
-						<TextInput
-							style={styles.textInput}
-							onChangeText={(e) => setText(e)}
+			</View>
+			<SuccessAlert
+				modalVisible={modalVisible}
+				setModalVisible={() => {
+					setModalVisible(false);
+					setLoading(false);
+				}}
+			/>
+			<Modal
+				isVisible={calIdVisible}
+				useNativeDriver
+				useNativeDriverForBackdrop
+				style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+			>
+				<View style={styles.modal}>
+					<Text style={styles.text}>Type in a custom google calendar ID</Text>
+					<TextInput
+						style={styles.textInput}
+						onChangeText={(e) => setText(e)}
+					/>
+					<View>
+						<Button
+							title="OK"
+							onPress={() => {
+								setCalIdVisible(false);
+								if (text) {
+									dispatch(setCalID({ calendarID: text }));
+								}
+								setModalVisible(true);
+							}}
+							color="#00D34B"
 						/>
-						<View>
-							<Button
-								title="OK"
-								onPress={() => {
-									setCalIdVisible(false);
-									if (text) {
-										dispatch(setCalID({ calendarID: text }));
-									}
-									setModalVisible(true);
-								}}
-								color="#00D34B"
-							/>
-						</View>
 					</View>
-				</Modal>
-				<Modal
-					isVisible={deadLineModal}
-					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+				</View>
+			</Modal>
+			<Modal
+				isVisible={deadLineModal}
+				style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+			>
+				<View
+					style={{
+						backgroundColor: "white",
+						padding: 20,
+						borderRadius: 10,
+						justifyContent: "space-evenly",
+					}}
 				>
-					<View
-						style={{
-							backgroundColor: "white",
-							padding: 20,
-							borderRadius: 10,
-							justifyContent: "space-evenly",
-						}}
-					>
-						<DatePicker
-							minimumDate={new Date()}
-							mode="date"
-							date={date}
-							onDateChange={(e) => setDate(new Date(e))}
+					<DatePicker
+						minimumDate={new Date()}
+						mode="date"
+						date={date}
+						onDateChange={(e) => setDate(new Date(e))}
+					/>
+					<View style={{ height: 50, marginTop: 10, flexDirection: "row" }}>
+						<CustomButton
+							text="Cancel"
+							callback={() => setDeadLineModal(false)}
+							color="#FC3030"
+							textColor={"white"}
 						/>
-						<View style={{ maxHeight: 50, marginTop: 10 }}>
-							<CustomButton
-								text="Set Deadline"
-								callback={() => setDeadLineModal(false)}
-								color="#00D34B"
-							/>
-						</View>
+						<CustomButton
+							text="Set Deadline"
+							callback={() => {
+								setDeadLineModal(false);
+								dispatch(setDeadline({ deadline: date }));
+							}}
+							color="#00D34B"
+						/>
 					</View>
-				</Modal>
-			</ScrollView>
+				</View>
+			</Modal>
 			{loading ? <LoadingPopup /> : null}
 		</View>
 	);
@@ -449,7 +376,7 @@ const styles = StyleSheet.create({
 		padding: 10,
 		backgroundColor: "#262626",
 		marginHorizontal: 3,
-		marginTop: 5,
+		// marginTop: 5,
 		borderRadius: 10,
 	},
 	modal: {
@@ -471,7 +398,7 @@ const styles = StyleSheet.create({
 		color: "white",
 	},
 	top: {
-		minHeight: 250,
+		minHeight: 200,
 		justifyContent: "center",
 		alignItems: "center",
 	},

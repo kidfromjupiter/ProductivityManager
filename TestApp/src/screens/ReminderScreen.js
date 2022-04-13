@@ -118,7 +118,9 @@ export const ReminderScreen = ({ navigation }) => {
 					styles.header,
 				]}
 			>
-				<Text style={styles.headerText}>Reminders</Text>
+				<Text style={[styles.headerText, { color: colors.textColor }]}>
+					Reminders
+				</Text>
 				<View
 					style={{
 						flex: 1,
@@ -126,6 +128,7 @@ export const ReminderScreen = ({ navigation }) => {
 						alignItems: "center",
 
 						flexDirection: "row",
+						color: colors.textColor,
 					}}
 				>
 					<Animated.View
@@ -136,7 +139,7 @@ export const ReminderScreen = ({ navigation }) => {
 						<AntDesign
 							name={"edit"}
 							size={29}
-							color={"white"}
+							color={colors.textColor}
 							onPress={() => dispatch(setEditMode())}
 							style={[{ paddingHorizontal: 20 }]}
 						/>
@@ -144,7 +147,7 @@ export const ReminderScreen = ({ navigation }) => {
 					<AntDesign
 						name={"plus"}
 						size={29}
-						color="white"
+						color={colors.textColor}
 						onPress={() => setCategoryModal(true)}
 					/>
 				</View>

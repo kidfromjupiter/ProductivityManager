@@ -10,7 +10,7 @@ import ListHeader from "../../components/ListHeader";
 import CustomButton from "../../components/SpacedRep/CustomButton";
 import SuccessAlert from "../../components/SuccessAnimation";
 import { DateTimeGenerator, spacedRepDateGen } from "../../extras/dateparser";
-import { addEvent } from "../../extras/GAuth";
+import { addEvent } from "../../extras/calendar";
 import { setEvents } from "../../redux/CalendarSlice";
 const CreateEvent = ({ navigation }) => {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
