@@ -30,8 +30,8 @@ const ColorPickerScreen = () => {
 			levelTwo: "#445168",
 			levelThree: "#586781",
 			levelFour: "#97A7C2",
-			textColor: "#D7D7D7", // light
-			textColorTwo: "#BECADE", // dark
+			textColorLight: "#D7D7D7", // light
+			textColorDark: "#BECADE", // dark
 			accentColor: "#00D34B",
 			statusbarTheme: "light",
 		},
@@ -42,8 +42,8 @@ const ColorPickerScreen = () => {
 			levelTwo: "#B5707F",
 			levelThree: "#D092A1",
 			levelFour: "#ECB6BF",
-			textColor: "#FFFFFF",
-			textColorTwo: "#D4BFBA",
+			textColorLight: "#FFFFFF",
+			textColorDark: "#D4BFBA",
 			accentColor: "#4B0C29",
 			statusbarTheme: "light",
 		},
@@ -55,8 +55,8 @@ const ColorPickerScreen = () => {
 			levelTwo: "#2ECAE9",
 			levelThree: "#8EECFE",
 			levelFour: "#A6EBF8",
-			textColor: "#D9F8FF",
-			textColorTwo: "#454545",
+			textColorLight: "#D9F8FF",
+			textColorDark: "#454545",
 			accentColor: "#FFE35B",
 			statusbarTheme: "light",
 		},
@@ -68,8 +68,8 @@ const ColorPickerScreen = () => {
 			levelTwo: "#494949",
 			levelThree: "#656565",
 			levelFour: "#767676",
-			textColor: "#D9D9D9",
-			textColorTwo: "#000000",
+			textColorLight: "#D9D9D9",
+			textColorDark: "#000000",
 			accentColor: "#C6C6C6",
 			statusbarTheme: "light",
 		},
@@ -81,9 +81,9 @@ const ColorPickerScreen = () => {
 			levelTwo: "#DDE1E3",
 			levelThree: "#CED3D7",
 			levelFour: "#BDC5C9",
-			textColor: "#000000",
-			textColorTwo: "#343434",
-			accentColor: "#344047",
+			textColorLight: "#d6d6d6",
+			textColorDark: "#343434",
+			accentColor: "#670299",
 			statusbarTheme: "dark",
 		},
 		{
@@ -94,8 +94,8 @@ const ColorPickerScreen = () => {
 			levelTwo: "#698366",
 			levelThree: "#D6B16F",
 			levelFour: "#E2822C",
-			textColor: "#FFD8C5",
-			textColorTwo: "#311600",
+			textColorLight: "#FFD8C5",
+			textColorDark: "#311600",
 			accentColor: "#DB5B1E",
 			statusbarTheme: "light",
 		},
@@ -106,8 +106,8 @@ const ColorPickerScreen = () => {
 			levelTwo: "#83A684",
 			levelThree: "#6C8D9A",
 			levelFour: "#C3D0D6",
-			textColor: "#E6F2F7",
-			textColorTwo: "#D7FAE1",
+			textColorLight: "#E6F2F7",
+			textColorDark: "#D7FAE1",
 			accentColor: "#001000",
 			statusbarTheme: "light",
 		},
@@ -119,8 +119,8 @@ const ColorPickerScreen = () => {
 		levelTwo,
 		levelThree,
 		levelFour,
-		textColor,
-		textColorTwo,
+		textColorLight,
+		textColorDark,
 		accentColor,
 		name,
 		statusbarTheme
@@ -132,8 +132,8 @@ const ColorPickerScreen = () => {
 				levelTwo: levelTwo,
 				levelThree: levelThree,
 				levelFour: levelFour,
-				textColor: textColor,
-				textColorTwo: textColorTwo,
+				textColorLight: textColorLight,
+				textColorDark: textColorDark,
 				accentColor: accentColor,
 				name: name,
 				statusbarTheme: statusbarTheme,
@@ -154,8 +154,8 @@ const ColorPickerScreen = () => {
 						object.levelTwo,
 						object.levelThree,
 						object.levelFour,
-						object.textColor,
-						object.textColorTwo,
+						object.textColorLight,
+						object.textColorDark,
 						object.accentColor,
 						object.name,
 						object.statusbarTheme
@@ -206,7 +206,7 @@ const ColorPickerScreen = () => {
 			<View
 				style={[
 					styles.container,
-					{ borderWidth: 4, borderColor: color.textColor },
+					{ borderWidth: 4, borderColor: color.textColorLight },
 				]}
 				pointerEvents="none"
 			>
@@ -229,7 +229,7 @@ const ColorPickerScreen = () => {
 					initialNumToRender={1}
 				/>
 			</View>
-			<Text style={{ color: color.textColor, paddingBottom: 5 }}>
+			<Text style={{ color: color.textColorLight, paddingBottom: 5 }}>
 				Try swiping right or left
 			</Text>
 			<View style={[styles.colorHolder]}>

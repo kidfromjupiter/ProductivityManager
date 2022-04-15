@@ -20,6 +20,7 @@ import CalendarEvent from "../../extras/classes/EventsResourceClass";
 import { addCalendar, getEvents } from "../../extras/calendar";
 import { setCalID, setIdToken, setToken } from "../../redux/GAuthSlice";
 import { getCalId } from "../../extras/BACKEND";
+import EventCollection from "../../extras/classes/EventCollectionClass";
 
 const SpacedRepHome = ({ navigation }) => {
 	const dispatch = useDispatch();
@@ -71,8 +72,8 @@ const SpacedRepHome = ({ navigation }) => {
 				}
 			});
 		});
-		events.sort((a, b) => a.daysTill() - b.daysTill());
-		setObjectArray(events);
+		const eventcollection = new EventCollection(events);
+		setObjectArray(eventcollection.eventList);
 		setRefresh(false);
 	}
 

@@ -15,7 +15,7 @@ const ListEmpty = ({ emptyText, colors }) => {
 			<Text
 				style={[
 					styles.emptyText,
-					{ color: colors ? colors.textColor : "white" },
+					{ color: colors ? colors.textColorLight : "white" },
 				]}
 			>
 				{emptyText}
@@ -56,7 +56,7 @@ const MiniReminderView = ({ navigation }) => {
 				Checkbox
 				checkboxColor={colors.accentColor}
 				text={item.title}
-				checkboxTextColor={colors.textColorTwo}
+				checkboxTextColor={colors.textColorDark}
 				onCheck={() => setComplete(index, item.category)}
 				index={index}
 				isCompleted={item.completed}

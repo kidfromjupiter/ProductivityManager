@@ -23,7 +23,9 @@ const SettingsListItem = ({
 		>
 			<View style={{ maxWidth: Dimensions.get("window").width - 80 }}>
 				<View style={styles.titleHolder}>
-					<Text style={{ color: color.textColor, fontSize: 18 }}>{text}</Text>
+					<Text style={{ color: color.textColorLight, fontSize: 18 }}>
+						{text}
+					</Text>
 				</View>
 				<View style={styles.subTextHolder}>
 					<Text style={[{ color: subTextColor ? subTextColor : "grey" }]}>

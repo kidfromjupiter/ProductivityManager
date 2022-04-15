@@ -53,8 +53,8 @@ export function saveData(data) {
 			levelTwo: data.colors.levelTwo,
 			levelThree: data.colors.levelThree,
 			levelFour: data.colors.levelFour,
-			textColor: data.colors.textColor,
-			textColorTwo: data.colors.textColorTwo,
+			textColorLight: data.colors.textColorLight,
+			textColorDark: data.colors.textColorDark,
 			accentColor: data.colors.accentColor,
 		})
 	);

@@ -38,12 +38,12 @@ const PomodoroPresetContainer = ({
 					radius={70}
 					color={colors.accentColor}
 					customStyles={[styles.circleStyle]}
-					textColor={colors.textColorTwo}
+					textColorLight={colors.textColorDark}
 					text="min"
 					adjustMargin={-10}
 					backgroundColor={colors.levelThree}
 				/>
-				<Text style={[styles.titleText, { color: colors.textColorTwo }]}>
+				<Text style={[styles.titleText, { color: colors.textColorDark }]}>
 					Session
 				</Text>
 			</View>
@@ -56,12 +56,12 @@ const PomodoroPresetContainer = ({
 					backgroundColor={colors.levelThree}
 					color={colors.accentColor}
 					customStyles={[styles.circleStyle]}
-					textColor={colors.textColorTwo}
+					textColorLight={colors.textColorDark}
 					text="min"
 					textSize={12}
 					adjustMargin={-5}
 				/>
-				<Text style={[styles.titleText, { color: colors.textColorTwo }]}>
+				<Text style={[styles.titleText, { color: colors.textColorDark }]}>
 					Break
 				</Text>
 			</View>
@@ -93,7 +93,7 @@ const PomodoroPresetContainer = ({
 							styles.titleText,
 							styles.BottomText,
 							styles.BottomBottomText,
-							{ color: colors.textColorTwo },
+							{ color: colors.textColorDark },
 						]}
 					>
 						{numOfSessions} sessions
@@ -103,7 +103,7 @@ const PomodoroPresetContainer = ({
 							styles.titleText,
 							styles.BottomText,
 							styles.BottomBottomText,
-							{ color: colors.textColorTwo },
+							{ color: colors.textColorDark },
 						]}
 					>
 						Total : {totalTime}min

@@ -8,8 +8,8 @@ export const ColorSlice = createSlice({
 		levelTwo: "#445168",
 		levelThree: "#586781",
 		levelFour: "#97A7C2",
-		textColor: "#D7D7D7", // light
-		textColorTwo: "#BECADE", // dark
+		textColorLight: "#D7D7D7", // light
+		textColorDark: "#BECADE", // dark
 		accentColor: "#00D34B",
 		statusbarTheme: "light",
 		name: "Slate moss",
@@ -28,7 +28,7 @@ export const ColorSlice = createSlice({
 			state.levelTwo = action.payload;
 		},
 		changeTextColor: (state, action) => {
-			state.textColor = action.payload;
+			state.textColorLight = action.payload;
 		},
 		changeColorScheme: (state, action) => {
 			const localState = JSON.parse(JSON.stringify(state));
@@ -37,8 +37,8 @@ export const ColorSlice = createSlice({
 			localState.levelTwo = action.payload.levelTwo;
 			localState.levelThree = action.payload.levelThree;
 			localState.levelFour = action.payload.levelFour;
-			localState.textColor = action.payload.textColor;
-			localState.textColorTwo = action.payload.textColorTwo;
+			localState.textColorLight = action.payload.textColorLight;
+			localState.textColorDark = action.payload.textColorDark;
 			localState.accentColor = action.payload.accentColor;
 			localState.name = action.payload.name;
 			localState.statusbarTheme = action.payload.statusbarTheme;

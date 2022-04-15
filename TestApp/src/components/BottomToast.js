@@ -7,7 +7,9 @@ const BottomToast = ({ text }) => {
 	return (
 		<View style={styles.rootContainer}>
 			<View style={styles.toastContainer}>
-				<Text style={[styles.text, { color: colors.textColor }]}>{text}</Text>
+				<Text style={[styles.text, { color: colors.textColorLight }]}>
+					{text}
+				</Text>
 			</View>
 		</View>
 	);

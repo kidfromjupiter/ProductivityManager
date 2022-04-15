@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import {
 	LayoutAnimation,
 	Pressable,
 	StyleSheet,
 	Text,
 	View,
-} from 'react-native';
-import BouncyCheckbox from 'react-native-bouncy-checkbox';
+} from "react-native";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 const ListItemGeneric = ({
 	text,
@@ -16,7 +16,7 @@ const ListItemGeneric = ({
 	index,
 	onCheck,
 	isCompleted,
-	textColor,
+	textColorLight,
 	expandOnLongPress,
 	expandHeight,
 	height,
@@ -30,18 +30,18 @@ const ListItemGeneric = ({
 		<View
 			style={[
 				styles.container,
-				{ backgroundColor: isCompleted ? '#6B6B6B' : undefined },
+				{ backgroundColor: isCompleted ? "#6B6B6B" : undefined },
 				listItemStyle,
 				{
 					opacity: isCompleted ? 0.5 : null,
 					height:
-						expanded && expandOnLongPress ?
-							expandHeight :
-							height ?
-								height :
-								flex ?
-									null :
-									50,
+						expanded && expandOnLongPress
+							? expandHeight
+							: height
+							? height
+							: flex
+							? null
+							: 50,
 				},
 			]}
 		>
@@ -61,16 +61,18 @@ const ListItemGeneric = ({
 					delayLongPress={300}
 					hitSlop={2}
 					onLongPress={
-						expandOnLongPress ?
-							() => {
-								LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-								console.log('expanded');
-								setExpanded(!expanded);
-							  } :
-							null
+						expandOnLongPress
+							? () => {
+									LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+									console.log("expanded");
+									setExpanded(!expanded);
+							  }
+							: null
 					}
 				>
-					<Text style={(styles.textStyle, { color: textColor })}>{text}</Text>
+					<Text style={(styles.textStyle, { color: textColorLight })}>
+						{text}
+					</Text>
 					{children}
 				</Pressable>
 			)}
@@ -83,12 +85,12 @@ const styles = StyleSheet.create({
 		// backgroundColor: "red",
 		height: 50,
 		flex: 1,
-		justifyContent: 'center',
+		justifyContent: "center",
 		paddingLeft: 8,
 	},
 	textStyle: {
-		color: 'white',
-		backgroundColor: 'red',
+		color: "white",
+		backgroundColor: "red",
 		flex: 1,
 	},
 });

@@ -147,17 +147,17 @@ const TodayInfo = ({
 											}}
 											color="#FF002D"
 											text="Delete"
-											textColor="#D7D7D7"
+											textColorLight="#D7D7D7"
 										/>
 										{/* <CustomButton
 									text="Modify"
 									color="#586781"
-									textColor="#D7D7D7"
+									textColorLight="#D7D7D7"
 								/>
 								<CustomButton
 									text="Pomodoro"
 									color="#586781"
-									textColor="#D7D7D7"
+									textColorLight="#D7D7D7"
 								/> */}
 									</View>
 									{/* <View style={styles.bottomButtons}>

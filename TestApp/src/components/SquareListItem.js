@@ -69,7 +69,7 @@ export default function SquareListItem({
 					minHeight: 90,
 					backgroundColor: color.levelOne,
 				}}
-				titleStyle={{ color: color.textColor, padding: 10 }}
+				titleStyle={{ color: color.textColorLight, padding: 10 }}
 				showTitle
 				touchEndCallback={() => touchEndCallBack(index)}
 				enableLongPress
@@ -94,7 +94,7 @@ export default function SquareListItem({
 							<Ionicons
 								name="ios-trash-outline"
 								size={28}
-								color={color.textColorTwo}
+								color={color.textColorDark}
 							/>
 						</TouchableOpacity>
 						<TouchableOpacity
@@ -104,7 +104,7 @@ export default function SquareListItem({
 							hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
 							style={[styles.iconStyle, { backgroundColor: color.levelThree }]}
 						>
-							<AntDesign name="check" size={28} color={color.textColorTwo} />
+							<AntDesign name="check" size={28} color={color.textColorDark} />
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.iconStyle, { backgroundColor: color.levelThree }]}
@@ -113,7 +113,7 @@ export default function SquareListItem({
 							<AntDesign
 								name="clockcircleo"
 								size={28}
-								color={color.textColorTwo}
+								color={color.textColorDark}
 							/>
 						</TouchableOpacity>
 					</View>

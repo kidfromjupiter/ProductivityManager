@@ -26,7 +26,7 @@ const Presets = ({ colors, resetTimer, setTimer, initialTime }) => {
 	const buttonTextColor = {
 		color: "white",
 	};
-	const textColor = {
+	const textColorLight = {
 		color: "#D7D7D7",
 	};
 
@@ -185,7 +185,7 @@ const Timer = ({
 						style={[
 							styles.timeStyles,
 							context ? { fontSize: timeSize } : { fontSize: 150 },
-							{ color: colors.textColor },
+							{ color: colors.textColorLight },
 						]}
 					>
 						{minutes}
@@ -196,7 +196,7 @@ const Timer = ({
 						style={[
 							styles.timeStyles,
 							context ? { fontSize: timeSize } : { fontSize: 150 },
-							{ color: colors.textColor },
+							{ color: colors.textColorLight },
 						]}
 					>
 						{seconds}

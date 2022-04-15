@@ -42,7 +42,7 @@ const QuickView = ({
 					<Text
 						style={[
 							styles.textStyle,
-							{ fontSize: 20, color: colors.textColor },
+							{ fontSize: 20, color: colors.textColorLight },
 						]}
 					>
 						{day()}
@@ -50,7 +50,7 @@ const QuickView = ({
 					<Text
 						style={[
 							styles.textStyle,
-							{ fontSize: 14, color: colors.textColor },
+							{ fontSize: 14, color: colors.textColorLight },
 						]}
 					>
 						{MonthandDate()}
@@ -85,7 +85,7 @@ const QuickViewSub = ({ color }) => {
 				loop={false}
 				source={require("../../../assets/animations/wellDone.json")}
 			/>
-			{/* <Text style={{ fontSize: 15, color: color.textColor }}>
+			{/* <Text style={{ fontSize: 15, color: color.textColorLight }}>
 				Congrats! All caught up
 			</Text> */}
 		</View>

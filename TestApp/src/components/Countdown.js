@@ -17,10 +17,12 @@ const DigitContainer = ({ digit, text }) => {
 	const colors = useSelector((state) => state.colors);
 	return (
 		<View style={[styles.digitContainer, { backgroundColor: colors.levelTwo }]}>
-			<Text style={[styles.textStyles, { color: colors.textColor }]}>
+			<Text style={[styles.textStyles, { color: colors.textColorLight }]}>
 				{digit < 10 ? "0" + digit : digit}
 			</Text>
-			<Text style={{ color: colors.textColor, paddingBottom: 5 }}>{text}</Text>
+			<Text style={{ color: colors.textColorLight, paddingBottom: 5 }}>
+				{text}
+			</Text>
 			<View
 				style={{
 					position: "absolute",

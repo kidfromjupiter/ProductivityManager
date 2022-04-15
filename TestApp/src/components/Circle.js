@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 const InfoCircle = ({
 	setRadius,
@@ -10,7 +10,7 @@ const InfoCircle = ({
 	radius,
 	color,
 	customStyles,
-	textColor,
+	textColorLight,
 	adjustMargin,
 	backgroundColor,
 }) => {
@@ -34,7 +34,7 @@ const InfoCircle = ({
 					style={[
 						styles.text,
 						styles.number,
-						{ fontSize: numberSize, color: textColor },
+						{ fontSize: numberSize, color: textColorLight },
 					]}
 				>
 					{number}
@@ -42,7 +42,9 @@ const InfoCircle = ({
 			</View>
 			{text ? (
 				<View style={(styles.Text, { marginTop: adjustMargin })}>
-					<Text style={[styles.text, { fontSize: textSize, color: textColor }]}>
+					<Text
+						style={[styles.text, { fontSize: textSize, color: textColorLight }]}
+					>
 						{text}
 					</Text>
 				</View>
@@ -53,17 +55,17 @@ const InfoCircle = ({
 
 const styles = StyleSheet.create({
 	container: {
-		justifyContent: 'center',
+		justifyContent: "center",
 		flex: 1,
 	},
 	text: {
-		textAlign: 'center',
+		textAlign: "center",
 		// textAlignVertical: "center",
 	},
 	Text: {
 		// flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 	},
 	number: {
 		fontSize: 30,

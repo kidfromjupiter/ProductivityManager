@@ -151,7 +151,7 @@ function SettingsScreen({ navigation }) {
 				text={item.title}
 				subText={item.subText}
 				customStyles={{ backgroundColor: colors.backgroundColor }}
-				subTextColor={colors.textColorTwo}
+				subTextColor={colors.textColorDark}
 			/>
 		);
 	};
@@ -160,7 +160,9 @@ function SettingsScreen({ navigation }) {
 	return (
 		<View style={{ flex: 1, backgroundColor: colors.backgroundColor }}>
 			<View style={styles.top}>
-				<Text style={{ color: colors.textColor, fontSize: 40 }}>Settings</Text>
+				<Text style={{ color: colors.textColorLight, fontSize: 40 }}>
+					Settings
+				</Text>
 			</View>
 			{signedIn ? (
 				<View style={styles.accountInfo}>
@@ -171,7 +173,7 @@ function SettingsScreen({ navigation }) {
 								styles.name,
 								{
 									maxWidth: Dimensions.get("window").width - 75,
-									color: colors.textColor,
+									color: colors.textColorLight,
 								},
 							]}
 							numberOfLines={1}
@@ -179,7 +181,9 @@ function SettingsScreen({ navigation }) {
 						>
 							{name} {family_name}
 						</Text>
-						<Text style={[styles.accountText, { color: colors.textColor }]}>
+						<Text
+							style={[styles.accountText, { color: colors.textColorLight }]}
+						>
 							{email}
 						</Text>
 					</View>
@@ -354,7 +358,7 @@ function SettingsScreen({ navigation }) {
 							text="Cancel"
 							callback={() => setDeadLineModal(false)}
 							color="#FC3030"
-							textColor={"white"}
+							textColorLight={"white"}
 						/>
 						<CustomButton
 							text="Set Deadline"
@@ -429,6 +433,6 @@ export default SettingsScreen;
 // 		levelTwo: "#445168",
 // 		levelThree: "#586781",
 // 		levelFour: "#97A7C2",
-// 		textColor: "#D7D7D7", //light
-// 		textColorTwo: "#BECADE", //dark
+// 		textColorLight: "#D7D7D7", //light
+// 		textColorDark: "#BECADE", //dark
 // 		accentColor: "#00D34B",

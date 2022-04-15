@@ -118,7 +118,7 @@ export const ReminderScreen = ({ navigation }) => {
 					styles.header,
 				]}
 			>
-				<Text style={[styles.headerText, { color: colors.textColor }]}>
+				<Text style={[styles.headerText, { color: colors.textColorLight }]}>
 					Reminders
 				</Text>
 				<View
@@ -128,7 +128,7 @@ export const ReminderScreen = ({ navigation }) => {
 						alignItems: "center",
 
 						flexDirection: "row",
-						color: colors.textColor,
+						color: colors.textColorLight,
 					}}
 				>
 					<Animated.View
@@ -139,7 +139,7 @@ export const ReminderScreen = ({ navigation }) => {
 						<AntDesign
 							name={"edit"}
 							size={29}
-							color={colors.textColor}
+							color={colors.textColorLight}
 							onPress={() => dispatch(setEditMode())}
 							style={[{ paddingHorizontal: 20 }]}
 						/>
@@ -147,7 +147,7 @@ export const ReminderScreen = ({ navigation }) => {
 					<AntDesign
 						name={"plus"}
 						size={29}
-						color={colors.textColor}
+						color={colors.textColorLight}
 						onPress={() => setCategoryModal(true)}
 					/>
 				</View>
@@ -243,7 +243,7 @@ const TextInputModal = ({ colors, title, callback, cancelCallback }) => {
 					callback={cancelCallback}
 					text="Cancel"
 					color="#FC3030"
-					textColor={"white"}
+					textColorLight={"white"}
 					customStyles={{ padding: 10, margin: 0 }}
 				/>
 				<CustomButton
@@ -252,7 +252,7 @@ const TextInputModal = ({ colors, title, callback, cancelCallback }) => {
 					}}
 					text="Confirm"
 					color="#00C300"
-					textColor={"white"}
+					textColorLight={"white"}
 					customStyles={{ padding: 10, margin: 0 }}
 				/>
 			</View>

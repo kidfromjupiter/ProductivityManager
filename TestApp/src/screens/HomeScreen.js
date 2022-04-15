@@ -12,6 +12,7 @@ import Square from "../components/square";
 import dateParser from "../extras/dateparser";
 import { getMostRecentEvent } from "../extras/calendar";
 import { resetTimer, setTimer, startTimer } from "../redux/TimerSlice";
+import ImprovedText from "../components/CustomReactComponent/ImprovedText";
 
 // import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -25,6 +26,7 @@ function HomeScreen({ navigation }) {
 	const [eventData, setEventData] = useState(null);
 	const [showCountdown, setShowCountdown] = useState(false);
 	const deadline = useSelector((state) => state.deadline.deadline);
+	const [welcomeText] = useState(getTimePrompt());
 	const dispatch = useDispatch();
 
 	const fadeAnim = {
@@ -42,7 +44,6 @@ function HomeScreen({ navigation }) {
 		],
 	};
 
-	// console.log(idtoken);
 	function getTimePrompt() {
 		const time = new Date();
 		if (time.getHours() <= 12) {
@@ -97,7 +98,6 @@ function HomeScreen({ navigation }) {
 	}, [deadline]);
 
 	const { minutes, seconds } = dateParser(timer.time);
-	console.log("deadline time: ", deadline);
 	return (
 		<View
 			style={[styles.rootContainer, { backgroundColor: color.backgroundColor }]}
@@ -113,8 +113,22 @@ function HomeScreen({ navigation }) {
 						fadeAnim,
 					]}
 				>
-					<Text style={styles.introText}>Good</Text>
-					<Text style={styles.introText}>{getTimePrompt()}</Text>
+					<ImprovedText
+						style={styles.introText}
+						backgroundColor={color.backgroundColor}
+						text="Good"
+					/>
+					{/* <Text style={[styles.introText, { color: color.textColorDark }]}>
+						Good
+					</Text> */}
+					<ImprovedText
+						style={styles.introText}
+						backgroundColor={color.backgroundColor}
+						text={welcomeText}
+					/>
+					{/* <Text style={[styles.introText, { color: color.textColorDark }]}>
+						{getTimePrompt()}
+					</Text> */}
 				</Animated.View>
 			)}
 

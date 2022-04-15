@@ -1,9 +1,10 @@
 import { AntDesign } from "@expo/vector-icons";
-import React, { useEffect } from "react";
-import { Animated, FlatList, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Animated, FlatList, StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import {
+	color,
 	default as Anim,
 	useAnimatedStyle,
 	useSharedValue,
@@ -15,9 +16,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { SpacedRep } from "../../extras/classes/SpacedRep";
 import { deleteEvent } from "../../extras/calendar";
 import { setEvents } from "../../redux/CalendarSlice";
+import ImprovedText, {
+	getTextColor,
+} from "../CustomReactComponent/ImprovedText";
 
 const Tags = ({ name }) => {
-	return <Text style={styles.tag}>{name}</Text>;
+	return <ImprovedText style={styles.tag}>{name}</ImprovedText>;
 };
 
 const LeftActions = (progress, dragX) => {
@@ -76,6 +80,8 @@ const SpacedRepListItem = ({
 }) => {
 	const calID = useSelector((state) => state.gauth.calendarID);
 	const calendarEvents = useSelector((state) => state.calendar.events);
+	const colors = useSelector((state) => state.colors);
+	const [tagsColor] = useState(getTextColor(colors.levelOne));
 	const rotation = useSharedValue(0);
 	const animatedStyle = useAnimatedStyle(() => {
 		return {
@@ -121,8 +127,6 @@ const SpacedRepListItem = ({
 		}
 	};
 
-	console.log(calendarEvents[spacedRepId]);
-
 	return (
 		<GestureHandlerRootView>
 			<Swipeable
@@ -138,7 +142,11 @@ const SpacedRepListItem = ({
 				}}
 			>
 				<Anim.View
-					style={[styles.container, animatedStyle]}
+					style={[
+						styles.container,
+						{ backgroundColor: colors.levelOne },
+						animatedStyle,
+					]}
 					onTouchEnd={() => {
 						rotation.value = withSequence(
 							withTiming(-1, { duration: 50 }),
@@ -169,10 +177,20 @@ const SpacedRepListItem = ({
 				>
 					<View style={styles.metaContainer}>
 						<View style={styles.titleContainer}>
-							<Text style={styles.titleText}>{title}</Text>
+							<ImprovedText
+								style={[
+									[
+										styles.titleText,
+										{ color: colors.textColorDark },
+										{ color: colors.textColorDark },
+									],
+								]}
+								backgroundColor={colors.levelOne}
+								text={title}
+							></ImprovedText>
 						</View>
 						<View style={styles.tagContainer}>
-							<AntDesign name="tags" size={18} color="#D7D7D7" />
+							<AntDesign name="tags" size={18} color={tagsColor} />
 							<FlatList
 								data={tags}
 								horizontal
@@ -186,24 +204,49 @@ const SpacedRepListItem = ({
 					</View>
 					{!repsLeft ? (
 						<View style={styles.counterHolder}>
-							<View style={styles.counter}>
+							<View
+								style={[
+									styles.counter,
+									{ backgroundColor: colors.accentColor },
+								]}
+							>
 								{daysTill ? (
 									daysTill == 1 ? (
-										<Text style={styles.counterText}>In {daysTill} day</Text>
+										<ImprovedText
+											style={[
+												styles.counterText,
+												// { color: colors.textColorDark },
+											]}
+											text={`In ${daysTill} day`}
+										></ImprovedText>
 									) : (
-										<Text style={styles.counterText}>In {daysTill} days</Text>
+										<ImprovedText
+											style={[
+												styles.counterText,
+												// { color: colors.textColorDark },
+											]}
+											text={`In ${daysTill} days`}
+											backgroundColor={colors.accentColor}
+										></ImprovedText>
 									)
 								) : (
-									<Text style={styles.counterText}>Today</Text>
+									<ImprovedText
+										style={[
+											styles.counterText,
+											{ color: colors.textColorDark },
+										]}
+										text="Today"
+									></ImprovedText>
 								)}
 							</View>
 						</View>
 					) : (
 						<View style={styles.counterHolder}>
 							<View style={styles.counter}>
-								<Text style={styles.counterText}>
-									{repsRemaining} reps left
-								</Text>
+								<ImprovedText
+									style={styles.counterText}
+									text={`${repsRemaining} reps left`}
+								></ImprovedText>
 							</View>
 						</View>
 					)}

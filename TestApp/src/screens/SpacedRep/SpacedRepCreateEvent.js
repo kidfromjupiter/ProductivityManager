@@ -123,7 +123,7 @@ const CreateEvent = ({ navigation }) => {
 							mode="date"
 							onDateChange={onChange_start}
 							fadeToColor="#2B3748"
-							textColor="white"
+							textColorLight="white"
 						/>
 					</View>
 				</View>
@@ -139,7 +139,7 @@ const CreateEvent = ({ navigation }) => {
 							mode="date"
 							onDateChange={onChange_end}
 							fadeToColor="#2B3748"
-							textColor="white"
+							textColorLight="white"
 						/>
 					</View>
 				</View>
@@ -194,7 +194,7 @@ const CreateEvent = ({ navigation }) => {
 						<CustomButton
 							text="Looks about right"
 							color="#00D34B"
-							textColor="white"
+							textColorLight="white"
 							callback={() => {
 								setShow(true);
 								createEventArray();
@@ -244,7 +244,7 @@ const CreateEvent = ({ navigation }) => {
 									setCalendarEvents([]);
 									setMarkedDates({});
 								}}
-								textColor="white"
+								textColorLight="white"
 								icon={
 									<AntDesign
 										name="exclamationcircleo"
@@ -256,7 +256,7 @@ const CreateEvent = ({ navigation }) => {
 							<CustomButton
 								text="Add to calendar"
 								color="#00D34B"
-								textColor="white"
+								textColorLight="white"
 								callback={() => batchAdd().then(setModalVisible(true))}
 								icon={<AntDesign name="calendar" size={24} color="white" />}
 							/>
@@ -365,6 +365,6 @@ export default CreateEvent;
 // levelTwo: "#445168",
 // levelThree: "#586781",
 // levelFour: "#97A7C2",
-// textColor: "#D7D7D7", //light
-// textColorTwo: "#BECADE", //dark
+// textColorLight: "#D7D7D7", //light
+// textColorDark: "#BECADE", //dark
 // accentColor: "#00D34B",
