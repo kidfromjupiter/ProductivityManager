@@ -1,8 +1,7 @@
-import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import {
-	LayoutAnimation, StyleSheet, View,
-} from 'react-native';
+import { Feather } from "@expo/vector-icons";
+import React, { useState } from "react";
+import { LayoutAnimation, StyleSheet, View } from "react-native";
+import { useSelector } from "react-redux";
 
 const GestureSlider = ({
 	onTick,
@@ -11,13 +10,14 @@ const GestureSlider = ({
 	setScrolling,
 	setNotScrolling,
 }) => {
+	const colors = useSelector((state) => state.colors);
 	const [prevLoc, setprevLoc] = useState(null);
 	const [height, setHeight] = useState(24);
 
 	const animation = LayoutAnimation.create(
 		75,
 		LayoutAnimation.Types.linear,
-		LayoutAnimation.Properties.opacity,
+		LayoutAnimation.Properties.opacity
 	);
 
 	function gestureCal(location, timestamp) {
@@ -44,9 +44,9 @@ const GestureSlider = ({
 	}
 
 	return (
-		<View style={styles.topContainer}>
+		<View style={[styles.topContainer]}>
 			<View
-				style={[styles.container]}
+				style={[styles.container, , { backgroundColor: colors.accentColor }]}
 				onStartShouldSetResponder={() => true}
 				onMoveShouldSetResponder={(evt) => true}
 				onResponderMove={(event) => {
@@ -80,12 +80,12 @@ const GestureSlider = ({
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: '#00D34B',
+		backgroundColor: "#00D34B",
 		flex: 1,
 		borderRadius: 50,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
 		// maxHeight: 50,
 		height: 50,
 		// ],
@@ -93,25 +93,25 @@ const styles = StyleSheet.create({
 	topContainer: {
 		flex: 1,
 		// maxHeight: 50,
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	icon: {
 		// padding: 10,
-		backgroundColor: 'white',
+		backgroundColor: "white",
 		zIndex: 10,
 		borderRadius: 25,
 		height: 50,
 		width: 50,
-		textAlignVertical: 'center',
-		textAlign: 'center',
+		textAlignVertical: "center",
+		textAlign: "center",
 	},
 	button: {
 		borderRadius: 50,
-		backgroundColor: '#97A7C2',
+		backgroundColor: "#97A7C2",
 		margin: 3,
-		justifyContent: 'center',
+		justifyContent: "center",
 		// height: 50,
 		// width: 50,
 	},

@@ -36,6 +36,10 @@ import { saveData } from "../extras/AuthHandler";
 import { batchAdd, deleteAllReminders } from "../redux/ReminderSlice";
 import { clearDeadline, setDeadline } from "../redux/DeadlineSlice";
 import LoadingPopup from "../components/LoadingIndicator";
+import ImprovedText, {
+	getTextColor,
+} from "../components/CustomReactComponent/ImprovedText";
+import { resetTracker } from "../redux/TrackerSlice";
 
 function SettingsScreen({ navigation }) {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
@@ -150,8 +154,8 @@ function SettingsScreen({ navigation }) {
 				callback={item.callback}
 				text={item.title}
 				subText={item.subText}
-				customStyles={{ backgroundColor: colors.backgroundColor }}
-				subTextColor={colors.textColorDark}
+				backgroundColor={colors.backgroundColor}
+				// subTextColor={colors.textColorDark}
 			/>
 		);
 	};
@@ -160,9 +164,11 @@ function SettingsScreen({ navigation }) {
 	return (
 		<View style={{ flex: 1, backgroundColor: colors.backgroundColor }}>
 			<View style={styles.top}>
-				<Text style={{ color: colors.textColorLight, fontSize: 40 }}>
-					Settings
-				</Text>
+				<ImprovedText
+					style={{ color: colors.textColorLight, fontSize: 40 }}
+					text="Settings"
+					backgroundColor={colors.backgroundColor}
+				/>
 			</View>
 			{signedIn ? (
 				<View style={styles.accountInfo}>
@@ -173,7 +179,7 @@ function SettingsScreen({ navigation }) {
 								styles.name,
 								{
 									maxWidth: Dimensions.get("window").width - 75,
-									color: colors.textColorLight,
+									color: getTextColor(colors.backgroundColor),
 								},
 							]}
 							numberOfLines={1}
@@ -182,7 +188,10 @@ function SettingsScreen({ navigation }) {
 							{name} {family_name}
 						</Text>
 						<Text
-							style={[styles.accountText, { color: colors.textColorLight }]}
+							style={[
+								styles.accountText,
+								{ color: getTextColor(colors.backgroundColor) },
+							]}
 						>
 							{email}
 						</Text>
@@ -262,9 +271,18 @@ function SettingsScreen({ navigation }) {
 										},
 										{
 											callback: () => {
+												console.log(IdToken);
+												console.log(accessToken);
+											},
+											title: "list idtoken",
+											subText: "idtoken",
+										},
+										{
+											callback: () => {
 												setLoading(true);
 												signOut();
 												setModalVisible(true);
+												dispatch(resetTracker());
 												dataWipe();
 											},
 											title: "Sign out",

@@ -12,6 +12,7 @@ import {
 	setCalID,
 	setShouldSync,
 	resetGAuth,
+	setRefreshing,
 } from "../redux/GAuthSlice";
 import { store } from "../redux/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -39,26 +40,31 @@ function dataWipe() {
 }
 
 export function saveData(data) {
-	store.dispatch(setCalID({ calendarID: data.calID }));
-	store.dispatch(
-		batchAdd({
-			reminders: data.reminders.reminders,
-			completed: data.reminders.completed,
-		})
-	);
-	store.dispatch(
-		changeColorScheme({
-			backgroundColor: data.colors.backgroundColor,
-			levelOne: data.colors.levelOne,
-			levelTwo: data.colors.levelTwo,
-			levelThree: data.colors.levelThree,
-			levelFour: data.colors.levelFour,
-			textColorLight: data.colors.textColorLight,
-			textColorDark: data.colors.textColorDark,
-			accentColor: data.colors.accentColor,
-		})
-	);
-	AsyncStorage.setItem("pomodoro", data.pomodoros);
+	// console.log("called");
+	data.calID ? store.dispatch(setCalID({ calendarID: data.calID })) : null;
+	data.reminders
+		? store.dispatch(
+				batchAdd({
+					reminders: data.reminders?.reminders,
+					completed: data.reminders?.completed,
+				})
+		  )
+		: null;
+	data.colors
+		? store.dispatch(
+				changeColorScheme({
+					backgroundColor: data.colors?.backgroundColor,
+					levelOne: data.colors?.levelOne,
+					levelTwo: data.colors?.levelTwo,
+					levelThree: data.colors?.levelThree,
+					levelFour: data.colors?.levelFour,
+					textColorLight: data.colors?.textColorLight,
+					textColorDark: data.colors?.textColorDark,
+					accentColor: data.colors?.accentColor,
+				})
+		  )
+		: null;
+	AsyncStorage.setItem("pomodoro", data.pomodoros ? data.pomodoros : "");
 }
 
 function setState(accessToken, IdToken) {
@@ -77,30 +83,33 @@ export async function signIn() {
 		// const authState = await authorize(config);
 		if (!signedIn) {
 			GoogleSignin.signIn().then(() => {
-				GoogleSignin.getTokens().then((e) => {
-					setState(e.accessToken, e.idToken);
+				GoogleSignin.getTokens()
+					.then((e) => {
+						setState(e.accessToken, e.idToken);
 
-					grabData(e.idToken).then((e) => {
-						const data = e.data.data.data;
-						const family_name = e.data.data.family_name;
-						const name = e.data.data.name;
-						const profile_pic = e.data.data.profile_pic;
-						const email = e.data.data.email;
-						const calId = e.data.data.data.calID;
-						store.dispatch(
-							setGAuthMeta({
-								family_name: family_name,
-								name: name,
-								profile_pic: profile_pic,
-								email: email,
-							})
-						);
-						store.dispatch(setCalID({ calendarID: calId }));
-						store.dispatch(setShouldSync({ shouldSync: true }));
-						saveData(data);
-						store.dispatch(setIsSignedIn({ isSignedIn: true }));
-					});
-				});
+						grabData(e.idToken).then((e) => {
+							const data = e.data.data.data;
+							const family_name = e.data.data.family_name;
+							const name = e.data.data.name;
+							const profile_pic = e.data.data.profile_pic;
+							const email = e.data.data.email;
+							const calId = e.data.data.data.calID;
+							store.dispatch(
+								setGAuthMeta({
+									family_name: family_name,
+									name: name,
+									profile_pic: profile_pic,
+									email: email,
+								})
+							);
+							store.dispatch(setCalID({ calendarID: calId }));
+							store.dispatch(setShouldSync({ shouldSync: true }));
+							data ? saveData(data) : null;
+
+							store.dispatch(setIsSignedIn({ isSignedIn: true }));
+						});
+					})
+					.catch((e) => console.log(e));
 			});
 		} else {
 			GoogleSignin.signInSilently().then(() => {
@@ -150,9 +159,14 @@ export async function signOut() {
 }
 
 export async function refreshAccessToken() {
+	const refreshing = store.getState().gauth.refreshing;
 	const signIn = await GoogleSignin.signInSilently();
-	return GoogleSignin.getTokens().then((e) => {
-		setState(e.accessToken, e.idToken);
-		return Promise.resolve(e);
-	});
+	if (!refreshing) {
+		store.dispatch(setRefreshing({ refreshing: true }));
+		return GoogleSignin.getTokens().then((e) => {
+			store.dispatch(setRefreshing({ refreshing: false }));
+			setState(e.accessToken, e.idToken);
+			return Promise.resolve(e);
+		});
+	}
 }

@@ -168,6 +168,7 @@ const TimerScreen = () => {
 						minutes={minutes}
 						seconds={seconds}
 						setTimer={SetTimer}
+						backgroundColor={colors.backgroundColor}
 					/>
 				</View>
 			</View>

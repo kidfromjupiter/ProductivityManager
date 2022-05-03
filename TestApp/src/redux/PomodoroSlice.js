@@ -13,6 +13,8 @@ export const PomodoroSlice = createSlice({
 		pomodoroName: "",
 		pomodoroID: null,
 		numOfTotalSessions: 0,
+		initialTime: 0,
+		finishedPomodoros: 0,
 		// activeCycleIndex: 0,
 	},
 	reducers: {
@@ -30,6 +32,10 @@ export const PomodoroSlice = createSlice({
 			localState.isRunning = false;
 			localState.isSession = true;
 			localState.cycleData = [];
+			localState.isPaused = false;
+			localState.numOfPresets = 0;
+			localState.isFinished = false;
+			localState.pomodoroName = "";
 			return localState;
 		},
 		toggleTimer: (state) => {
@@ -52,6 +58,7 @@ export const PomodoroSlice = createSlice({
 			localState.numOfTotalSessions = localState.cycleData.length;
 			const time = localState.cycleData.shift();
 			localState.time = time * 60;
+			localState.initialTime = time * 60;
 			return localState;
 		},
 		setNewCycle: (state) => {
@@ -62,11 +69,18 @@ export const PomodoroSlice = createSlice({
 			}
 			// console.log(time)
 			if (localState.cycleData.length == 0) {
+				localState.finishedPomodoros += 1;
 				localState.isFinished = true;
 			}
 			localState.isRunning = false;
 			localState.isSession = !localState.isSession;
 			localState.time = time * 60;
+			localState.initialTime = time * 60;
+			return localState;
+		},
+		tracker_newday_cleanup: (state) => {
+			const localState = JSON.parse(JSON.stringify(state));
+			localState.finishedPomodoros = 0;
 			return localState;
 		},
 		exitCleanup: (state) => {
@@ -91,5 +105,6 @@ export const {
 	setNewCycle,
 	setCycleData,
 	exitCleanup,
+	tracker_newday_cleanup,
 } = PomodoroSlice.actions;
 export default PomodoroSlice.reducer;

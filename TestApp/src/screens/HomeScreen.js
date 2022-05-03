@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import CountDown from "../components/Countdown";
 import Timer from "../components/Counter";
@@ -13,6 +13,9 @@ import dateParser from "../extras/dateparser";
 import { getMostRecentEvent } from "../extras/calendar";
 import { resetTimer, setTimer, startTimer } from "../redux/TimerSlice";
 import ImprovedText from "../components/CustomReactComponent/ImprovedText";
+import PomodoroQuickView from "../components/PomodoroQuickView";
+import { GradientBackground } from "./Analytics/Today";
+import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 
 // import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -26,7 +29,7 @@ function HomeScreen({ navigation }) {
 	const [eventData, setEventData] = useState(null);
 	const [showCountdown, setShowCountdown] = useState(false);
 	const deadline = useSelector((state) => state.deadline.deadline);
-	const [welcomeText] = useState(getTimePrompt());
+	const [welcomeText, setWelcomeText] = useState(getTimePrompt());
 	const dispatch = useDispatch();
 
 	const fadeAnim = {
@@ -53,10 +56,10 @@ function HomeScreen({ navigation }) {
 			return "Afternoon";
 		}
 		if (time.getHours() >= 15) {
+			if (time.getHours() >= 23) {
+				return "lord. Go to sleep";
+			}
 			return "Evening";
-		}
-		if (time.getHours() >= 23) {
-			return "grief. Go to sleep";
 		}
 	}
 
@@ -83,6 +86,7 @@ function HomeScreen({ navigation }) {
 	};
 
 	useEffect(() => {
+		setWelcomeText(getTimePrompt());
 		getEvent();
 	}, []);
 	useEffect(() => {
@@ -99,9 +103,27 @@ function HomeScreen({ navigation }) {
 
 	const { minutes, seconds } = dateParser(timer.time);
 	return (
-		<View
-			style={[styles.rootContainer, { backgroundColor: color.backgroundColor }]}
-		>
+		<View style={[styles.rootContainer, { backgroundColor: color.levelOne }]}>
+			<Svg style={StyleSheet.absoluteFill}>
+				<Defs>
+					<RadialGradient
+						id="grad"
+						cx="50%"
+						cy="-30%"
+						gradientUnits="userSpaceOnUse"
+					>
+						<Stop offset={0} stopColor={color.levelFour} stopOpacity="0.4" />
+						<Stop offset={1} stopColor={color.levelOne} stopOpacity="1" />
+					</RadialGradient>
+				</Defs>
+				<Rect
+					x="0"
+					y="0"
+					width={Dimensions.get("screen").width}
+					height={Dimensions.get("screen").height}
+					fill="url(#grad)"
+				/>
+			</Svg>
 			{showCountdown && deadline != 0 ? (
 				<CountDown />
 			) : (
@@ -118,17 +140,11 @@ function HomeScreen({ navigation }) {
 						backgroundColor={color.backgroundColor}
 						text="Good"
 					/>
-					{/* <Text style={[styles.introText, { color: color.textColorDark }]}>
-						Good
-					</Text> */}
 					<ImprovedText
 						style={styles.introText}
 						backgroundColor={color.backgroundColor}
 						text={welcomeText}
 					/>
-					{/* <Text style={[styles.introText, { color: color.textColorDark }]}>
-						{getTimePrompt()}
-					</Text> */}
 				</Animated.View>
 			)}
 
@@ -140,16 +156,22 @@ function HomeScreen({ navigation }) {
 					endColor="#6E48AA"
 					navigation={navigation}
 					showTitle
-					customStyles={{ backgroundColor: color.levelOne }}
+					customStyles={{
+						backgroundColor: color.levelOne,
+						overflow: "hidden",
+					}}
 					titleStyle={{ color: color.accentColor }}
-				/>
+				>
+					<PomodoroQuickView />
+					<GradientBackground />
+				</Square>
 				<Square
 					flex={3}
 					text="Timer"
 					startColor="#00143D"
 					endColor="#00257A"
 					navigation={navigation}
-					customStyles={{ backgroundColor: color.levelOne }}
+					customStyles={{ backgroundColor: color.levelOne, overflow: "hidden" }}
 					titleStyle={{ color: color.accentColor }}
 				>
 					<Timer
@@ -162,7 +184,9 @@ function HomeScreen({ navigation }) {
 						minutes={minutes}
 						seconds={seconds}
 						setTimer={SetTimer}
+						backgroundColor={color.backgroundColor}
 					/>
+					<GradientBackground width={Dimensions.get("screen").width} />
 				</Square>
 			</View>
 			<View style={styles.container}>
@@ -174,19 +198,29 @@ function HomeScreen({ navigation }) {
 						endColor="#3a7bd5"
 						navigation={navigation}
 						showTitle
-						customStyles={{ backgroundColor: color.levelOne }}
+						customStyles={{
+							backgroundColor: color.levelOne,
+							overflow: "hidden",
+						}}
 						titleStyle={{ color: color.accentColor }}
-					/>
-					{/* <Square
+					>
+						<GradientBackground />
+					</Square>
+					<Square
 						flex={2}
 						text="Analytics"
 						startColor="#9D50BB"
 						endColor="#6E48AA"
 						navigation={navigation}
 						showTitle
-						customStyles={{ backgroundColor: color.levelOne }}
+						customStyles={{
+							backgroundColor: color.levelOne,
+							overflow: "hidden",
+						}}
 						titleStyle={{ color: color.accentColor }}
-					/> */}
+					>
+						<GradientBackground />
+					</Square>
 				</View>
 				<Square
 					flex={1}
@@ -195,9 +229,10 @@ function HomeScreen({ navigation }) {
 					startColor="#D33E30"
 					navigation={navigation}
 					showTitle
-					customStyles={{ backgroundColor: color.levelOne }}
+					customStyles={{ backgroundColor: color.levelOne, overflow: "hidden" }}
 					titleStyle={{ color: color.accentColor }}
 				>
+					<GradientBackground />
 					{eventData && eventData != "empty" ? (
 						<QuickView
 							title={eventData.summary}
@@ -223,11 +258,12 @@ function HomeScreen({ navigation }) {
 					startColor="#0055BF"
 					navigation={navigation}
 					showTitle
-					customStyles={{ backgroundColor: color.levelOne }}
+					customStyles={{ backgroundColor: color.levelOne, overflow: "hidden" }}
 					titleStyle={{ color: color.accentColor }}
 					iconName="pluscircle"
 				>
 					<MiniReminderView navigation={navigation} />
+					<GradientBackground width={Dimensions.get("screen").width} />
 				</Square>
 			</View>
 		</View>

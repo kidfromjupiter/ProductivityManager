@@ -25,6 +25,7 @@ const Square = ({
 	ParentHoldCallback,
 	touchEndCallback,
 	titleStyle,
+	animationDisabled,
 }) => {
 	const animatedButtonScale = new Animated.Value(0);
 
@@ -58,7 +59,7 @@ const Square = ({
 				animatedScaleStyle,
 			]}
 			onTouchStart={() => {
-				onTouchStart();
+				animationDisabled ? null : onTouchStart();
 			}}
 			onPress={() => {
 				touchEndCallback

@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
+import ImprovedText from "../CustomReactComponent/ImprovedText";
 
 const SettingsListItem = ({
 	callback,
@@ -14,6 +15,7 @@ const SettingsListItem = ({
 	subText,
 	customStyles,
 	subTextColor,
+	backgroundColor,
 }) => {
 	const color = useSelector((state) => state.colors);
 	return (
@@ -23,14 +25,17 @@ const SettingsListItem = ({
 		>
 			<View style={{ maxWidth: Dimensions.get("window").width - 80 }}>
 				<View style={styles.titleHolder}>
-					<Text style={{ color: color.textColorLight, fontSize: 18 }}>
-						{text}
-					</Text>
+					<ImprovedText
+						text={text}
+						backgroundColor={backgroundColor}
+						style={{ fontSize: 18 }}
+					/>
 				</View>
 				<View style={styles.subTextHolder}>
-					<Text style={[{ color: subTextColor ? subTextColor : "grey" }]}>
+					<ImprovedText text={subText} backgroundColor={backgroundColor} />
+					{/* <Text style={[{ color: subTextColor ? subTextColor : "grey" }]}>
 						{subText}
-					</Text>
+					</Text> */}
 				</View>
 			</View>
 		</TouchableOpacity>

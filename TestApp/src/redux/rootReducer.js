@@ -1,4 +1,5 @@
 import { combineReducers } from "@reduxjs/toolkit";
+// import AnalyticsSlice from "./AnalyticsSlice";
 import CalendarSlice from "./CalendarSlice";
 import ColorSlice from "./ColorSlice";
 import DeadlineSlice from "./DeadlineSlice";
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
 	calendar: CalendarSlice,
 	tracker: TrackerSlice,
 	deadline: DeadlineSlice,
+	// analytics:AnalyticsSlice
 });
 
 export default rootReducer;

@@ -10,11 +10,13 @@ import ListHeader from "../../components/ListHeader";
 import CustomButton from "../../components/SpacedRep/CustomButton";
 import SuccessAlert from "../../components/SuccessAnimation";
 import { DateTimeGenerator, spacedRepDateGen } from "../../extras/dateparser";
-import { addEvent } from "../../extras/calendar";
-import { setEvents } from "../../redux/CalendarSlice";
+import { addEvent } from "../../extras/BACKEND";
+import { getTextColor } from "../../components/CustomReactComponent/ImprovedText";
 const CreateEvent = ({ navigation }) => {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
 	const calendarID = useSelector((state) => state.gauth.calendarID);
+	const idtoken = useSelector((state) => state.gauth.IdToken);
+	const colors = useSelector((state) => state.colors);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [endDate, setEndDate] = useState(new Date());
 	const [startDate, setStartDate] = useState(new Date());
@@ -24,9 +26,12 @@ const CreateEvent = ({ navigation }) => {
 	const [scrollEnabled, setScrollEnabled] = useState(true);
 	const [show, setShow] = useState(false);
 	const scrollViewRef = useRef();
-	const [calendarEvents, setCalendarEvents] = useState([]);
-	const [markedDates, setMarkedDates] = useState({});
-	const [CalSliceMeta, setCalSliceMeta] = useState({ id: 0, spacedRep: null });
+	// const [calendarEvents, setCalendarEvents] = useState([]);
+	const [eventMeta, setEventMeta] = useState({
+		calendarEvents: [],
+		markedDates: {},
+	});
+	// const [markedDates, setMarkedDates] = useState({});
 
 	const dispatch = useDispatch();
 
@@ -49,20 +54,22 @@ const CreateEvent = ({ navigation }) => {
 			title,
 			{ tags: tags?.toString() }
 		);
-		setCalendarEvents(CalObjectArray);
-		setCalSliceMeta({ id: SpacedRepObj.id, spacedRep: SpacedRepObj });
+
 		const markedObjects = {};
 		markedDates.forEach((object) => {
+			console.log(object);
 			Object.assign(markedObjects, {
 				[object]: { selected: true, selectedColor: "#00D34B" },
 			});
 		});
-		setMarkedDates(markedObjects);
+		setEventMeta({
+			calendarEvents: CalObjectArray,
+			markedDates: markedObjects,
+		});
 	};
-	async function batchAdd() {
-		await calendarEvents.map((element) => {
-			dispatch(setEvents(CalSliceMeta));
-			addEvent(accessToken, element, calendarID).catch((e) =>
+	function batchAdd() {
+		eventMeta.calendarEvents.map((event) => {
+			addEvent(accessToken, idtoken, event).catch((e) =>
 				console.log(e.response.data)
 			);
 		});
@@ -98,12 +105,26 @@ const CreateEvent = ({ navigation }) => {
 		textDayHeaderFontSize: 16,
 	};
 	return (
-		<View style={styles.container}>
+		<View
+			style={[styles.container, { backgroundColor: colors.backgroundColor }]}
+		>
 			<ScrollView scrollEnabled={scrollEnabled} ref={scrollViewRef}>
-				<View style={[styles.section, styles.intro, { backgroundColor: null }]}>
+				<View
+					style={[
+						styles.section,
+						styles.intro,
+						{ backgroundColor: colors.backgroundColor },
+					]}
+				>
 					<Text style={styles.introText}>Lets get planning!</Text>
 				</View>
-				<View style={[styles.section, { flex: 1, minHeight: 150 }]}>
+				<View
+					style={[
+						styles.section,
+						{ flex: 1, minHeight: 150 },
+						{ backgroundColor: colors.levelOne },
+					]}
+				>
 					<Text style={styles.subtitle}>What should the events be called?</Text>
 					<TextInput
 						placeholder="Title"
@@ -115,15 +136,21 @@ const CreateEvent = ({ navigation }) => {
 					text="Select Starting date"
 					extraStyle={{ paddingHorizontal: 10 }}
 				/>
-				<View style={[styles.section, styles.dates]}>
+				<View
+					style={[
+						styles.section,
+						{ backgroundColor: colors.levelOne },
+						styles.dates,
+					]}
+				>
 					<View style={styles.dateHolder}>
 						<DatePicker
 							date={startDate}
 							minimumDate={new Date()}
 							mode="date"
 							onDateChange={onChange_start}
-							fadeToColor="#2B3748"
-							textColorLight="white"
+							fadeToColor={colors.levelOne}
+							textColorLight={() => getTextColor(colors.levelOne)}
 						/>
 					</View>
 				</View>
@@ -131,19 +158,31 @@ const CreateEvent = ({ navigation }) => {
 					text="Select Ending date"
 					extraStyle={{ paddingHorizontal: 10 }}
 				/>
-				<View style={[styles.section, styles.dates]}>
+				<View
+					style={[
+						styles.section,
+						{ backgroundColor: colors.levelOne },
+						styles.dates,
+					]}
+				>
 					<View style={styles.dateHolder}>
 						<DatePicker
 							date={endDate}
 							minimumDate={startDate}
 							mode="date"
 							onDateChange={onChange_end}
-							fadeToColor="#2B3748"
-							textColorLight="white"
+							fadeToColor={colors.levelOne}
+							textColorLight={() => getTextColor(colors.levelOne)}
 						/>
 					</View>
 				</View>
-				<View style={[styles.section, { flex: 1 }]}>
+				<View
+					style={[
+						styles.section,
+						{ backgroundColor: colors.levelOne },
+						{ flex: 1 },
+					]}
+				>
 					<Text style={styles.subtitle}>
 						Give the event a set of tags seperated with spaces
 					</Text>
@@ -164,7 +203,7 @@ const CreateEvent = ({ navigation }) => {
 						tagTextStyle={{ fontSize: 16 }}
 						containerStyle={{ justifyContent: "center" }}
 						inputStyle={{
-							backgroundColor: "#445168",
+							backgroundColor: colors.levelTwo,
 							borderRadius: 6,
 							color: "white",
 							height: 100,
@@ -172,7 +211,13 @@ const CreateEvent = ({ navigation }) => {
 						}}
 					/>
 				</View>
-				<View style={[styles.section, styles.repCountHolder]}>
+				<View
+					style={[
+						styles.section,
+						{ backgroundColor: colors.levelOne },
+						styles.repCountHolder,
+					]}
+				>
 					<Text style={styles.subtitle}>
 						How many repetitions would you like?
 					</Text>
@@ -192,12 +237,14 @@ const CreateEvent = ({ navigation }) => {
 				{!show ? (
 					<View style={styles.buttonHolder}>
 						<CustomButton
-							text="Looks about right"
+							text="Looks fine"
 							color="#00D34B"
 							textColorLight="white"
 							callback={() => {
 								setShow(true);
 								createEventArray();
+								// batchAdd().then(() => setModalVisible(true));
+
 								scrollViewRef.current.scrollToEnd();
 							}}
 							disabled={
@@ -230,7 +277,7 @@ const CreateEvent = ({ navigation }) => {
 								enableSwipeMonths={true}
 								style={{ borderRadius: 10, overflow: "hidden" }}
 								theme={theme}
-								markedDates={markedDates}
+								markedDates={eventMeta.markedDates}
 								// markedDates={}
 							/>
 						</View>
@@ -241,8 +288,7 @@ const CreateEvent = ({ navigation }) => {
 								color="#FF6700"
 								callback={() => {
 									setShow(false);
-									setCalendarEvents([]);
-									setMarkedDates({});
+									setEventMeta({ calendarEvents: [], markedDates: {} });
 								}}
 								textColorLight="white"
 								icon={
@@ -257,7 +303,10 @@ const CreateEvent = ({ navigation }) => {
 								text="Add to calendar"
 								color="#00D34B"
 								textColorLight="white"
-								callback={() => batchAdd().then(setModalVisible(true))}
+								callback={() => {
+									batchAdd();
+									setModalVisible(true);
+								}}
 								icon={<AntDesign name="calendar" size={24} color="white" />}
 							/>
 						</View>
@@ -269,7 +318,7 @@ const CreateEvent = ({ navigation }) => {
 				setModalVisible={setModalVisible}
 				modalVisible={modalVisible}
 				navigation={navigation}
-				destination="Spaced Repetition"
+				destination="SpacedRepHome"
 			/>
 		</View>
 	);

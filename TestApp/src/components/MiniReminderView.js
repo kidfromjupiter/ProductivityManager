@@ -8,18 +8,19 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setCompleted } from "../redux/ReminderSlice";
+import ImprovedText from "./CustomReactComponent/ImprovedText";
 import ListItemGeneric from "./ListItemGeneric";
 const ListEmpty = ({ emptyText, colors }) => {
 	return (
 		<View style={styles.emptyContainer}>
-			<Text
+			<ImprovedText
+				text={emptyText}
 				style={[
 					styles.emptyText,
 					{ color: colors ? colors.textColorLight : "white" },
 				]}
-			>
-				{emptyText}
-			</Text>
+				backgroundColor={colors.levelTwo}
+			/>
 		</View>
 	);
 };
@@ -48,7 +49,6 @@ const MiniReminderView = ({ navigation }) => {
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 		dispatch(setCompleted({ index: index, category: category }));
 	}
-	console.log(colors);
 
 	const renderItem = ({ item, index }) => {
 		return (
@@ -71,9 +71,7 @@ const MiniReminderView = ({ navigation }) => {
 			onTouchEnd={(event) => event.stopPropagation()}
 			onTouchStart={(event) => event.stopPropagation()}
 		>
-			<View
-				style={[styles.innerContainer, { backgroundColor: colors.levelTwo }]}
-			>
+			<View style={[styles.innerContainer]}>
 				{/* <Text>This is text</Text> */}
 				<FlatList
 					style={styles.listStyle}
@@ -111,14 +109,14 @@ const styles = StyleSheet.create({
 	OuterContainer: {
 		flex: 1,
 		borderRadius: 20,
-		marginHorizontal: 10,
-		marginBottom: 10,
+		marginHorizontal: 5,
+		marginBottom: 5,
 		overflow: "hidden",
 	},
 	innerContainer: {
 		flex: 1,
-		backgroundColor: "#445168",
-		elevation: 2,
+		// backgroundColor: "#445168",
+		// elevation: 2,
 	},
 });
 

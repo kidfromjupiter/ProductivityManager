@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import {
 	LineChart,
@@ -9,84 +9,213 @@ import {
 	StackedBarChart,
 } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
+// import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import History from "./Analytics/History";
+import OverView from "./Analytics/Overview";
+import Today from "./Analytics/Today";
+import ScreenTime from "./Analytics/ScreenTime";
+import {
+	AntDesign,
+	Ionicons,
+	FontAwesome,
+	FontAwesome5,
+} from "@expo/vector-icons";
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+} from "react-native-reanimated";
+import { useSelector } from "react-redux";
+import { BlurView } from "expo-blur";
+import { getDaily, post_analytics_data } from "../extras/Analytics_backend";
+import { default as _ANALYTICS } from "../extras/classes/AnalyticsClass";
+import Loading from "../components/LottieLoading";
+
+const Tab = createBottomTabNavigator();
 
 const Analytics = ({ navigation }) => {
-	const data = {
-		labels: ["Test1", "Test2"],
-		legend: ["L1", "L2", "L3"],
-		data: [
-			[60, 60, 60],
-			[30, 30, 60],
-		],
-		barColors: ["#2FAD14", "#DB3A3A", "#a4b0be"],
+	const colors = useSelector((state) => state.colors);
+
+	const offsetValue = useSharedValue(0);
+
+	function getWidth() {
+		let totalWidth = Dimensions.get("screen").width;
+		totalWidth = totalWidth - 20;
+		return totalWidth / 4;
+	}
+
+	const animatedStyles = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{
+					translateX: offsetValue.value,
+				},
+			],
+		};
+	});
+
+	const springConfig = {
+		mass: 0.5,
 	};
-	const chartConfig = {
-		// backgroundGradientFrom: "#1E2923",
-		// backgroundGradientFromOpacity: 0,
-		// backgroundGradientTo: "#08130D",
-		// backgroundGradientToOpacity: 0.5,
-		color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-		strokeWidth: 2, // optional, default 3
-		barPercentage: 0.6,
-		useShadowColorFromDataset: false, // optional
-	};
-	return (
-		<View style={styles.container}>
-			<Text>Analytics Screen</Text>
-			<StackedBarChart
-				// style={graphStyle}
-				data={data}
-				width={300}
-				height={220}
-				chartConfig={chartConfig}
+
+	function today(params) {
+		return (
+			<Today
+				total_breaktime={analyticsData?.total_breaktime}
+				total_sessiontime={analyticsData?.total_sessiontime}
 			/>
-			{/* <View>
-				<Text>Bezier Line Chart</Text>
-				<LineChart
-					data={{
-						labels: ["January", "February", "March", "April", "May", "June"],
-						datasets: [
-							{
-								data: [
-									Math.random() * 100,
-									Math.random() * 100,
-									Math.random() * 100,
-									Math.random() * 100,
-									Math.random() * 100,
-									Math.random() * 100,
-								],
-							},
-						],
+		);
+	}
+
+	return (
+		<>
+			<Tab.Navigator
+				initialRouteName="Today"
+				screenOptions={{
+					// headerShown: false,
+					headerStyle: { backgroundColor: colors.levelOne },
+					headerTitleStyle: {
+						fontSize: 30,
+						fontWeight: "bold",
+						color: "white",
+					},
+					tabBarStyle: {
+						position: "absolute",
+						margin: 10,
+						height: 60,
+						borderRadius: 10,
+						backgroundColor: colors.levelOne,
+						borderTopWidth: 0,
+					},
+					// tabBarActiveTintColor: colors.accentColor,
+					tabBarShowLabel: false,
+					tabBarBackground: () => {
+						return (
+							<BlurView
+								tint="dark"
+								intensity={100}
+								style={[StyleSheet.absoluteFill, { borderRadius: 10 }]}
+							/>
+						);
+					},
+				}}
+			>
+				<Tab.Screen
+					name="Today"
+					options={{
+						tabBarIcon: ({ focused, color }) =>
+							focused ? (
+								<Ionicons
+									name="ios-today"
+									size={24}
+									color={colors.accentColor}
+								/>
+							) : (
+								<Ionicons
+									name="ios-today-outline"
+									size={24}
+									color={colors.levelTwo}
+								/>
+							),
 					}}
-					width={Dimensions.get("window").width} // from react-native
-					height={220}
-					yAxisLabel="$"
-					yAxisSuffix="k"
-					yAxisInterval={1} // optional, defaults to 1
-					chartConfig={{
-						backgroundColor: "#e26a00",
-						backgroundGradientFrom: "#fb8c00",
-						backgroundGradientTo: "#ffa726",
-						decimalPlaces: 2, // optional, defaults to 2dp
-						color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-						labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-						style: {
-							borderRadius: 16,
+					listeners={({ navigation, route }) => ({
+						tabPress: (e) => {
+							offsetValue.value = withSpring(0, springConfig);
 						},
-						propsForDots: {
-							r: "6",
-							strokeWidth: "2",
-							stroke: "#ffa726",
+					})}
+					component={Today}
+				></Tab.Screen>
+				<Tab.Screen
+					name="Overview"
+					component={OverView}
+					options={{
+						tabBarIcon: ({ focused, color }) =>
+							focused ? (
+								<FontAwesome
+									name="circle"
+									size={24}
+									color={colors.accentColor}
+								/>
+							) : (
+								<FontAwesome
+									name="circle-o"
+									size={24}
+									color={colors.levelTwo}
+								/>
+							),
+					}}
+					listeners={({ navigation, route }) => ({
+						tabPress: (e) => {
+							offsetValue.value = withSpring(getWidth() * 1, springConfig);
 						},
-					}}
-					bezier
-					style={{
-						marginVertical: 8,
-						borderRadius: 16,
-					}}
+					})}
 				/>
-			</View> */}
-		</View>
+				<Tab.Screen
+					options={{
+						tabBarIcon: ({ focused, color }) => {
+							return focused ? (
+								<FontAwesome
+									name="history"
+									size={24}
+									color={colors.accentColor}
+								/>
+							) : (
+								<FontAwesome name="history" size={24} color={colors.levelTwo} />
+							);
+						},
+					}}
+					name="History"
+					component={History}
+					listeners={({ navigation, route }) => ({
+						tabPress: (e) => {
+							offsetValue.value = withSpring(getWidth() * 2, springConfig);
+						},
+					})}
+				/>
+				<Tab.Screen
+					name="ScreenTime"
+					component={ScreenTime}
+					options={{
+						tabBarIcon: ({ focused, color }) =>
+							focused ? (
+								<FontAwesome
+									name="hourglass"
+									size={24}
+									color={colors.accentColor}
+								/>
+							) : (
+								<FontAwesome
+									name="hourglass-o"
+									size={24}
+									color={colors.levelTwo}
+								/>
+							),
+					}}
+					listeners={({ navigation, route }) => ({
+						tabPress: (e) => {
+							offsetValue.value = withSpring(getWidth() * 3, springConfig);
+						},
+					})}
+				/>
+			</Tab.Navigator>
+			<Animated.View
+				style={[
+					{
+						height: 2,
+						width: getWidth() - 20,
+						backgroundColor: colors.accentColor,
+						position: "absolute",
+						bottom: 70,
+						left: 20,
+
+						// borderRadius: 5,
+						// right: 0,
+					},
+					animatedStyles,
+				]}
+			></Animated.View>
+		</>
 	);
 };
 

@@ -105,15 +105,16 @@ const TimesUp = ({ navigation, isVisible, setIsVisible }) => {
 							onGestureEvent={gestureHandler}
 							onEnded={(e) => {
 								if (
-									Math.abs(
-										e.nativeEvent.translationX + e.nativeEvent.translationY
-									) > 200
+									Math.abs(e.nativeEvent.translationX) +
+										Math.abs(e.nativeEvent.translationY) >
+									100
 								) {
 									Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 									notifee.cancelNotification("timerFinished");
 									setIsVisible();
 								}
 							}}
+
 							// minDist={100}
 						>
 							<Animated.View style={[styles.holdButton, animatedButtonStyle]}>

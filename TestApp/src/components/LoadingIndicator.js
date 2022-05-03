@@ -3,9 +3,9 @@ import { View } from "react-native-animatable";
 import LottieView from "lottie-react-native";
 import { StyleSheet } from "react-native";
 
-export default function LoadingPopup({}) {
+export default function LoadingPopup({ customStyles }) {
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, customStyles]}>
 			<LottieView
 				source={require("../../assets/animations/loading5.json")}
 				autoPlay

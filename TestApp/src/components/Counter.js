@@ -18,6 +18,7 @@ import { STATUS_CODES } from "../extras/TrackerObject";
 import TimesUp from "./TimesUp";
 import Notify from "../notifee/test";
 import notifee from "@notifee/react-native";
+import { getTextColor } from "./CustomReactComponent/ImprovedText";
 
 const Presets = ({ colors, resetTimer, setTimer, initialTime }) => {
 	const buttonColor = {
@@ -90,6 +91,7 @@ const Timer = ({
 	setTimer,
 	layoutanimation,
 	timerEndCallback,
+	backgroundColor,
 }) => {
 	const colors = useSelector((state) => state.colors);
 	const [SOUND, setSOUND] = useState(new Audio.Sound());
@@ -185,7 +187,7 @@ const Timer = ({
 						style={[
 							styles.timeStyles,
 							context ? { fontSize: timeSize } : { fontSize: 150 },
-							{ color: colors.textColorLight },
+							{ color: getTextColor(backgroundColor) },
 						]}
 					>
 						{minutes}
@@ -196,7 +198,7 @@ const Timer = ({
 						style={[
 							styles.timeStyles,
 							context ? { fontSize: timeSize } : { fontSize: 150 },
-							{ color: colors.textColorLight },
+							{ color: getTextColor(backgroundColor) },
 						]}
 					>
 						{seconds}

@@ -3,9 +3,15 @@ import { applyMiddleware } from "@reduxjs/toolkit";
 import { createStore } from "redux";
 import { persistReducer, persistStore } from "redux-persist";
 import { STATUS_CODES } from "../extras/TrackerObject";
-import { logData, reset } from "../redux/TrackerSlice";
+import {
+	logData,
+	reset,
+	_SET_dateModified,
+	setNewDay,
+} from "../redux/TrackerSlice";
 import rootReducer from "./rootReducer";
 import { Tracker } from "../extras/TrackerObject";
+import { tracker_newday_cleanup } from "./PomodoroSlice";
 
 const persistConfig = {
 	key: "root",
@@ -19,14 +25,21 @@ function addToTracker(data) {
 	// store.dispatch(reset());
 }
 
+function newDayCleanup_pomodoro() {
+	store.dispatch(tracker_newday_cleanup());
+}
+
 const logger = (store) => (next) => (action) => {
+	// console.log(action.type);
 	if (action.type === "pomodoro/setCycleData") {
-		console.log("this is the payload id", action.payload.id);
 		addToTracker({
 			name: action.payload.name,
 			type: STATUS_CODES.POMODORO_STARTED,
 			id: action.payload.id,
 		});
+	}
+	if (action.type == "tracker/setNewDay") {
+		newDayCleanup_pomodoro();
 	}
 	if (action.type === "pomodoro/setNewCycle") {
 		const state = store.getState();
@@ -47,6 +60,16 @@ const logger = (store) => (next) => (action) => {
 				break;
 		}
 	}
+	// if (action.type.includes("tracker")) {
+	// 	const today = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+	// 	const state = store.getState().tracker;
+	// 	if (!state.dateModified) {
+	// 		store.dispatch(_SET_dateModified({ date: today }));
+	// 	} else if (state.dateModified !== today) {
+	// 		store.dispatch(setNewDay());
+	// 	}
+	// }
+	// console.log( action.type);
 	return next(action);
 };
 const store = createStore(persistedReducer, applyMiddleware(logger));

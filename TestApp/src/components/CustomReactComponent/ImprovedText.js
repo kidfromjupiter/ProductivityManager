@@ -15,7 +15,7 @@ function rgb2hsv(value) {
 
 function getTextColorValue(value) {
 	const v = value[2];
-	if (v < 0.5) {
+	if (v < 0.6) {
 		return "#ffffff";
 	}
 	return "#000000";

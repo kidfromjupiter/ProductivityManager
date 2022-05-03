@@ -31,6 +31,9 @@ import Animated, {
 	withSequence,
 } from "react-native-reanimated";
 import { createAnimatableComponent } from "react-native-animatable";
+import ImprovedText, {
+	getTextColor,
+} from "../components/CustomReactComponent/ImprovedText";
 
 const Tab = createMaterialTopTabNavigator();
 const AnimatedIcon = createAnimatableComponent(AntDesign);
@@ -118,9 +121,11 @@ export const ReminderScreen = ({ navigation }) => {
 					styles.header,
 				]}
 			>
-				<Text style={[styles.headerText, { color: colors.textColorLight }]}>
-					Reminders
-				</Text>
+				<ImprovedText
+					style={[styles.headerText]}
+					text={editMode ? "Edit Reminders" : "Reminders"}
+					backgroundColor={editMode ? "#ff0000" : colors.levelOne}
+				/>
 				<View
 					style={{
 						flex: 1,
@@ -128,7 +133,6 @@ export const ReminderScreen = ({ navigation }) => {
 						alignItems: "center",
 
 						flexDirection: "row",
-						color: colors.textColorLight,
 					}}
 				>
 					<Animated.View
@@ -139,7 +143,7 @@ export const ReminderScreen = ({ navigation }) => {
 						<AntDesign
 							name={"edit"}
 							size={29}
-							color={colors.textColorLight}
+							color={editMode ? "white" : getTextColor(colors.levelOne)}
 							onPress={() => dispatch(setEditMode())}
 							style={[{ paddingHorizontal: 20 }]}
 						/>
@@ -147,7 +151,7 @@ export const ReminderScreen = ({ navigation }) => {
 					<AntDesign
 						name={"plus"}
 						size={29}
-						color={colors.textColorLight}
+						color={editMode ? "white" : getTextColor(colors.levelOne)}
 						onPress={() => setCategoryModal(true)}
 					/>
 				</View>

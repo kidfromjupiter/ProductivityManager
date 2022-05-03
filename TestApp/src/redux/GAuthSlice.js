@@ -4,7 +4,7 @@ export const GSlice = createSlice({
 	name: "gauth",
 	initialState: {
 		AuthToken: null,
-		calendarID: null,
+		calendarId: null,
 		expiry: null,
 		issuedAt: null,
 		shouldRefresh: null,
@@ -17,6 +17,7 @@ export const GSlice = createSlice({
 		name: null,
 		state: null,
 		refresh_token: null,
+		refreshing: false,
 	},
 	reducers: {
 		setToken: (state, action) => {
@@ -47,7 +48,7 @@ export const GSlice = createSlice({
 		},
 		setCalID: (state, action) => {
 			const localState = JSON.parse(JSON.stringify(state));
-			localState.calendarID = action.payload.calendarID;
+			localState.calendarId = action.payload.calendarID;
 			return localState;
 		},
 		setRefreshNeeded: (state, action) => {
@@ -87,6 +88,11 @@ export const GSlice = createSlice({
 			localState.state = null;
 			return localState;
 		},
+		setRefreshing: (state, action) => {
+			const localState = JSON.parse(JSON.stringify(state));
+			localState.refreshing = action.payload.refreshing;
+			return localState;
+		},
 	},
 });
 
@@ -100,5 +106,6 @@ export const {
 	setShouldSync,
 	resetGAuth,
 	setGAuthMeta,
+	setRefreshing,
 } = GSlice.actions;
 export default GSlice.reducer;

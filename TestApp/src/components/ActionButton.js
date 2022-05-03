@@ -1,15 +1,12 @@
-import { AntDesign } from '@expo/vector-icons';
-import React from 'react';
-import {
-	Animated, Pressable,
-	StyleSheet,
-} from 'react-native';
-import { useSelector } from 'react-redux';
-
+import { AntDesign } from "@expo/vector-icons";
+import React from "react";
+import { Animated, Pressable, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
+import { getTextColor } from "./CustomReactComponent/ImprovedText";
 
 const PressableAnimated = Animated.createAnimatedComponent(Pressable);
 
-const ActionButton = ({ text, icon, onPressOut }) => {
+const ActionButton = ({ text, icon, onPressOut, customStyles }) => {
 	const colors = useSelector((state) => state.colors);
 	const animatedScale = new Animated.Value(1);
 
@@ -38,6 +35,7 @@ const ActionButton = ({ text, icon, onPressOut }) => {
 		<PressableAnimated
 			style={[
 				styles.actionbutton,
+				customStyles,
 				animatedScaleStyle,
 				{ backgroundColor: colors.accentColor },
 			]}
@@ -49,23 +47,33 @@ const ActionButton = ({ text, icon, onPressOut }) => {
 				// add();
 			}}
 		>
-			{icon ? icon : <AntDesign name="plus" size={30} color="white" />}
+			{icon ? (
+				icon
+			) : (
+				<AntDesign
+					name="plus"
+					size={30}
+					color={getTextColor(colors.accentColor)}
+				/>
+			)}
 		</PressableAnimated>
 	);
 };
 
 const styles = StyleSheet.create({
 	actionbutton: {
-		position: 'absolute',
+		position: "absolute",
 		zIndex: 1000,
 		bottom: 20,
 		right: 20,
-		backgroundColor: '#ffc484',
+		backgroundColor: "#ffc484",
 		width: 70,
 		height: 70,
-		justifyContent: 'center',
-		alignItems: 'center',
+		justifyContent: "center",
+		alignItems: "center",
 		borderRadius: 40,
+		textAlign: "center",
+		textAlignVertical: "center",
 	},
 });
 export default ActionButton;

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AppState, View } from "react-native";
 import { GoogleSignin } from "react-native-google-signin";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,18 +11,161 @@ import {
 	setIsSignedIn,
 	setToken,
 } from "../redux/GAuthSlice";
+import { store } from "../redux/store";
+import { getTextColor } from "./CustomReactComponent/ImprovedText";
+import BackgroundTimer from "react-native-background-timer-android";
+import { useRoute } from "@react-navigation/native";
+import {
+	reset,
+	_SET_breakTimeTot,
+	_SET_screentime,
+	_SET_sessionTimeTot,
+	_SET_dateModified,
+	setNewDay,
+} from "../redux/TrackerSlice";
+import Analytics from "../extras/classes/AnalyticsClass";
 
-const TopLevelContainer = ({ children }) => {
-	// const signedIn = useSelector((state) => state.gauth.isSignedIn);
-	// const shouldSync = useSelector((state) => state.gauth.shouldSync);
-	// const calID = useSelector((state) => state.gauth.calendarID);
+const TopLevelContainer = ({ children, currentScreen }) => {
 	const colors = useSelector((state) => state.colors);
-	const accesstoken = useSelector((state) => state.gauth.AuthToken);
-	const idtoken = useSelector((state) => state.gauth.IdToken);
-	const gauth = useSelector((state) => state.gauth);
-	// const reminderData = useSelector((state) => state.reminders);
+	const pomodoro = useSelector((state) => state.pomodoro);
+	const tracker = useSelector((state) => state.tracker);
+	const [sessionTime, setSessionTime] = useState(tracker.sessionTimeTot);
+	const [breakTime, setBreakTime] = useState(tracker.breakTimeTot);
+	const [screenTime, setScreenTime] = useState(() => {
+		const { Home, Reminders, SpacedRep, Timer, Settings } = tracker.screenTime;
+
+		return {
+			Home: Home,
+			Reminders: Reminders,
+			SpacedRep: SpacedRep,
+			Timer: Timer,
+			Settings: Settings,
+		};
+	});
+
 	const dispatch = useDispatch();
-	// console.log(gauth);
+
+	// tracker setup
+	useEffect(() => {
+		const today = new Date().toISOString().substring(0, 10);
+		// const today = "2022-10-28";
+		if (!tracker.dateModified) {
+			dispatch(_SET_dateModified({ date: today }));
+		} else if (tracker.dateModified !== today) {
+			dispatch(setNewDay());
+		}
+	}, []);
+
+	useEffect(() => {
+		if (pomodoro.isSession && pomodoro.isRunning) {
+			const interval = BackgroundTimer.setInterval(() => {
+				// dispatch(_SET_sessionTimeTot({ time: tracker.sessionTimeTot + 1 }));
+				setSessionTime(sessionTime + 1);
+			}, 1000);
+			return () => {
+				dispatch(_SET_sessionTimeTot({ time: sessionTime }));
+				BackgroundTimer.clearInterval(interval);
+			};
+		}
+		if (!pomodoro.isSession && pomodoro.isRunning) {
+			const interval = BackgroundTimer.setInterval(() => {
+				setBreakTime(breakTime + 1);
+			}, 1000);
+			return () => {
+				dispatch(_SET_breakTimeTot({ time: breakTime }));
+				BackgroundTimer.clearInterval(interval);
+			};
+		}
+		if (
+			!pomodoro.isRunning &&
+			pomodoro.time > 0 &&
+			currentScreen == "Pomodoro"
+		) {
+			const interval = BackgroundTimer.setInterval(() => {
+				setBreakTime(breakTime + 1);
+			}, 1000);
+			return () => {
+				dispatch(_SET_breakTimeTot({ time: breakTime }));
+				BackgroundTimer.clearInterval(interval);
+			};
+		}
+	}, [
+		pomodoro.isSession,
+		pomodoro.isRunning,
+		sessionTime,
+		breakTime,
+		currentScreen,
+	]);
+
+	//screentime counter
+	useEffect(() => {
+		const { Home, Reminders, SpacedRep, Timer, Settings } = tracker.screenTime;
+		switch (currentScreen) {
+			case "Settings":
+				const settingstimer = setInterval(() => {
+					dispatch(
+						_SET_screentime({ ...tracker.screenTime, Settings: Settings + 1 })
+					);
+				}, 1000);
+				return () => {
+					clearInterval(settingstimer);
+				};
+			case "OngoingReminders":
+			case "CompletedReminders":
+				const reminderstimer = setInterval(() => {
+					dispatch(
+						_SET_screentime({ ...tracker.screenTime, Reminders: Reminders + 1 })
+					);
+				}, 1000);
+				return () => {
+					clearInterval(reminderstimer);
+				};
+			case "Spaced Repetition":
+			case "SpacedRepList":
+			case "SpacedRepHome":
+				const spacedreptimer = setInterval(() => {
+					dispatch(
+						_SET_screentime({ ...tracker.screenTime, SpacedRep: SpacedRep + 1 })
+					);
+				}, 1000);
+				return () => {
+					clearInterval(spacedreptimer);
+				};
+			case "Timer":
+				const timer_time = setInterval(() => {
+					dispatch(
+						_SET_screentime({ ...tracker.screenTime, Timer: Timer + 1 })
+					);
+				}, 1000);
+				return () => {
+					clearInterval(timer_time);
+				};
+			case "Home":
+				const hometimer = setInterval(() => {
+					dispatch(_SET_screentime({ ...tracker.screenTime, Home: Home + 1 }));
+				}, 1000);
+				return () => {
+					clearInterval(hometimer);
+				};
+			default:
+				break;
+		}
+	}, [tracker.screenTime, currentScreen]);
+
+	// console.log(
+	// 	JSON.stringify(
+	// 		new Analytics(
+	// 			tracker.breakTimeTot,
+	// 			tracker.sessionTimeTot,
+	// 			tracker.screenTime,
+	// 			tracker.trackingData,
+	// 			tracker.dateModified
+	// 		)
+	// 	)
+	// );
+	// BackgroundTimer.setInterval(() => {
+	// 	console.log("hello");
+	// }, 1000);
 
 	// function sendData(idToken) {
 	// 	AsyncStorage.getItem("pomodoro").then((f) => {
@@ -34,22 +177,14 @@ const TopLevelContainer = ({ children }) => {
 	// 		}).then(() => console.log("backed up"));
 	// 	});
 	// }
-	// const handleAppStateChange = (nextAppState) => {
-	// 	if (nextAppState === "background") {
-	// 		if (signedIn && shouldSync) {
-	// 			GoogleSignin.signInSilently().then((e) => {
-	// 				sendData(e.idToken);
-	// 			});
-	// 		}
-	// 	}
-	// };
+
 	//setting the calID
-	useEffect(() => {
-		const result = getCalId(accesstoken, idtoken);
-		result.then((e) => {
-			dispatch(setCalID({ calendarID: e.data.calendarId }));
-		});
-	}, []);
+	// useEffect(() => {
+	// 	const result = getCalId(accesstoken, idtoken);
+	// 	result.then((e) => {
+	// 		dispatch(setCalID({ calendarID: e.data.calendarId }));
+	// 	});
+	// }, []);
 
 	// useEffect(() => {
 	// 	if (signedIn) {
@@ -85,10 +220,12 @@ const TopLevelContainer = ({ children }) => {
 				style={{
 					backgroundColor: colors.backgroundColor,
 					zIndex: -10,
+					flex: 1,
 				}}
-			></View>
-			{children}
-			<StatusBar style={colors.statusbarTheme} />
+			>
+				{children}
+				<StatusBar style={colors.statusbarTheme} />
+			</View>
 		</>
 	);
 };

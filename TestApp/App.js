@@ -19,13 +19,15 @@ import HomeScreen from "./src/screens/HomeScreen";
 import Pomodoro from "./src/screens/PomodoroScreen";
 import ReminderScreen from "./src/screens/ReminderScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
+import SelectCalendar from "./src/screens/SpacedRep/SelectCalendar";
 import CreateEvent from "./src/screens/SpacedRep/SpacedRepCreateEvent";
 import SpacedRepHome from "./src/screens/SpacedRep/SpacedRepHome";
+import SpacedRepList from "./src/screens/SpacedRep/SpacedRepList";
 import TimerScreen from "./src/screens/TimerScreen";
 
 // signIn();
 
-LogBox.ignoreLogs(["Setting a timer"]);
+LogBox.ignoreLogs(["Setting a timer", "[react-native-gesture-handler]"]);
 const { UIManager } = NativeModules;
 
 UIManager.setLayoutAnimationEnabledExperimental &&
@@ -79,7 +81,9 @@ function StackNav() {
 				options={{ animation: "slide_from_right" }}
 			/>
 			<Stack.Screen name="Settings" component={SettingsScreen} />
-			<Stack.Screen name="Spaced Repetition" component={SpacedRepHome} />
+			<Stack.Screen name="Spaced Repetition" component={SelectCalendar} />
+			<Stack.Screen name="SpacedRepList" component={SpacedRepList} />
+			<Stack.Screen name="SpacedRepHome" component={SpacedRepHome} />
 		</Stack.Navigator>
 	);
 }
@@ -87,6 +91,7 @@ function StackNav() {
 export default function App() {
 	const navigationRef = useNavigationContainerRef();
 	const routeNameRef = React.useRef();
+	const [currentRouteName, setCurrentRouteName] = React.useState("");
 
 	return (
 		<Provider store={store}>
@@ -101,6 +106,7 @@ export default function App() {
 						const currentRouteName = navigationRef.getCurrentRoute().name;
 
 						if (previousRouteName !== currentRouteName) {
+							setCurrentRouteName(currentRouteName);
 							store.dispatch(
 								logData(new Tracker({ screen: currentRouteName, type: "6" }))
 							);
@@ -108,12 +114,17 @@ export default function App() {
 						routeNameRef.current = currentRouteName;
 					}}
 				>
-					<TopLevelContainer>
+					<TopLevelContainer
+						currentScreen={
+							// navigationRef ? navigationRef.getCurrentRoute()?.name : null
+							currentRouteName
+							// routeNameRef.current
+						}
+					>
 						<StackNav />
 					</TopLevelContainer>
 				</NavigationContainer>
 			</PersistGate>
-			{/* <StatusBar style="light" /> */}
 		</Provider>
 	);
 }

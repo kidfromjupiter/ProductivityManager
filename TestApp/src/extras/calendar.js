@@ -10,7 +10,6 @@ axios.interceptors.response.use(null, function (error) {
 		return axios(error.config);
 	} else if (error.response.status == 401) {
 		if (store.getState().gauth.isSignedIn) {
-			console.log("running this");
 			const authState = refreshAccessToken();
 			authState.then((e) => {
 				error.config.headers.Authorization = "Bearer " + e.accessToken;
@@ -49,12 +48,11 @@ async function deleteEvent(accesstoken, id, calId) {
 }
 
 async function deleteCalendar(accesstoken, calId) {
-	axios.defaults.headers.common["Authorization"] = "Bearer " + accesstoken;
-
-	return await axios({
-		method: "DELETE",
-		url: "/calendars/" + calId,
-	});
+	// axios.defaults.headers.common["Authorization"] = "Bearer " + accesstoken;
+	// return await axios({
+	// 	method: "DELETE",
+	// 	url: "/calendars/" + calId,
+	// });
 }
 
 async function addCalendar(accesstoken) {

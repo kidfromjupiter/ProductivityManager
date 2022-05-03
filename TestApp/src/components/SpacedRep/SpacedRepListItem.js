@@ -14,14 +14,21 @@ import {
 } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { SpacedRep } from "../../extras/classes/SpacedRep";
-import { deleteEvent } from "../../extras/calendar";
+import { deleteEvent } from "../../extras/BACKEND";
 import { setEvents } from "../../redux/CalendarSlice";
 import ImprovedText, {
 	getTextColor,
 } from "../CustomReactComponent/ImprovedText";
 
 const Tags = ({ name }) => {
-	return <ImprovedText style={styles.tag}>{name}</ImprovedText>;
+	const colors = useSelector((state) => state.colors);
+	return (
+		<ImprovedText
+			style={[styles.tag, { backgroundColor: colors.levelTwo }]}
+			text={name}
+			backgroundColor={colors.levelTwo}
+		></ImprovedText>
+	);
 };
 
 const LeftActions = (progress, dragX) => {
@@ -77,9 +84,11 @@ const SpacedRepListItem = ({
 	updateObjectArray,
 	slideDelete,
 	startDate,
+	customStyles,
 }) => {
 	const calID = useSelector((state) => state.gauth.calendarID);
 	const calendarEvents = useSelector((state) => state.calendar.events);
+	const idtoken = useSelector((state) => state.gauth.IdToken);
 	const colors = useSelector((state) => state.colors);
 	const [tagsColor] = useState(getTextColor(colors.levelOne));
 	const rotation = useSharedValue(0);
@@ -113,38 +122,27 @@ const SpacedRepListItem = ({
 	}, []);
 
 	const onDelete = () => {
-		for (const obj of calendarEvents[spacedRepId].events) {
-			if (obj.start.date == startDate) {
-				const index = calendarEvents[spacedRepId].events.indexOf(obj);
-				calendarEvents[spacedRepId].events.splice(index, 1);
-				const spacedRepObj = new SpacedRep(
-					calendarEvents[spacedRepId].events,
-					spacedRepId,
-					calendarEvents[spacedRepId].totalReps
-				);
-				dispatch(setEvents({ id: spacedRepId, spacedRep: spacedRepObj }));
-			}
-		}
+		deleteEvent(accessToken, idtoken, calendarId, id);
 	};
 
 	return (
 		<GestureHandlerRootView>
 			<Swipeable
 				renderLeftActions={slideDelete ? LeftActions : null}
-				friction={2.5}
+				friction={1.7}
 				leftThreshold={75}
 				onSwipeableOpen={() => {
-					onDelete();
 					updateObjectArray(index);
-					deleteEvent(accessToken, id, calID).catch((e) =>
-						console.log(e.response)
-					);
+				}}
+				onSwipeableWillOpen={() => {
+					onDelete();
 				}}
 			>
 				<Anim.View
 					style={[
 						styles.container,
 						{ backgroundColor: colors.levelOne },
+						customStyles,
 						animatedStyle,
 					]}
 					onTouchEnd={() => {
@@ -163,14 +161,15 @@ const SpacedRepListItem = ({
 									tags: tags,
 									reps: reps,
 									daysTill: daysTill,
-									totalreps: calendarEvents[spacedRepId].totalReps,
+									totalreps: totalreps,
 									spacedRepId: spacedRepId,
-									percentFinished:
-										((calendarEvents[spacedRepId].totalReps -
-											calendarEvents[spacedRepId].numOfEvents) /
-											calendarEvents[spacedRepId].totalReps) *
-										100,
-									repsRemaining: calendarEvents[spacedRepId].events.length,
+									percentFinished: 10,
+									// ((calendarEvents[spacedRepId].totalReps -
+									// 	calendarEvents[spacedRepId].numOfEvents) /
+									// 	calendarEvents[spacedRepId].totalReps) *
+									// 100,
+									// repsRemaining: calendarEvents[spacedRepId].events.length,
+									repsRemaining: 3,
 							  })
 							: null;
 					}}
@@ -218,24 +217,20 @@ const SpacedRepListItem = ({
 												// { color: colors.textColorDark },
 											]}
 											text={`In ${daysTill} day`}
+											backgroundColor={colors.accentColor}
 										></ImprovedText>
 									) : (
 										<ImprovedText
-											style={[
-												styles.counterText,
-												// { color: colors.textColorDark },
-											]}
+											style={[styles.counterText]}
 											text={`In ${daysTill} days`}
 											backgroundColor={colors.accentColor}
 										></ImprovedText>
 									)
 								) : (
 									<ImprovedText
-										style={[
-											styles.counterText,
-											{ color: colors.textColorDark },
-										]}
+										style={[styles.counterText]}
 										text="Today"
+										backgroundColor={colors.accentColor}
 									></ImprovedText>
 								)}
 							</View>

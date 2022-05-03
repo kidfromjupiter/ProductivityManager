@@ -85,6 +85,7 @@ const Pomodoro = ({ navigation }) => {
 	const _SETNEWCYCLE = () => {
 		dispatch(setNewCycle());
 	};
+
 	useEffect(
 		() =>
 			navigation
@@ -92,7 +93,7 @@ const Pomodoro = ({ navigation }) => {
 						e.preventDefault();
 						Alert.alert(
 							"Leave?",
-							"Leaving will result in loss of productivity and procrastination. Disappointment may follow. Do you wish to proceed?",
+							"Leaving will result in loss of productivity and procrastination. Disappointment may follow. Do you wish to proceed? Your session will be paused",
 							[
 								{ text: "No", style: "cancel", onPress: () => {} },
 								{
@@ -116,7 +117,9 @@ const Pomodoro = ({ navigation }) => {
 				"pomodoro",
 				JSON.stringify(pomodoroPresetsList)
 			).then(() => console.log("saved"));
-			dispatch(exitCleanup());
+			// if (pomodoro.isRunning) {
+			// 	_TOGGLETIMER();
+			// }
 		};
 	}, [pomodoroPresetsList]);
 
@@ -148,7 +151,6 @@ const Pomodoro = ({ navigation }) => {
 		);
 		// }
 	}, [pomodoro.cycleData, pomodoro.numOfTotalSessions]);
-	console.log(PROGRESS.value);
 
 	const renderItem = ({ item, index }) => {
 		const itemObject = item;
@@ -298,6 +300,7 @@ const Pomodoro = ({ navigation }) => {
 						seconds={seconds}
 						layoutanimation={animation}
 						timerEndCallback={_SETNEWCYCLE}
+						backgroundColor={colors.backgroundColor}
 					/>
 				</AnimatedRing>
 			) : (
@@ -312,6 +315,7 @@ const Pomodoro = ({ navigation }) => {
 					minutes={minutes}
 					seconds={seconds}
 					timerEndCallback={_SETNEWCYCLE}
+					backgroundColor={colors.backgroundColor}
 				/>
 			)}
 

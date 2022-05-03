@@ -108,7 +108,7 @@ const ColorPickerScreen = () => {
 			levelFour: "#C3D0D6",
 			textColorLight: "#E6F2F7",
 			textColorDark: "#D7FAE1",
-			accentColor: "#001000",
+			accentColor: "#E4C3AD",
 			statusbarTheme: "light",
 		},
 	];
