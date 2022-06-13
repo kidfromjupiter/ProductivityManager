@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import BottomToast from "../components/BottomToast";
 import Timer, { Presets } from "../components/Counter";
@@ -9,6 +9,7 @@ import {
 	setInitialValue,
 	setTimer,
 	startTimer,
+	toggleRepeat,
 } from "../redux/TimerSlice";
 import Animated, {
 	color,
@@ -26,6 +27,7 @@ import Svg, {
 	Rect,
 	Stop,
 } from "react-native-svg";
+import { Feather } from "@expo/vector-icons";
 
 const CIRCLE_LENGTH = 1000;
 const R = CIRCLE_LENGTH / (2 * Math.PI);
@@ -59,11 +61,11 @@ const TimerScreen = () => {
 		PROGRESS.value = withTiming(timer.time / timerValue);
 	}, [timerValue, timer.time]);
 	useEffect(() => {
-		if (running) {
+		if (running && !timer.isPaused) {
 			y.value = withRepeat(withTiming(0.5, { duration: 5000 }), -1, true);
 			x.value = withRepeat(withTiming(2, { duration: 1000 }), -1, true);
 		}
-	}, [running]);
+	}, [running, timer.isPaused]);
 
 	const animatedProp = useAnimatedProps(() => ({
 		strokeDashoffset: CIRCLE_LENGTH * PROGRESS.value,
@@ -169,8 +171,24 @@ const TimerScreen = () => {
 						seconds={seconds}
 						setTimer={SetTimer}
 						backgroundColor={colors.backgroundColor}
+						initialTime={timerValue}
+						timerFinishedPopupText="Timer finished!"
 					/>
 				</View>
+			</View>
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<TouchableOpacity
+					onPress={() => {
+						dispatch(toggleRepeat());
+					}}
+					style={{ padding: 10 }}
+				>
+					<Feather
+						name="repeat"
+						size={24}
+						color={timer.repeat ? colors.accentColor : "white"}
+					/>
+				</TouchableOpacity>
 			</View>
 			<View style={styles.presetHolder}>
 				<Presets
@@ -182,9 +200,9 @@ const TimerScreen = () => {
 					}
 				/>
 			</View>
-			{!running ? (
+			{/* {!running ? (
 				<BottomToast text="Tap to toggle timer on/off. Hold to reset" />
-			) : null}
+			) : null} */}
 		</View>
 	);
 };
@@ -206,6 +224,7 @@ const styles = StyleSheet.create({
 	},
 	presetHolder: {
 		flex: 1,
+		// backgroundColor: "red",
 		// paddingBottom: 50,
 	},
 });

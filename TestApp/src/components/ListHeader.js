@@ -1,5 +1,5 @@
 import { AntDesign } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import {
 	Animated,
 	LayoutAnimation,
@@ -8,6 +8,7 @@ import {
 	Text,
 	View,
 } from "react-native";
+import rainbow from "../extras/colors";
 
 import { useSelector } from "react-redux";
 
@@ -23,12 +24,18 @@ const ListHeader = ({
 	iconColor,
 	iconSize,
 	textStyles,
+	randomiseColor,
 }) => {
 	const animatedValue = new Animated.Value(1);
 	const animatedValueText = new Animated.Value(1);
+	const [headerColor, setHeaderColor] = useState(
+		rainbow(
+			Math.random() * Math.random() * 10,
+			Math.random() * Math.random() * 10
+		)
+	);
 
 	const colors = useSelector((state) => state.colors);
-	LayoutAnimation.configureNext(animation);
 	const onTouchStart = () => {
 		Animated.spring(animatedValue, {
 			toValue: 0.8,
@@ -70,7 +77,7 @@ const ListHeader = ({
 				style={[
 					styles.text,
 					{
-						color: colors.accentColor,
+						color: randomiseColor ? headerColor : colors.accentColor,
 					},
 					textStyles,
 					{ transform: [{ scale: animatedValueText }] },
@@ -99,7 +106,13 @@ const ListHeader = ({
 							{ transform: [{ scale: animatedValue }] },
 						]}
 						size={!iconSize ? 30 : iconSize}
-						color={!iconColor ? colors.accentColor : iconColor}
+						color={
+							!iconColor
+								? randomiseColor
+									? headerColor
+									: colors.accentColor
+								: iconColor
+						}
 					/>
 				</Pressable>
 			</View>

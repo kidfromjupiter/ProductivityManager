@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
-import {
-	LineChart,
-	BarChart,
-	PieChart,
-	ProgressChart,
-	ContributionGraph,
-	StackedBarChart,
-} from "react-native-chart-kit";
 import { Dimensions } from "react-native";
 // import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -31,11 +23,14 @@ import { BlurView } from "expo-blur";
 import { getDaily, post_analytics_data } from "../extras/Analytics_backend";
 import { default as _ANALYTICS } from "../extras/classes/AnalyticsClass";
 import Loading from "../components/LottieLoading";
+import LottieView from "lottie-react-native";
 
 const Tab = createBottomTabNavigator();
 
 const Analytics = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
+	const [offset, setOffset] = useState(0);
+	const isSignedIn = useSelector((state) => state.gauth.isSignedIn);
 
 	const offsetValue = useSharedValue(0);
 
@@ -58,13 +53,28 @@ const Analytics = ({ navigation }) => {
 	const springConfig = {
 		mass: 0.5,
 	};
-
-	function today(params) {
+	if (!isSignedIn) {
 		return (
-			<Today
-				total_breaktime={analyticsData?.total_breaktime}
-				total_sessiontime={analyticsData?.total_sessiontime}
-			/>
+			<View
+				style={{
+					flex: 1,
+					backgroundColor: "black",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<LottieView
+					source={require("../../assets/animations/analytics.json")}
+					style={{ height: 250, width: 250 }}
+					autoPlay
+					loop
+					speed={1}
+				/>
+				<Button
+					title="Sign in"
+					onPress={() => navigation.navigate("Settings")}
+				/>
+			</View>
 		);
 	}
 
@@ -73,6 +83,7 @@ const Analytics = ({ navigation }) => {
 			<Tab.Navigator
 				initialRouteName="Today"
 				screenOptions={{
+					unmountOnBlur: true,
 					// headerShown: false,
 					headerStyle: { backgroundColor: colors.levelOne },
 					headerTitleStyle: {
@@ -100,6 +111,24 @@ const Analytics = ({ navigation }) => {
 						);
 					},
 				}}
+				screenListeners={({ navigation, route }) => {
+					switch (route.name) {
+						case "Today":
+							offsetValue.value = withSpring(0, springConfig);
+							break;
+
+						case "Overview":
+							offsetValue.value = withSpring(getWidth() * 1, springConfig);
+							break;
+						case "History":
+							offsetValue.value = withSpring(getWidth() * 3, springConfig);
+							break;
+						case "Screentime":
+							offsetValue.value = withSpring(getWidth() * 2, springConfig);
+						default:
+							break;
+					}
+				}}
 			>
 				<Tab.Screen
 					name="Today"
@@ -118,18 +147,15 @@ const Analytics = ({ navigation }) => {
 									color={colors.levelTwo}
 								/>
 							),
+						headerShown: false,
 					}}
-					listeners={({ navigation, route }) => ({
-						tabPress: (e) => {
-							offsetValue.value = withSpring(0, springConfig);
-						},
-					})}
 					component={Today}
 				></Tab.Screen>
 				<Tab.Screen
 					name="Overview"
 					component={OverView}
 					options={{
+						headerShown: false,
 						tabBarIcon: ({ focused, color }) =>
 							focused ? (
 								<FontAwesome
@@ -145,36 +171,9 @@ const Analytics = ({ navigation }) => {
 								/>
 							),
 					}}
-					listeners={({ navigation, route }) => ({
-						tabPress: (e) => {
-							offsetValue.value = withSpring(getWidth() * 1, springConfig);
-						},
-					})}
 				/>
 				<Tab.Screen
-					options={{
-						tabBarIcon: ({ focused, color }) => {
-							return focused ? (
-								<FontAwesome
-									name="history"
-									size={24}
-									color={colors.accentColor}
-								/>
-							) : (
-								<FontAwesome name="history" size={24} color={colors.levelTwo} />
-							);
-						},
-					}}
-					name="History"
-					component={History}
-					listeners={({ navigation, route }) => ({
-						tabPress: (e) => {
-							offsetValue.value = withSpring(getWidth() * 2, springConfig);
-						},
-					})}
-				/>
-				<Tab.Screen
-					name="ScreenTime"
+					name="Screentime"
 					component={ScreenTime}
 					options={{
 						tabBarIcon: ({ focused, color }) =>
@@ -192,11 +191,23 @@ const Analytics = ({ navigation }) => {
 								/>
 							),
 					}}
-					listeners={({ navigation, route }) => ({
-						tabPress: (e) => {
-							offsetValue.value = withSpring(getWidth() * 3, springConfig);
+				/>
+				<Tab.Screen
+					options={{
+						tabBarIcon: ({ focused, color }) => {
+							return focused ? (
+								<FontAwesome
+									name="history"
+									size={24}
+									color={colors.accentColor}
+								/>
+							) : (
+								<FontAwesome name="history" size={24} color={colors.levelTwo} />
+							);
 						},
-					})}
+					}}
+					name="History"
+					component={History}
 				/>
 			</Tab.Navigator>
 			<Animated.View

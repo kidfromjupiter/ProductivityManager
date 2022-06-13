@@ -12,11 +12,24 @@ import {
 } from "../../extras/Analytics_backend";
 import Heatmap from "../../components/analytics/graphs/Heatmap";
 import AllTime from "../../components/analytics/AlltimeHolder";
+import moment from "moment";
+import Loading from "../../components/LottieLoading";
+import {
+	VictoryStack,
+	VictoryBar,
+	VictoryChart,
+	VictoryLabel,
+	VictoryLegend,
+	VictoryAxis,
+} from "victory-native";
+import { ScrollView } from "react-native-gesture-handler";
+import AnalyticsLoading from "../../components/analytics/AnalyticsLoading";
+import AverageDaily from "../../components/analytics/DailyAverage";
 
 const OverView = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
 	const [analyticsData, setAnalyticsData] = useState(null);
-	const idtoken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	const [stacked_data, setStackedData] = useState(null);
 	const [monthly, setMonthly] = useState(null);
 	const tracker = useSelector((state) => state.tracker);
@@ -24,73 +37,166 @@ const OverView = ({ navigation }) => {
 	const [alltime, setAllTime] = useState(null);
 
 	useEffect(() => {
-		currentDate = new Date();
-		startDate = new Date(currentDate.getFullYear(), 0, 1);
-		const days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-
-		const weekNumber = Math.ceil((currentDate.getDay() + 1 + days) / 7);
 		const month = new Date().getMonth() + 1;
-
+		const weekNumber = moment().format("W");
 		getWeekly(idtoken, weekNumber).then((res) => {
-			setAnalyticsData(res.data.data);
+			if (res.data.data) {
+				const { breakdata, focusdata, focusavrg, breakavrg } = processWeekly(
+					res.data.data
+				);
+				setStackedData({
+					breakdata: breakdata,
+					focusdata: focusdata,
+					focusavrg: focusavrg,
+					breakavrg: breakavrg,
+				});
+			}
 		});
 		getMonthly(idtoken, month).then((res) => {
-			setMonthly(res.data.data);
+			let contribmap = {};
+			if (res.data.data) {
+				res.data.data.map((e) => {
+					contribmap[new Date(e.date).getDate()] = e.total_sessiontime;
+				});
+				setContribMap(contribmap);
+			}
 		});
 		getAllTime(idtoken).then((res) => {
 			setAllTime(res.data);
 		});
-	}, [tracker.trackingData]);
+	}, []);
 
-	useEffect(() => {
-		function processWeekly() {
-			let chartdata = [];
-			const labels = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"];
-			const legend = ["Focus", "Break"];
-			analyticsData.map((e) => {
-				let day = [e.total_sessiontime, e.total_breaktime];
-				chartdata.push(day);
-			});
-			if (chartdata.length < 7) {
-				const length = 7 - chartdata.length;
-				for (let i = 0; i < length; i++) {
-					chartdata.push([0, 0]);
+	function processWeekly(analyticsData) {
+		let focusdata = [];
+		let breakdata = [];
+		for (const obj of analyticsData) {
+			const date = moment(obj.date).format("dddd");
+			const st = Math.round(
+				moment.duration(obj.total_sessiontime, "seconds").asMinutes()
+			);
+			const bt = Math.round(
+				moment.duration(obj.total_breaktime, "seconds").asMinutes()
+			);
+			switch (date) {
+				case "Monday":
+					let f = { x: 1, y: st };
+					let b = { x: 1, y: bt };
+					focusdata.push(f);
+					breakdata.push(b);
+					break;
+				case "Tuesday":
+					f = { x: 2, y: st };
+					b = { x: 2, y: bt };
+					focusdata.push(f);
+					breakdata.push(b);
+					break;
+				case "Wednesday":
+					f = { x: 3, y: st };
+					b = { x: 3, y: bt };
+					focusdata.push(f);
+					breakdata.push(b);
+					break;
+				case "Thursday":
+					f = { x: 4, y: st };
+					b = { x: 4, y: bt };
+					focusdata.push(f);
+					breakdata.push(b);
+					break;
+				case "Friday":
+					f = { x: 5, y: st };
+					b = { x: 5, y: bt };
+					focusdata.push(f);
+					breakdata.push(b);
+					break;
+				case "Saturday":
+					f = { x: 6, y: st };
+					b = { x: 6, y: bt };
+					focusdata.push(f);
+					breakdata.push(b);
+					break;
+				case "Sunday":
+					f = { x: 7, y: st };
+					b = { x: 7, y: bt };
+					focusdata.push(f);
+					breakdata.push(b);
+					break;
+
+				default:
+					break;
+			}
+		}
+		//y = breakdata
+		// m= focusdata
+		let m = [
+			{ x: 1, y: 0 },
+			{ x: 2, y: 0 },
+			{ x: 3, y: 0 },
+			{ x: 4, y: 0 },
+			{ x: 5, y: 0 },
+			{ x: 6, y: 0 },
+			{ x: 7, y: 0 },
+		];
+		let y = [
+			{ x: 1, y: 0 },
+			{ x: 2, y: 0 },
+			{ x: 3, y: 0 },
+			{ x: 4, y: 0 },
+			{ x: 5, y: 0 },
+			{ x: 6, y: 0 },
+			{ x: 7, y: 0 },
+		];
+		let sumbreak = 0;
+		let sumfocus = 0;
+
+		for (const u of m) {
+			for (const l of focusdata) {
+				if (l.x == u.x) {
+					m[m.indexOf(u)] = l;
+					sumfocus += l.y;
 				}
 			}
-			return {
-				labels: labels,
-				legend: legend,
-				data: chartdata,
-				barColors: [colors.levelOne, colors.levelTwo],
-			};
 		}
-		if (analyticsData) {
-			const d = processWeekly();
-			setStackedData(d);
+		for (const u of y) {
+			for (const l of breakdata) {
+				if (l.x == u.x) {
+					y[y.indexOf(u)] = l;
+					sumbreak += l.y;
+				}
+			}
 		}
-	}, [colors, analyticsData]);
+		return {
+			breakdata: y,
+			focusdata: m,
+			breakavrg: Math.round(sumbreak / Object.keys(analyticsData).length),
+			focusavrg: Math.round(sumfocus / Object.keys(analyticsData).length),
+		};
+	}
 
-	useEffect(() => {
-		let contribmap = {};
-		if (monthly) {
-			monthly.map((e) => {
-				contribmap[new Date(e.date).getDate()] = e.total_sessiontime;
-			});
-			setContribMap(contribmap);
+	if (!stacked_data || !contribMap || !alltime) {
+		return <AnalyticsLoading />;
+	}
+	function format(e) {
+		{
+			switch (e) {
+				case 1:
+					return "Mon";
+				case 2:
+					return "Tue";
+				case 3:
+					return "Wed";
+				case 4:
+					return "Thu";
+				case 5:
+					return "Fri";
+				case 6:
+					return "Sat";
+				case 7:
+					return "Sun";
+				default:
+					break;
+			}
 		}
-	}, [monthly]);
-
-	const chartConfig = {
-		backgroundGradientFrom: colors.accentColor,
-		backgroundGradientFromOpacity: 0,
-		backgroundGradientTo: colors.levelOne,
-		backgroundGradientToOpacity: 0,
-		color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-		strokeWidth: 2, // optional, default 3
-		barPercentage: 0.75,
-		useShadowColorFromDataset: false, // optional
-		barRadius: 10,
-	};
+	}
 	return (
 		<View
 			style={[styles.container, { backgroundColor: colors.backgroundColor }]}
@@ -101,74 +207,144 @@ const OverView = ({ navigation }) => {
 					marginBottom: 80,
 					backgroundColor: colors.levelOne,
 					marginHorizontal: 5,
-					marginTop: 20,
+					marginTop: 10,
 					borderRadius: 20,
+					overflow: "hidden",
 				}}
 			>
-				<View style={styles.subSection}>
-					<Square
-						flex={1}
-						customStyles={{ overflow: "hidden" }}
-						animationDisabled
-					>
-						<Text style={styles.titleText}>This week</Text>
-						<View style={{ flex: 1, marginHorizontal: 10, overflow: "hidden" }}>
-							{stacked_data ? (
-								<StackedBar
-									chartConfig={chartConfig}
-									stacked_data={stacked_data}
-								/>
-							) : null}
-						</View>
-						<GradientBackground
-							width={Dimensions.get("screen").width}
-							cx={10}
-						/>
-					</Square>
-				</View>
-				<View style={styles.subSection}>
-					<Square
-						flex={1}
-						customStyles={{ overflow: "hidden" }}
-						animationDisabled
-					>
-						<Text style={styles.titleText}>This month</Text>
-						<View style={{ flex: 1, marginHorizontal: 10 }}>
-							{contribMap ? (
-								<Heatmap data={contribMap} chartConfig={chartConfig} />
-							) : null}
-						</View>
-						<GradientBackground
-							width={Dimensions.get("screen").width}
-							cx={10}
-						/>
-					</Square>
-				</View>
-				<View style={[styles.subSection, { maxHeight: 150 }]}>
-					<Square
-						flex={1}
-						customStyles={{ overflow: "hidden" }}
-						animationDisabled
-					>
-						<Text style={styles.titleText}>All time</Text>
-						<View style={{ flex: 1, marginHorizontal: 10, overflow: "hidden" }}>
-							{alltime ? (
-								<AllTime
-									st={alltime.total_sessiontime}
-									bt={alltime.total_breaktime}
-									at={alltime.total_apptime}
-								/>
-							) : null}
-						</View>
-						{/* <View style={}>
+				<ScrollView showsVerticalScrollIndicator={false}>
+					<View style={styles.subSection}>
+						<Square
+							flex={1}
+							customStyles={{ overflow: "hidden" }}
+							animationDisabled
+						>
+							<Text style={styles.titleText}>This week</Text>
+							<View
+								style={{ flex: 1, marginHorizontal: 10, overflow: "hidden" }}
+							>
+								{stacked_data ? (
+									<VictoryChart
+										height={250}
+										width={Dimensions.get("screen").width - 40}
+										animate={{
+											onEnter: {
+												duration: 500,
+											},
+										}}
+									>
+										<VictoryAxis
+											style={{
+												axis: { stroke: colors.levelFour },
+												tickLabels: {
+													fill: colors.levelFour,
+													fontWeight: "bold",
+												},
+											}}
+											// offsetY={30}
+											tickFormat={format}
+										/>
+										<VictoryAxis
+											dependentAxis
+											style={{
+												axis: { stroke: colors.levelFour },
+												tickLabels: {
+													fill: colors.levelFour,
+													fontWeight: "bold",
+												},
+											}}
+											offsetX={30}
+											padding={{ right: 10 }}
+										/>
+										<VictoryLegend
+											data={[
+												{
+													name: "Break",
+													symbol: { fill: colors.levelTwo },
+													labels: { fill: "white" },
+												},
+												{
+													name: "Focus",
+													symbol: { fill: colors.accentColor },
+													labels: { fill: "white" },
+												},
+											]}
+											orientation="horizontal"
+										/>
+										<VictoryStack
+											colorScale={[colors.accentColor, colors.levelTwo]}
+										>
+											<VictoryBar
+												data={stacked_data.focusdata}
+												cornerRadius={{ bottom: 2, top: 2 }}
+												barRatio={1.1}
+												// alignment="start"
+											/>
+											<VictoryBar
+												data={stacked_data.breakdata}
+												cornerRadius={{ top: 4 }}
+												barRatio={1.1}
+												// alignment="start"
+											/>
+										</VictoryStack>
+									</VictoryChart>
+								) : null}
+							</View>
+							<AverageDaily
+								focustime={stacked_data.focusavrg}
+								breaktime={stacked_data.breakavrg}
+							/>
+							<GradientBackground
+								width={Dimensions.get("screen").width}
+								cx={10}
+							/>
+						</Square>
+					</View>
+					<View style={styles.subSection}>
+						<Square
+							flex={1}
+							customStyles={{ overflow: "hidden" }}
+							animationDisabled
+						>
+							<Text style={[styles.titleText]}>This month</Text>
+							<View style={{ marginHorizontal: 10 }}>
+								{contribMap ? <Heatmap data={contribMap} /> : null}
+							</View>
+							<GradientBackground
+								width={Dimensions.get("screen").width}
+								// height={700}
+								cx={10}
+							/>
+						</Square>
+					</View>
+					<View style={[styles.subSection, { height: 150 }]}>
+						<Square
+							flex={1}
+							customStyles={{ overflow: "hidden" }}
+							animationDisabled
+						>
+							<Text style={styles.titleText}>All time</Text>
+							<View
+								style={{ flex: 1, marginHorizontal: 10, overflow: "hidden" }}
+							>
+								{alltime ? (
+									<AllTime
+										st={alltime.total_sessiontime}
+										bt={alltime.total_breaktime}
+										at={alltime.total_apptime}
+									/>
+								) : null}
+							</View>
+							{/* <View style={}>
 
 						</View> */}
-						<GradientBackground
-							width={Dimensions.get("screen").width}
-							cx={10}
-						/>
-					</Square>
-				</View>
+							<GradientBackground
+								width={Dimensions.get("screen").width}
+								cx={10}
+							/>
+						</Square>
+					</View>
+				</ScrollView>
 			</View>
 		</View>
 	);
@@ -176,7 +352,7 @@ const OverView = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		// alignItems: "center",
+		paddingTop: 25,
 		justifyContent: "center",
 	},
 	titleText: {

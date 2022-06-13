@@ -11,7 +11,7 @@ import LoadingPopup from "../../components/LoadingIndicator";
 import { useFocusEffect } from "@react-navigation/native";
 export default function EventCollectionScreen({ navigation }) {
 	const colors = useSelector((state) => state.colors);
-	const idtoken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	const accesstoken = useSelector((state) => state.gauth.AuthToken);
 	const calid = useSelector((state) => state.gauth.calendarId);
 	const [eventCollections, setEventCollections] = useState([]);

@@ -123,6 +123,7 @@ export const RemiderSlice = createSlice({
 			const localstate = JSON.parse(JSON.stringify(state));
 			const category = action.payload.category;
 			delete localstate.reminders[category];
+			delete localstate.completed[category];
 			return localstate;
 		},
 		setEditMode: (state, action) => {

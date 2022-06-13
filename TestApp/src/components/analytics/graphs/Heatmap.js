@@ -6,11 +6,9 @@ import { Calendar } from "react-native-calendars";
 import moment from "moment";
 import { getTextColor } from "../../CustomReactComponent/ImprovedText";
 
-export default function Heatmap({ data, chartConfig }) {
+function Heatmap({ data, chartConfig }) {
 	const colors = useSelector((state) => state.colors);
 	const [gen, setGen] = useState([]);
-	const [layout, setLayout] = useState(null);
-	const [cleanedValue, setCleanedValue] = useState({});
 	const maxValue = useRef(Math.max(...Object.values(data)));
 
 	function reduce(value) {
@@ -18,19 +16,17 @@ export default function Heatmap({ data, chartConfig }) {
 			return 0.15;
 		}
 		const p = value / maxValue.current;
-		var multiplier = Math.pow(10, 1 || 0);
-		return Math.round(p * multiplier) / multiplier;
-		// console.log(p);
+
+		return p;
 	}
 
 	const theme = {
-		backgroundColor: "#ffffff",
-		// calendarBackground: "transparent",
+		// backgroundColor: "transparent",
+		calendarBackground: "transparent",
 		textSectionTitleColor: "#b6c1cd",
 		textSectionTitleDisabledColor: "#d9e1e8",
 		selectedDayBackgroundColor: "#00adf5",
-		selectedDayTextColor: "#ffffff",
-		todayTextColor: "#00adf5",
+		selectedDayTextColor: "white",
 		dayTextColor: "white",
 		textDisabledColor: "white",
 		dotColor: "#00adf5",
@@ -45,61 +41,23 @@ export default function Heatmap({ data, chartConfig }) {
 		textDayFontSize: 16,
 		textMonthFontSize: 16,
 		textDayHeaderFontSize: 16,
+		"stylesheet.calendar.header": {
+			monthText: {
+				display: "none",
+			},
+		},
 	};
 	function generatelist() {
-		let l = [];
-		for (let index = 0; index < 31; index++) {
-			if (data[index + 1] >= 0) {
-				l.push({
-					date: index + 1,
-					day: () => {
-						switch (index % 7) {
-							case 0:
-								return "Mon";
-							case 1:
-								return "Tue";
-							case 2:
-								return "Wed";
-							case 3:
-								return "Thu";
-							case 4:
-								return "Fri";
-							case 5:
-								return "Sat";
-							case 6:
-								return "Sun";
-							default:
-								break;
-						}
-					},
-					color: getColor(colors.levelThree, reduce(data[index])),
-				});
-			} else {
-				l.push({
-					date: index + 1,
-					day: () => {
-						switch (index % 7) {
-							case 0:
-								return "Mon";
-							case 1:
-								return "Tue";
-							case 2:
-								return "Wed";
-							case 3:
-								return "Thu";
-							case 4:
-								return "Fri";
-							case 5:
-								return "Sat";
-							case 6:
-								return "Sun";
-							default:
-								break;
-						}
-					},
-					color: getColor(colors.levelThree, 0.05),
-				});
-			}
+		let l = {};
+		for (const o of Object.keys(data)) {
+			let d = new Date();
+			d.setDate(o);
+			const mins = moment.duration(data[o], "seconds").asMinutes();
+			const s = d.toISOString().substring(0, 10);
+			l[s] = {
+				selectedColor: getColor(colors.levelThree, reduce(data[o])),
+				selected: true,
+			};
 		}
 		return l;
 	}
@@ -136,50 +94,23 @@ export default function Heatmap({ data, chartConfig }) {
 	}, [data]);
 
 	return (
-		<>
-			<View
-				style={{ flex: 1, justifyContent: "center" }}
-				onLayout={(e) => {
-					setLayout(e.nativeEvent.layout);
-				}}
-			>
-				{layout ? (
-					<FlatList
-						data={gen}
-						numColumns={7}
-						keyExtractor={(item) => item.date}
-						renderItem={({ item }) => {
-							return (
-								<View
-									style={{
-										height: (layout.height - 50) / 5,
-										width: (layout.width - 50) / 7,
-										backgroundColor: item.color,
-										margin: 3,
-										marginHorizontal: 3,
-										borderRadius: 5,
-										justifyContent: "center",
-										alignItems: "center",
-										// opacity: item.opacity,
-										// opacity: 1,
-									}}
-								>
-									<Text
-										style={{
-											fontSize: 17,
-											fontWeight: "bold",
-											color: "white",
-										}}
-									>
-										{item.date}
-										{/* {data[item.date] >= 0 ? reduce(data[item.date]) : 0.1} */}
-									</Text>
-								</View>
-							);
-						}}
-					/>
-				) : null}
-			</View>
-		</>
+		<View
+			style={{
+				flex: 1,
+				borderRadius: 10,
+				overflow: "hidden",
+				// backgroundColor: "white",
+			}}
+		>
+			<Calendar
+				theme={theme}
+				hideExtraDays
+				disableMonthChange
+				hideArrows
+				markedDates={gen}
+				firstDay={1}
+			/>
+		</View>
 	);
 }
+export default Heatmap;

@@ -67,12 +67,12 @@ export function saveData(data) {
 	AsyncStorage.setItem("pomodoro", data.pomodoros ? data.pomodoros : "");
 }
 
-function setState(accessToken, IdToken) {
+function setState(accessToken, idtoken) {
 	store.dispatch(
 		setGAuth({
 			AuthToken: accessToken,
 			state: "success",
-			IdToken: IdToken,
+			idtoken: idtoken,
 		})
 	);
 }
@@ -144,7 +144,7 @@ export async function signIn() {
 		// 		// authState.accessToken,
 		// 		// authState.refreshToken,
 		// 		// authState.accessTokenExpirationDate,
-		// 		// authState.idToken
+		// 		// authState.idtoken
 		// 		authState.
 		// 	);
 		//

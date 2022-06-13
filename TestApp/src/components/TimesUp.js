@@ -22,7 +22,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import LinearGradient from "react-native-linear-gradient";
 import notifee from "@notifee/react-native";
 
-const TimesUp = ({ navigation, isVisible, setIsVisible }) => {
+const TimesUp = ({
+	navigation,
+	isVisible,
+	setIsVisible,
+	text,
+	endCallback,
+}) => {
 	const x = useSharedValue(0);
 	const y = useSharedValue(0);
 	const swing = useSharedValue(20);
@@ -37,6 +43,17 @@ const TimesUp = ({ navigation, isVisible, setIsVisible }) => {
 		onActive: (event) => {
 			x.value = Math.abs(event.translationX);
 			y.value = Math.abs(event.translationY);
+			if (x.value + y.value > 200) {
+				runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+			}
+		},
+		onFinish: (event) => {
+			// runOnJS(console.log)("finish");
+			if (Math.abs(event.translationX) + Math.abs(event.translationY) > 200) {
+				runOnJS(setIsVisible)();
+				runOnJS(notifee.cancelNotification)("timerFinished");
+				runOnJS(endCallback)();
+			}
 		},
 		onEnd: (_) => {
 			x.value = withTiming(0);
@@ -79,8 +96,8 @@ const TimesUp = ({ navigation, isVisible, setIsVisible }) => {
 			isVisible={isVisible}
 			coverScreen
 			style={{ flex: 1, padding: 0, margin: 0 }}
-			animationIn="zoomInUp"
-			animationOut="zoomOutDown"
+			animationIn="fadeIn"
+			animationOut="fadeOut"
 			useNativeDriver
 		>
 			<LinearGradient
@@ -98,25 +115,10 @@ const TimesUp = ({ navigation, isVisible, setIsVisible }) => {
 								color="white"
 							/>
 						</Animated.View>
-						<Text style={styles.textStyles}>Ding ding!</Text>
+						<Text style={styles.textStyles}>{text}</Text>
 					</View>
 					<View style={styles.buttonHolder}>
-						<PanGestureHandler
-							onGestureEvent={gestureHandler}
-							onEnded={(e) => {
-								if (
-									Math.abs(e.nativeEvent.translationX) +
-										Math.abs(e.nativeEvent.translationY) >
-									100
-								) {
-									Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-									notifee.cancelNotification("timerFinished");
-									setIsVisible();
-								}
-							}}
-
-							// minDist={100}
-						>
+						<PanGestureHandler onGestureEvent={gestureHandler}>
 							<Animated.View style={[styles.holdButton, animatedButtonStyle]}>
 								<AntDesign name="close" size={60} color="#FD4D4D" />
 							</Animated.View>

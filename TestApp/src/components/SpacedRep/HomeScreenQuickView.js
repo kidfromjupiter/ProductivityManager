@@ -1,4 +1,5 @@
 import LottieView from "lottie-react-native";
+import moment from "moment";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CircularProgress from "react-native-circular-progress-indicator";
@@ -12,14 +13,6 @@ const QuickView = ({
 	startDate,
 }) => {
 	const colors = useSelector((state) => state.colors);
-	function day() {
-		const day = new Date(startDate);
-		return day.toUTCString().substring(0, 3);
-	}
-	function MonthandDate() {
-		const day = new Date(startDate);
-		return day.toUTCString().substring(5, 11);
-	}
 	return (
 		<View style={styles.container}>
 			<View>
@@ -45,15 +38,7 @@ const QuickView = ({
 							{ fontSize: 20, color: colors.textColorLight },
 						]}
 					>
-						{day()}
-					</Text>
-					<Text
-						style={[
-							styles.textStyle,
-							{ fontSize: 14, color: colors.textColorLight },
-						]}
-					>
-						{MonthandDate()}
+						{moment(startDate).fromNow()}
 					</Text>
 				</View>
 			</View>

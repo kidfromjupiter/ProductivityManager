@@ -17,12 +17,13 @@ import { Tracker } from "../extras/TrackerObject";
 import { STATUS_CODES } from "../extras/TrackerObject";
 import TimesUp from "./TimesUp";
 import Notify from "../notifee/test";
-import notifee from "@notifee/react-native";
+import notifee, { EventType } from "@notifee/react-native";
 import { getTextColor } from "./CustomReactComponent/ImprovedText";
+import { startTimer } from "../redux/TimerSlice";
 
 const Presets = ({ colors, resetTimer, setTimer, initialTime }) => {
 	const buttonColor = {
-		backgroundColor: colors.accentColor,
+		backgroundColor: colors.levelTwo,
 	};
 	const buttonTextColor = {
 		color: "white",
@@ -33,47 +34,49 @@ const Presets = ({ colors, resetTimer, setTimer, initialTime }) => {
 
 	return (
 		<>
-			<View style={styles.buttonHolder}>
-				<TouchableHighlight
-					style={[styles.button, buttonColor]}
-					onPress={() => {
-						resetTimer(0);
-						setTimer({ time: 1 * 60 });
-						initialTime(1 * 60);
-					}}
-				>
-					<Text style={[styles.textStyles, buttonTextColor]}>1</Text>
-				</TouchableHighlight>
-				<TouchableHighlight
-					style={[styles.button, buttonColor]}
-					onPress={() => {
-						resetTimer(0);
-						setTimer({ time: 2 * 60 });
-						initialTime(2 * 60);
-					}}
-				>
-					<Text style={[styles.textStyles, buttonTextColor]}>2</Text>
-				</TouchableHighlight>
-				<TouchableHighlight
-					style={[styles.button, buttonColor]}
-					onPress={() => {
-						resetTimer(0);
-						setTimer({ time: 5 * 60 });
-						initialTime(5 * 60);
-					}}
-				>
-					<Text style={[styles.textStyles, buttonTextColor]}>5</Text>
-				</TouchableHighlight>
-				<TouchableHighlight
-					style={[styles.button, buttonColor]}
-					onPress={() => {
-						resetTimer(0);
-						setTimer({ time: 10 * 60 });
-						initialTime(10 * 60);
-					}}
-				>
-					<Text style={[styles.textStyles, buttonTextColor]}>10</Text>
-				</TouchableHighlight>
+			<View style={[{ flex: 1, justifyContent: "center" }]}>
+				<View style={[styles.buttonHolder]}>
+					<TouchableHighlight
+						style={[styles.button, buttonColor]}
+						onPress={() => {
+							resetTimer(0);
+							setTimer({ time: 1 * 6 });
+							initialTime(1 * 6);
+						}}
+					>
+						<Text style={[styles.textStyles, buttonTextColor]}>1</Text>
+					</TouchableHighlight>
+					<TouchableHighlight
+						style={[styles.button, buttonColor]}
+						onPress={() => {
+							resetTimer(0);
+							setTimer({ time: 2 * 60 });
+							initialTime(2 * 60);
+						}}
+					>
+						<Text style={[styles.textStyles, buttonTextColor]}>2</Text>
+					</TouchableHighlight>
+					<TouchableHighlight
+						style={[styles.button, buttonColor]}
+						onPress={() => {
+							resetTimer(0);
+							setTimer({ time: 5 * 60 });
+							initialTime(5 * 60);
+						}}
+					>
+						<Text style={[styles.textStyles, buttonTextColor]}>5</Text>
+					</TouchableHighlight>
+					<TouchableHighlight
+						style={[styles.button, buttonColor]}
+						onPress={() => {
+							resetTimer(0);
+							setTimer({ time: 10 * 60 });
+							initialTime(10 * 60);
+						}}
+					>
+						<Text style={[styles.textStyles, buttonTextColor]}>10</Text>
+					</TouchableHighlight>
+				</View>
 			</View>
 		</>
 	);
@@ -92,6 +95,8 @@ const Timer = ({
 	layoutanimation,
 	timerEndCallback,
 	backgroundColor,
+	initialTime,
+	timerFinishedPopupText,
 }) => {
 	const colors = useSelector((state) => state.colors);
 	const [SOUND, setSOUND] = useState(new Audio.Sound());
@@ -110,9 +115,8 @@ const Timer = ({
 
 	useEffect(() => {
 		const soundTimeout = BackgroundTimer.setTimeout(() => {
-			if (timer.isRunning) {
+			if (timer.isRunning && !timer.repeat) {
 				playSound();
-				// setBackgroundTimerSet(true);
 			}
 		}, timer.time * 1000);
 		if (timer && timer.isRunning && timer.time !== 0) {
@@ -120,9 +124,12 @@ const Timer = ({
 				let newTime = timer.time - 1;
 				if (newTime == 0) {
 					setTimer({ time: newTime });
-					setModalVisible(true);
-					Notify("Times Up", "Time is up!");
+					if (!timer.repeat) {
+						setModalVisible(true);
+						Notify("Times Up", "Timer ran out!");
+					}
 				}
+
 				setTimer({ time: newTime });
 			}, 1000);
 
@@ -135,15 +142,52 @@ const Timer = ({
 
 	async function playSound() {
 		SOUND.getStatusAsync().then((e) => {
-			if (!e.isPlaying) {
-				SOUND.loadAsync(require("../../assets/Phobos.mp3")).then(() => {
-					SOUND.setIsLoopingAsync(true);
-					SOUND.playAsync();
-				});
+			if (e.isLoaded) {
+				if (timer.repeat) {
+					SOUND.getStatusAsync().then((d) => {
+						if (!d.isPlaying) {
+							SOUND.playAsync();
+						}
+					});
+				} else {
+					SOUND.getStatusAsync().then((d) => {
+						if (!d.isPlaying) {
+							SOUND.setIsLoopingAsync(true);
+							SOUND.playAsync();
+						}
+					});
+				}
+			} else {
+				if (timer.repeat) {
+					SOUND.loadAsync(require("../../assets/repeatsound.mp3")).then(() => {
+						SOUND.getStatusAsync().then((d) => {
+							if (!d.isPlaying) {
+								SOUND.playAsync();
+							}
+						});
+					});
+				} else {
+					SOUND.loadAsync(require("../../assets/Phobos.mp3")).then(() => {
+						SOUND.getStatusAsync().then((d) => {
+							if (!d.isPlaying) {
+								SOUND.setIsLoopingAsync(true);
+								SOUND.playAsync();
+							}
+						});
+					});
+				}
 			}
 		});
 	}
+
 	useEffect(() => {
+		if (SOUND) {
+			SOUND.setOnPlaybackStatusUpdate((e) => {
+				if (e.didJustFinish && !e.isLooping) {
+					SOUND.stopAsync();
+				}
+			});
+		}
 		return () => {
 			SOUND
 				? () => {
@@ -157,28 +201,51 @@ const Timer = ({
 	}, [SOUND, playing]);
 
 	useEffect(() => {
+		if (timer.time == 0 && timer.repeat && !modalVisible) {
+			playSound();
+			setTimer({ time: initialTime });
+			StartTimer();
+		}
+	}, [timer.time, initialTime]);
+
+	useEffect(() => {
 		if (modalVisible == false && SOUND) {
-			console.log("stopping and unloading Sound");
 			SOUND.unloadAsync();
 			setPlaying(false);
 		}
 	}, [modalVisible, SOUND]);
+
+	//notifications
+	notifee.onForegroundEvent(({ type, detail }) => {
+		if (type === EventType.ACTION_PRESS && detail.pressAction.id === "snooze") {
+			setModalVisible(false);
+			timerEndCallback ? timerEndCallback() : null;
+		}
+	});
+	notifee.onBackgroundEvent(async ({ type, detail }) => {
+		const { notification, pressAction } = detail;
+
+		// Check if the user pressed the "Mark as read" action
+		if (type === EventType.ACTION_PRESS && pressAction.id === "snooze") {
+			await setModalVisible(false);
+			(await timerEndCallback) ? timerEndCallback() : null;
+			// Remove the notification
+			await notifee.cancelNotification(notification.id);
+		}
+	});
 
 	return (
 		<Pressable
 			style={[styles.timeContainer]}
 			onPress={() => {
 				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-				LayoutAnimation.configureNext(layoutanimation);
 				dispatch(logData(new Tracker({ type: STATUS_CODES.TIMER_TOGGLE })));
 				StartTimer();
 			}}
 			onLongPress={() => {
 				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-				LayoutAnimation.configureNext(layoutanimation);
 				ResetTimer();
 			}}
-			android_ripple={{ color: "grey", borderless: true }}
 			disabled={isDisabled || timer.time === 0}
 		>
 			<View style={{ flex: 8, justifyContent: "center" }}>
@@ -209,8 +276,11 @@ const Timer = ({
 				isVisible={modalVisible}
 				setIsVisible={() => {
 					setModalVisible(false);
+				}}
+				endCallback={() => {
 					timerEndCallback ? timerEndCallback() : null;
 				}}
+				text={timerFinishedPopupText}
 			/>
 			{/* {context == "timer" ? (
 				<Presets
@@ -242,7 +312,7 @@ const styles = StyleSheet.create({
 		// backgroundColor: "black",
 	},
 	buttonHolder: {
-		flex: 3,
+		// flex: 3,
 		justifyContent: "space-around",
 		alignItems: "center",
 		flexDirection: "row",

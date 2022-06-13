@@ -4,22 +4,27 @@ import { store } from "../redux/store";
 
 const Backend = axios.create({
 	baseURL: "https://get-it-done22.herokuapp.com/api",
-	// baseURL: "http://192.168.192.196:8000/api",
+	// baseURL: "http://192.168.146.196:8000/api",
 });
 
 export function errorHander(error) {
+	if (!error.response) {
+		//probably a post error
+		store.dispatch(_SET_error({ type: "network", message: error.message }));
+		return Promise.reject(error);
+	}
 	if (error.response.status == 403) {
 		return axios(error.config);
 	} else if (error.response.status == 401) {
 		// console.log(error.config);
 		refreshAccessToken();
 		const accessToken = store.getState().gauth.AuthToken;
-		const idtoken = store.getState().gauth.IdToken;
+		const idtoken = store.getState().gauth.idtoken;
 		error.config.headers.Authorization = accessToken;
 		error.config.headers.idtoken = idtoken;
 		return axios(error.config);
 	} else if (error.response.status == 405) {
-		const idtoken = store.getState().gauth.IdToken;
+		const idtoken = store.getState().gauth.idtoken;
 		createUser(idtoken);
 	} else {
 		return Promise.reject(error);
@@ -27,7 +32,7 @@ export function errorHander(error) {
 }
 
 export function requestInterceptor(config) {
-	const idtoken = store.getState().gauth.IdToken;
+	const idtoken = store.getState().gauth.idtoken;
 	config.headers.idtoken = idtoken;
 }
 
@@ -35,16 +40,16 @@ Backend.interceptors.response.use(null, errorHander);
 
 // Backend.interceptors.request.use(requestInterceptor);
 
-async function createUser(idToken) {
-	Backend.defaults.headers.common["idtoken"] = idToken;
+async function createUser(idtoken) {
+	Backend.defaults.headers.common["idtoken"] = idtoken;
 	return await Backend({
 		method: "POST",
 		url: "/users/",
 	});
 }
 
-async function updateUserData(idToken, data) {
-	Backend.defaults.headers.common["idtoken"] = idToken;
+async function updateUserData(idtoken, data) {
+	Backend.defaults.headers.common["idtoken"] = idtoken;
 	Backend.defaults.headers.common["Content-Type"] = "application/json";
 	return await Backend({
 		method: "PATCH",
@@ -53,26 +58,26 @@ async function updateUserData(idToken, data) {
 	});
 }
 
-async function grabData(idToken) {
-	Backend.defaults.headers.common["idtoken"] = idToken;
+async function grabData(idtoken) {
+	Backend.defaults.headers.common["idtoken"] = idtoken;
 	return await Backend({
 		method: "GET",
 		url: "/users/",
 	});
 }
 
-async function getCalId(accessToken, idToken) {
+async function getCalId(accessToken, idtoken) {
 	Backend.defaults.headers.common["Authorization"] = "Bearer " + accessToken;
-	Backend.defaults.headers.common["idtoken"] = idToken;
+	Backend.defaults.headers.common["idtoken"] = idtoken;
 
 	return await Backend({
 		method: "POST",
 		url: "/spacedrep/",
 	});
 }
-async function getCalendars(accessToken, idToken) {
+async function getCalendars(accessToken, idtoken) {
 	Backend.defaults.headers.common["Authorization"] = accessToken;
-	Backend.defaults.headers.common["idtoken"] = idToken;
+	Backend.defaults.headers.common["idtoken"] = idtoken;
 
 	return await Backend({
 		method: "GET",
@@ -138,6 +143,14 @@ async function getAllEventCollections(accesstoken, idtoken, calid) {
 	});
 }
 
+async function getRecentEvent(idtoken) {
+	Backend.defaults.headers.common["idtoken"] = idtoken;
+	return await Backend({
+		method: "GET",
+		url: "/spacedrep/events/upcoming/",
+	});
+}
+
 async function search(accesstoken, idtoken, calid, query) {
 	Backend.defaults.headers.common["Authorization"] = accesstoken;
 	Backend.defaults.headers.common["idtoken"] = idtoken;
@@ -160,5 +173,6 @@ export {
 	getAllEvents,
 	deleteEvent,
 	getAllEventCollections,
+	getRecentEvent,
 	search,
 };

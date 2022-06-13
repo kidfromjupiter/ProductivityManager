@@ -24,6 +24,8 @@ import {
 	setNewDay,
 } from "../redux/TrackerSlice";
 import Analytics from "../extras/classes/AnalyticsClass";
+import ErrorPopup from "./notificationPopups/Error";
+import { _REMOVE_error } from "../redux/ErrorSlice";
 
 const TopLevelContainer = ({ children, currentScreen }) => {
 	const colors = useSelector((state) => state.colors);
@@ -31,17 +33,8 @@ const TopLevelContainer = ({ children, currentScreen }) => {
 	const tracker = useSelector((state) => state.tracker);
 	const [sessionTime, setSessionTime] = useState(tracker.sessionTimeTot);
 	const [breakTime, setBreakTime] = useState(tracker.breakTimeTot);
-	const [screenTime, setScreenTime] = useState(() => {
-		const { Home, Reminders, SpacedRep, Timer, Settings } = tracker.screenTime;
-
-		return {
-			Home: Home,
-			Reminders: Reminders,
-			SpacedRep: SpacedRep,
-			Timer: Timer,
-			Settings: Settings,
-		};
-	});
+	const error = useSelector((state) => state.error);
+	const [removeError, removeErrorfn] = useState(false);
 
 	const dispatch = useDispatch();
 
@@ -55,6 +48,16 @@ const TopLevelContainer = ({ children, currentScreen }) => {
 			dispatch(setNewDay());
 		}
 	}, []);
+
+	//tracker listener
+	useEffect(() => {
+		if (tracker.breakTimeTot == 0) {
+			setBreakTime(0);
+		}
+		if (tracker.sessionTimeTot == 0) {
+			setSessionTime(0);
+		}
+	}, [tracker.breakTimeTot, tracker.sessionTimeTot]);
 
 	useEffect(() => {
 		if (pomodoro.isSession && pomodoro.isRunning) {
@@ -96,6 +99,12 @@ const TopLevelContainer = ({ children, currentScreen }) => {
 		breakTime,
 		currentScreen,
 	]);
+
+	useEffect(() => {
+		if (removeError) {
+			dispatch(_REMOVE_error());
+		}
+	}, [removeError]);
 
 	//screentime counter
 	useEffect(() => {
@@ -158,7 +167,7 @@ const TopLevelContainer = ({ children, currentScreen }) => {
 	// 			tracker.breakTimeTot,
 	// 			tracker.sessionTimeTot,
 	// 			tracker.screenTime,
-	// 			tracker.trackingData,
+	// 			// tracker.trackingData,
 	// 			tracker.dateModified
 	// 		)
 	// 	)
@@ -167,9 +176,9 @@ const TopLevelContainer = ({ children, currentScreen }) => {
 	// 	console.log("hello");
 	// }, 1000);
 
-	// function sendData(idToken) {
+	// function sendData(idtoken) {
 	// 	AsyncStorage.getItem("pomodoro").then((f) => {
-	// 		updateUserData(idToken, {
+	// 		updateUserData(idtoken, {
 	// 			calID: calID,
 	// 			pomodoros: f,
 	// 			reminders: reminderData,
@@ -192,7 +201,7 @@ const TopLevelContainer = ({ children, currentScreen }) => {
 	// 			GoogleSignin.getTokens().then((e) => {
 	// 				dispatch(setToken({ AuthToken: e.accessToken }));
 	// 			});
-	// 			grabData(e.idToken).then((e) => {
+	// 			grabData(e.idtoken).then((e) => {
 	// 				const family_name = e.data.data.family_name;
 	// 				const name = e.data.data.name;
 	// 				const profile_pic = e.data.data.profile_pic;
@@ -223,6 +232,10 @@ const TopLevelContainer = ({ children, currentScreen }) => {
 					flex: 1,
 				}}
 			>
+				{error.display ? (
+					<ErrorPopup message={error.error.message} setState={removeErrorfn} />
+				) : null}
+
 				{children}
 				<StatusBar style={colors.statusbarTheme} />
 			</View>

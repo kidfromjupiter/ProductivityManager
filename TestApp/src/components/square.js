@@ -7,8 +7,27 @@ import {
 	Text,
 	View,
 } from "react-native";
+import {
+	Gesture,
+	GestureDetector,
+	GestureHandlerRootView,
+	TapGestureHandler,
+} from "react-native-gesture-handler";
+import {
+	default as RNAnimated,
+	Layout,
+	runOnJS,
+	SequencedTransition,
+	useAnimatedGestureHandler,
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+	withTiming,
+	ZoomIn,
+	ZoomOut,
+} from "react-native-reanimated";
 
-const PressableAnimated = Animated.createAnimatedComponent(Pressable);
+const RNAnimatedPressable = RNAnimated.createAnimatedComponent(Pressable);
 
 const Square = ({
 	text,
@@ -26,71 +45,140 @@ const Square = ({
 	touchEndCallback,
 	titleStyle,
 	animationDisabled,
+	enteringDelay,
+	zoomInDuration,
 }) => {
 	const animatedButtonScale = new Animated.Value(0);
+	const animatedScale = useSharedValue(1);
 
 	const onTouchStart = () => {
-		Animated.timing(animatedButtonScale, {
-			toValue: 10,
-			useNativeDriver: true,
-			duration: 300,
-		}).start(() => animatedButtonScale.setValue(0));
+		animatedScale.value = withSpring(scaleDown ? scaleDown : 0.8, {
+			overshootClamping: true,
+			mass: 0.4,
+		});
 	};
+	const onTouchEnd = () => {
+		animatedScale.value = withSpring(1, { overshootClamping: true, mass: 0.4 });
+	};
+	const animatedScaleStyle = useAnimatedStyle(() => {
+		return { transform: [{ scale: animatedScale.value }] };
+	});
 
-	const animatedScaleStyle = {
-		transform: [
-			{
-				scale: animatedButtonScale.interpolate({
-					inputRange: [0, 5, 10],
-					outputRange: [1, scaleDown ? scaleDown : 0.9, 1],
-				}),
-			},
-		],
+	const tapgesture = Gesture.Tap()
+		.onEnd(() => {
+			touchEndCallback
+				? runOnJS(touchEndCallback)()
+				: navigation
+				? runOnJS(navigation.navigate)(text)
+				: null;
+		})
+		.onTouchesDown(() => {
+			animatedScale.value = withSpring(scaleDown ? scaleDown : 0.8, {
+				overshootClamping: true,
+				mass: 0.4,
+			});
+		})
+		.onFinalize(() => {
+			animatedScale.value = withSpring(1, {
+				overshootClamping: true,
+				mass: 0.4,
+			});
+		});
+
+	const longPress = Gesture.LongPress()
+		.onEnd(() => {
+			enableLongPress
+				? () => {
+						runOnJS(ParentHoldCallback)();
+				  }
+				: null;
+			// runOnJS(console.log)("long press");
+		})
+		.onTouchesDown(() => {
+			animatedScale.value = withSpring(scaleDown ? scaleDown : 0.8, {
+				overshootClamping: true,
+				mass: 0.4,
+			});
+		})
+		.onFinalize(() => {
+			animatedScale.value = withSpring(1, {
+				overshootClamping: true,
+				mass: 0.4,
+			});
+		});
+	const gestureHandler = Gesture.Race(tapgesture, longPress);
+	// .onEnd((e) => {
+	// 	animatedScale.value = withSpring(
+	// 		1,
+	// 		{ overshootClamping: true, mass: 0.4 },
+	// 		() => {
+	// 			touchEndCallback
+	// 				? runOnJS(touchEndCallback)()
+	// 				: navigation
+	// 				? runOnJS(navigation.navigate)(text)
+	// 				: null;
+	// 		}
+	// 	);
+	// });
+	// const tapgesture = useAnimatedGestureHandler({
+	// 	onActive: () => {
+	// 		animatedScale.value = withSpring(scaleDown ? scaleDown : 0.8, {
+	// 			overshootClamping: true,
+	// 			mass: 0.4,
+	// 		});
+	// 		runOnJS(console.log)("fired");
+	// 	},
+	// 	onEnd: () => {
+	// 		animatedScale.value = withSpring(
+	// 			1,
+	// 			{ overshootClamping: true, mass: 0.4 },
+	// 			() => {
+	// 				touchEndCallback
+	// 					? runOnJS(touchEndCallback)()
+	// 					: navigation
+	// 					? runOnJS(navigation.navigate)(text)
+	// 					: null;
+	// 			}
+	// 		);
+	// 	},
+	// });
+	const animatedButtonScaleStyle = {
+		transform: [{ scale: animatedButtonScale }],
 	};
 
 	return (
-		<PressableAnimated
-			delayLongPress={300}
-			style={[
-				styles.container,
-				customStyles,
-				holdToExpand && expandSize && expanded ? expandSize : null,
-				{ flex: flex },
-				animatedScaleStyle,
-			]}
-			onTouchStart={() => {
-				animationDisabled ? null : onTouchStart();
-			}}
-			onPress={() => {
-				touchEndCallback
-					? touchEndCallback()
-					: navigation
-					? navigation.navigate(text)
-					: null;
-			}}
-			onLongPress={
-				enableLongPress
-					? () => {
-							LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-
-							ParentHoldCallback();
-					  }
-					: null
-			}
-		>
-			<View style={styles.childrenContainer}>
-				{showTitle ? (
-					<Text
-						style={[styles.text, titleStyle]}
-						numberOfLines={10}
-						ellipsizeMode="tail"
-					>
-						{text}
-					</Text>
-				) : null}
-				{children}
-			</View>
-		</PressableAnimated>
+		<GestureHandlerRootView style={{ flex: flex }}>
+			<GestureDetector gesture={gestureHandler}>
+				<RNAnimated.View
+					delayLongPress={300}
+					style={[
+						styles.container,
+						customStyles,
+						holdToExpand && expandSize && expanded ? expandSize : null,
+						animatedScaleStyle,
+						// animatedButtonScale,
+					]}
+					entering={ZoomIn.delay(enteringDelay ? enteringDelay : 0).duration(
+						!zoomInDuration ? 150 : zoomInDuration
+					)}
+					exiting={ZoomOut.duration(150)}
+					layout={Layout.springify()}
+				>
+					<View style={styles.childrenContainer}>
+						{showTitle ? (
+							<Text
+								style={[styles.text, titleStyle]}
+								numberOfLines={10}
+								ellipsizeMode="tail"
+							>
+								{text}
+							</Text>
+						) : null}
+						{children}
+					</View>
+				</RNAnimated.View>
+			</GestureDetector>
+		</GestureHandlerRootView>
 	);
 };
 

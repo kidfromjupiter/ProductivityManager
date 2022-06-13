@@ -40,7 +40,7 @@ const PomodoroQuickView = ({}) => {
 						<ImprovedText
 							backgroundColor={colors.levelTwo}
 							text={Math.round(pomodoro.time / 60)}
-							style={{ fontWeight: "bold", fontSize: 20 }}
+							style={{ fontWeight: "bold", fontSize: 18 }}
 						/>
 					</CircularProgressWithChild>
 				</CircularProgressWithChild>

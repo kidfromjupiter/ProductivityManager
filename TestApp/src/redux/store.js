@@ -38,7 +38,10 @@ const logger = (store) => (next) => (action) => {
 			id: action.payload.id,
 		});
 	}
-	if (action.type == "tracker/setNewDay") {
+	if (
+		action.type == "tracker/setNewDay" ||
+		action.type == "tracker/resetTracker"
+	) {
 		newDayCleanup_pomodoro();
 	}
 	if (action.type === "pomodoro/setNewCycle") {

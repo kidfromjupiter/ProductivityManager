@@ -88,7 +88,7 @@ const SpacedRepListItem = ({
 }) => {
 	const calID = useSelector((state) => state.gauth.calendarID);
 	const calendarEvents = useSelector((state) => state.calendar.events);
-	const idtoken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	const colors = useSelector((state) => state.colors);
 	const [tagsColor] = useState(getTextColor(colors.levelOne));
 	const rotation = useSharedValue(0);

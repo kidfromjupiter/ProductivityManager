@@ -10,6 +10,7 @@ export const TimerSlice = createSlice({
 		isStopped: false,
 		isStarted: false,
 		isFinished: false,
+		repeat: false,
 		initialValue: 0,
 	},
 	reducers: {
@@ -24,7 +25,7 @@ export const TimerSlice = createSlice({
 			}
 		},
 		setTimer: (state, action) => {
-			if (action.payload.time == 0) {
+			if (action.payload.time == 0 && !state.repeat) {
 				state.isRunning = false;
 				state.isFinished = true;
 			}
@@ -40,6 +41,11 @@ export const TimerSlice = createSlice({
 			localState.initialValue = action.payload.initialValue;
 			return localState;
 		},
+		toggleRepeat: (state) => {
+			let localState = JSON.parse(JSON.stringify(state));
+			localState.repeat = !localState.repeat;
+			return localState;
+		},
 	},
 });
 
@@ -49,5 +55,6 @@ export const {
 	setTimer,
 	resetTimer,
 	setInitialValue,
+	toggleRepeat,
 } = TimerSlice.actions;
 export default TimerSlice.reducer;

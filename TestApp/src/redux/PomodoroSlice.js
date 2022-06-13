@@ -15,6 +15,7 @@ export const PomodoroSlice = createSlice({
 		numOfTotalSessions: 0,
 		initialTime: 0,
 		finishedPomodoros: 0,
+		// repeat: false,
 		// activeCycleIndex: 0,
 	},
 	reducers: {
@@ -36,6 +37,7 @@ export const PomodoroSlice = createSlice({
 			localState.numOfPresets = 0;
 			localState.isFinished = false;
 			localState.pomodoroName = "";
+			localState.pomodoroID = null;
 			return localState;
 		},
 		toggleTimer: (state) => {

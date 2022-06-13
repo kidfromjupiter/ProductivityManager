@@ -28,7 +28,7 @@ import {
 	resetGAuth,
 	setCalID,
 	setGAuthMeta,
-	setIdToken,
+	setidtoken,
 	setIsSignedIn,
 	setShouldSync,
 } from "../redux/GAuthSlice";
@@ -53,7 +53,7 @@ function SettingsScreen({ navigation }) {
 	const deadline = useSelector((state) => state.deadline.deadline);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [calIdVisible, setCalIdVisible] = useState(false);
-	const IdToken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	const colors = useSelector((state) => state.colors);
 	const reminderData = useSelector((state) => state.reminders);
 	const [deadLineModal, setDeadLineModal] = useState(false);
@@ -113,10 +113,10 @@ function SettingsScreen({ navigation }) {
 		]);
 	}
 
-	function sendData(idToken) {
+	function sendData(idtoken) {
 		setLoading(true);
 		AsyncStorage.getItem("pomodoro").then((f) => {
-			updateUserData(idToken, {
+			updateUserData(idtoken, {
 				calID: calID,
 				pomodoros: f,
 				reminders: reminderData,
@@ -126,7 +126,7 @@ function SettingsScreen({ navigation }) {
 		});
 	}
 	function fullBackupRestore() {
-		grabData(IdToken)
+		grabData(idtoken)
 			.then((e) => {
 				const data = e.data.data;
 				const date = new Date(data.dateUpdated);
@@ -264,14 +264,14 @@ function SettingsScreen({ navigation }) {
 										{
 											callback: () => {
 												setLoading(true);
-												sendData(IdToken);
+												sendData(idtoken);
 											},
 											title: "Backup now",
 											subText: "Manual Backup",
 										},
 										{
 											callback: () => {
-												console.log(IdToken);
+												console.log(idtoken);
 												console.log(accessToken);
 											},
 											title: "list idtoken",

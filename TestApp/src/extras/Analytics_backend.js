@@ -2,19 +2,26 @@ import axios from "axios";
 import { refreshAccessToken } from "./AuthHandler";
 // import { errorHander } from "./BACKEND";
 import { store } from "../redux/store";
+import { _SET_error } from "../redux/ErrorSlice";
 
 const ANALYTICS = axios.create({
-	// baseURL: "https://get-it-done22.herokuapp.com/api/analytics",
-	baseURL: "http://192.168.146.196:8000/api/analytics",
+	baseURL: "https://get-it-done22.herokuapp.com/api/analytics",
+	// baseURL: "http://192.168.146.196:8000/api/analytics",
 });
 
 function errorHander(error) {
+	if (!error.response) {
+		//probably a post error
+		store.dispatch(_SET_error({ type: "network", message: error.message }));
+		return Promise.reject(error);
+	}
 	if (error.response.status == 401) {
 		refreshAccessToken();
 		const accessToken = store.getState().gauth.AuthToken;
-		const idtoken = store.getState().gauth.IdToken;
+		const idtoken = store.getState().gauth.idtoken;
 		error.config.headers.Authorization = accessToken;
 		error.config.headers.idtoken = idtoken;
+
 		return axios(error.config);
 	} else {
 		return Promise.reject(error);

@@ -12,8 +12,10 @@ import {
 import { useSelector } from "react-redux";
 import { PomodoroClass } from "../extras/classes/PomodoroCreator";
 import sessionArrayGen from "../extras/sessionArrayGen";
+import { GradientBackground } from "../screens/Analytics/Today";
 import PomodoroPresetContainer from "./PomodoroPresetContainer";
 import Square from "./square";
+import Animated, { ZoomIn, ZoomOut } from "react-native-reanimated";
 
 const PresetContainerDetails = ({
 	details,
@@ -59,7 +61,14 @@ const PresetContainerDetails = ({
 		setPomodoroPresetsList(objList);
 	};
 	return (
-		<View style={[styles.container, { backgroundColor: colors.levelFour }]}>
+		<Animated.View
+			style={[
+				styles.container,
+				{ backgroundColor: colors.levelFour, zIndex: 10 },
+			]}
+			entering={ZoomIn.duration(150)}
+			exiting={ZoomOut.duration(150)}
+		>
 			<View style={[styles.rows, styles.headerContainer]}>
 				<TextInput
 					value={detailsObjectT}
@@ -139,7 +148,7 @@ const PresetContainerDetails = ({
 					<AntDesign name="check" size={24} color="white" />
 				</TouchableOpacity>
 			</View>
-		</View>
+		</Animated.View>
 	);
 };
 
@@ -217,6 +226,7 @@ const PresetContainerCondensed = ({
 	ParentHoldCallback,
 	index,
 	touchEndCallback,
+	selectedIndex,
 }) => {
 	// console.log(index);
 	return (
@@ -224,10 +234,11 @@ const PresetContainerCondensed = ({
 			<Square
 				text={itemObject.title}
 				flex={1}
-				customStyles={[styles.listItem, { backgroundColor: colors.levelTwo }]}
+				customStyles={[styles.listItem]}
 				scaleDown={0.96}
 				ParentHoldCallback={() => ParentHoldCallback(itemObject, index)}
 				enableLongPress
+				// animationDisabled
 			>
 				<PomodoroPresetContainer
 					colors={colors}
@@ -250,6 +261,11 @@ const PresetContainerCondensed = ({
 						);
 					}}
 				/>
+				{selectedIndex == itemObject.id ? (
+					<GradientBackground />
+				) : (
+					<GradientBackground accent={colors.levelOne} />
+				)}
 			</Square>
 		</>
 	);
@@ -263,7 +279,7 @@ const styles = StyleSheet.create({
 	},
 	listItem: {
 		borderBottomWidth: 0,
-		borderRadius: 10,
+		borderRadius: 20,
 		width: 200,
 		flex: 1,
 		justifyContent: "center",

@@ -24,7 +24,7 @@ import Modal from "react-native-modal";
 const SpacedRepList = ({ navigation }) => {
 	const dispatch = useDispatch();
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
-	const idToken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	const calID = useSelector((state) => state.gauth.calendarId);
 	const signedIn = useSelector((state) => state.gauth.isSignedIn);
 	const [selectedData, setSelectedData] = useState(null);
@@ -53,7 +53,7 @@ const SpacedRepList = ({ navigation }) => {
 	}
 
 	function refresh() {
-		getAllEvents(accessToken, idToken, calID).then((e) =>
+		getAllEvents(accessToken, idtoken, calID).then((e) =>
 			creatingObjectArray(e.data.events)
 		);
 	}
@@ -136,7 +136,7 @@ const SpacedRepList = ({ navigation }) => {
 	function submitSearch() {
 		setSearching(true);
 		if (searchText.text) {
-			search(accessToken, idToken, calID, searchText.text)
+			search(accessToken, idtoken, calID, searchText.text)
 				.then((e) => {
 					setSearchResults(e.data.data);
 					setSearching(false);

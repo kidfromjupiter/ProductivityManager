@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react";
 import {
 	FlatList,
 	LayoutAnimation,
+	ScrollView,
 	StyleSheet,
 	Text,
 	View,
 } from "react-native";
+import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { setCompleted } from "../redux/ReminderSlice";
 import ImprovedText from "./CustomReactComponent/ImprovedText";
 import ListItemGeneric from "./ListItemGeneric";
+
 const ListEmpty = ({ emptyText, colors }) => {
 	return (
 		<View style={styles.emptyContainer}>
@@ -46,22 +49,27 @@ const MiniReminderView = ({ navigation }) => {
 		setReminders(getReminders(reminders_redux));
 	}, [reminders_redux]);
 	function setComplete(index, category) {
-		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 		dispatch(setCompleted({ index: index, category: category }));
 	}
 
 	const renderItem = ({ item, index }) => {
 		return (
-			<ListItemGeneric
-				Checkbox
-				checkboxColor={colors.accentColor}
-				text={item.title}
-				checkboxTextColor={colors.textColorDark}
-				onCheck={() => setComplete(index, item.category)}
-				index={index}
-				isCompleted={item.completed}
-			/>
-			// <View></View>
+			<Animated.View
+				entering={FadeIn}
+				exiting={FadeOut}
+				layout={Layout.duration(200)}
+				key={item.id}
+			>
+				<ListItemGeneric
+					Checkbox
+					checkboxColor={colors.accentColor}
+					text={item.title}
+					checkboxTextColor={colors.textColorDark}
+					onCheck={() => setComplete(index, item.category)}
+					index={index}
+					isCompleted={item.completed}
+				/>
+			</Animated.View>
 		);
 	};
 
@@ -73,7 +81,7 @@ const MiniReminderView = ({ navigation }) => {
 		>
 			<View style={[styles.innerContainer]}>
 				{/* <Text>This is text</Text> */}
-				<FlatList
+				{/* <Animated.FlatList
 					style={styles.listStyle}
 					ListEmptyComponent={() => (
 						<ListEmpty colors={colors} emptyText="No reminders" />
@@ -87,7 +95,13 @@ const MiniReminderView = ({ navigation }) => {
 					ItemSeparatorComponent={() => (
 						<View style={{ height: 1, backgroundColor: colors.levelThree }} />
 					)}
-				/>
+					itemLayoutAnimation={Layout.duration(100)}
+				/> */}
+				<ScrollView>
+					{reminders.map((item, index) => {
+						return renderItem({ item: item, index: index });
+					})}
+				</ScrollView>
 			</View>
 		</View>
 	);

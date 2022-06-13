@@ -102,7 +102,7 @@ export const TrackerSlice = createSlice({
 			state.trackingData = [];
 		},
 		resetTracker: (state) => {
-			const today = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+			const today = new Date().toISOString().substring(0, 10);
 			// state.trackerObjectList[dateModified] = data;
 			state.trackingData = [];
 			state.trackerObjectList = {};

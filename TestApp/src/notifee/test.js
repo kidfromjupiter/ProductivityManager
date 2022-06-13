@@ -26,4 +26,6 @@ async function Notify(title, body) {
 	});
 }
 
+// Notify();
+
 export default Notify;

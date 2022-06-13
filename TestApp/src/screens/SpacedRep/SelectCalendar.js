@@ -31,10 +31,10 @@ const CalendarItem = ({ item, index, colors, navigation, setIsLoading }) => {
 	const dispatch = useDispatch();
 	const [noOfEvents, setNoOfEvents] = useState(0);
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
-	const idToken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	useEffect(() => {
 		setIsLoading(true);
-		getAllEvents(accessToken, idToken, item.id).then((res) => {
+		getAllEvents(accessToken, idtoken, item.id).then((res) => {
 			setNoOfEvents(res.data.events.length);
 			setIsLoading(false);
 		});
@@ -73,7 +73,7 @@ const CalendarItem = ({ item, index, colors, navigation, setIsLoading }) => {
 const SelectCalendar = ({ navigation }) => {
 	const colors = useSelector((state) => state.colors);
 	const accesstoken = useSelector((state) => state.gauth.AuthToken);
-	const idtoken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	const signedIn = useSelector((state) => state.gauth.isSignedIn);
 	const [calendarList, setCalendarList] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);

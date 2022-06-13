@@ -69,7 +69,7 @@ const PomodoroPresetContainer = ({
 				style={[
 					styles.Presets,
 					styles.PresetBottom,
-					{ backgroundColor: colors.levelThree },
+					// { backgroundColor: colors.levelThree },
 				]}
 			>
 				<Text

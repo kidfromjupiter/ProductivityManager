@@ -15,6 +15,7 @@ import Animated, {
 	withRepeat,
 	useSharedValue,
 	useAnimatedStyle,
+	Layout,
 } from "react-native-reanimated";
 import { getTextColor } from "./CustomReactComponent/ImprovedText";
 
@@ -67,7 +68,7 @@ export default function SquareListItem({
 	}, [expanded]);
 
 	return (
-		<View
+		<Animated.View
 			style={{
 				transform: [{ translateX: setTranslations() }],
 				zIndex: expanded.height > 0 ? 100 : 0,
@@ -91,6 +92,7 @@ export default function SquareListItem({
 				showTitle
 				touchEndCallback={() => touchEndCallBack(index)}
 				enableLongPress
+				zoomInDuration={0}
 				ParentHoldCallback={() => {
 					setExpandedProps();
 				}}
@@ -101,7 +103,10 @@ export default function SquareListItem({
 					</View>
 				) : null}
 				{expanded.height > 0 && meta.width != 0 ? (
-					<View style={[styles.iconHolder, { height: meta.height }]}>
+					<Animated.View
+						layout={Layout.duration(200)}
+						style={[styles.iconHolder, { height: meta.height }]}
+					>
 						<TouchableOpacity
 							onPress={() => {
 								deleteItem(index);
@@ -134,7 +139,7 @@ export default function SquareListItem({
 								color={color.textColorDark}
 							/>
 						</TouchableOpacity> */}
-					</View>
+					</Animated.View>
 				) : null}
 				{!expanded.height > 0 && desc ? (
 					<Animated.View
@@ -156,7 +161,7 @@ export default function SquareListItem({
 					></Animated.View>
 				) : null}
 			</Square>
-		</View>
+		</Animated.View>
 	);
 }
 

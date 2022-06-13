@@ -15,7 +15,7 @@ import { getTextColor } from "../../components/CustomReactComponent/ImprovedText
 const CreateEvent = ({ navigation }) => {
 	const accessToken = useSelector((state) => state.gauth.AuthToken);
 	const calendarID = useSelector((state) => state.gauth.calendarID);
-	const idtoken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	const colors = useSelector((state) => state.colors);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [endDate, setEndDate] = useState(new Date());

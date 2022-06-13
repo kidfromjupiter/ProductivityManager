@@ -2,7 +2,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
 	Alert,
 	FlatList,
@@ -11,7 +11,10 @@ import {
 	StyleSheet,
 	View,
 	Dimensions,
+	TouchableOpacity,
+	ScrollView,
 } from "react-native";
+import { AntDesign, Ionicons, Feather } from "@expo/vector-icons";
 import Svg, { Circle } from "react-native-svg";
 import { useDispatch, useSelector } from "react-redux";
 import AnimatedRing from "../components/AnimatedRing";
@@ -38,7 +41,16 @@ import Animated, {
 	useAnimatedProps,
 	useSharedValue,
 	withTiming,
+	Layout,
+	ZoomIn,
+	ZoomOut,
+	FadeIn,
+	FadeOut,
+	FadeInLeft,
+	ZoomInRight,
+	ZoomOutRight,
 } from "react-native-reanimated";
+import { GradientBackground } from "./Analytics/Today";
 
 const CIRCLE_LENGTH = 880;
 const R = CIRCLE_LENGTH / (2 * Math.PI);
@@ -59,69 +71,56 @@ const Pomodoro = ({ navigation }) => {
 		setLayout({ width, height });
 	}
 
-	const animation = LayoutAnimation.create(
-		185,
-		LayoutAnimation.Types.easeInEaseOut,
-		LayoutAnimation.Properties.scaleXY
-	);
-
 	const dispatch = useDispatch();
-	const _SETTIME = (value) => {
+	const _SETTIME = useCallback((value) => {
 		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		dispatch(setTime({ time: value.time }));
-	};
-	const _RESETTIME = () => {
+	}, []);
+	const _RESETTIME = useCallback(() => {
 		dispatch(resetTimer());
-	};
-	const _TOGGLETIMER = () => {
+	}, []);
+	const _TOGGLETIMER = useCallback(() => {
 		dispatch(toggleTimer());
-	};
-	const _INCREMENETPRESETNUMBER = (value) => {
+	}, []);
+	const _INCREMENETPRESETNUMBER = useCallback((value) => {
 		dispatch(incrementNumOfPresets({ number: value }));
-	};
-	const _SETCYCLEDATA = (value, name, id) => {
+	}, []);
+	const _SETCYCLEDATA = useCallback((value, name, id) => {
 		dispatch(setCycleData({ array: value, name: name, id: id }));
-	};
-	const _SETNEWCYCLE = () => {
+	}, []);
+	const _SETNEWCYCLE = useCallback(() => {
 		dispatch(setNewCycle());
-	};
+	}, []);
 
 	useEffect(
-		() =>
-			navigation
-				? navigation.addListener("beforeRemove", (e) => {
-						e.preventDefault();
-						Alert.alert(
-							"Leave?",
-							"Leaving will result in loss of productivity and procrastination. Disappointment may follow. Do you wish to proceed? Your session will be paused",
-							[
-								{ text: "No", style: "cancel", onPress: () => {} },
-								{
-									text: "Yes",
-									style: "destructive",
-									onPress: () => {
-										navigation.dispatch(e.data.action);
+		useCallback(
+			() =>
+				navigation
+					? navigation.addListener("beforeRemove", (e) => {
+							e.preventDefault();
+							Alert.alert(
+								"Leave?",
+								"Leaving will result in loss of productivity and procrastination. Disappointment may follow. Do you wish to proceed? Your session will be paused",
+								[
+									{ text: "No", style: "cancel", onPress: () => {} },
+									{
+										text: "Yes",
+										style: "destructive",
+										onPress: () => {
+											navigation.dispatch(e.data.action);
+										},
 									},
-								},
-							]
-						);
-				  })
-				: null,
+								]
+							);
+					  })
+					: null,
+			[navigation]
+		),
 		[]
 	);
 
 	// cleanup
-	useEffect(() => {
-		return () => {
-			AsyncStorage.setItem(
-				"pomodoro",
-				JSON.stringify(pomodoroPresetsList)
-			).then(() => console.log("saved"));
-			// if (pomodoro.isRunning) {
-			// 	_TOGGLETIMER();
-			// }
-		};
-	}, [pomodoroPresetsList]);
+	useEffect(() => {}, [pomodoroPresetsList]);
 
 	useEffect(() => {
 		const getallObjects = async () => {
@@ -155,33 +154,41 @@ const Pomodoro = ({ navigation }) => {
 	const renderItem = ({ item, index }) => {
 		const itemObject = item;
 		return (
-			<PresetContainerCondensed
-				itemObject={itemObject}
-				colors={colors}
-				ParentHoldCallback={toggleDetails}
-				index={index}
-				touchEndCallback={(value, name, id) => {
-					LayoutAnimation.easeInEaseOut();
-					if (pomodoro.cycleData.length == 0) {
-						_SETCYCLEDATA(value, name, id);
-					} else {
-						Alert.alert(
-							"Start Pomodoro?",
-							"This will clear the current pomodoro and won't be marked as a complete session. Do you wish to proceed?",
-							[
-								{ text: "No", style: "cancel", onPress: () => {} },
-								{
-									text: "Yes",
-									style: "destructive",
-									onPress: () => {
-										_SETCYCLEDATA(value, name, id);
+			<Animated.View
+				entering={ZoomIn.delay(50 * index)}
+				exiting={ZoomOut}
+				layout={Layout.springify().duration(100)}
+				key={item.id}
+			>
+				<PresetContainerCondensed
+					itemObject={itemObject}
+					colors={colors}
+					ParentHoldCallback={toggleDetails}
+					index={index}
+					selectedIndex={pomodoro.pomodoroID}
+					touchEndCallback={(value, name, id) => {
+						LayoutAnimation.easeInEaseOut();
+						if (pomodoro.cycleData.length == 0) {
+							_SETCYCLEDATA(value, name, id);
+						} else {
+							Alert.alert(
+								"Start Pomodoro?",
+								"This will clear the current pomodoro and won't be marked as a complete session. Do you wish to proceed?",
+								[
+									{ text: "No", style: "cancel", onPress: () => {} },
+									{
+										text: "Yes",
+										style: "destructive",
+										onPress: () => {
+											_SETCYCLEDATA(value, name, id);
+										},
 									},
-								},
-							]
-						);
-					}
-				}}
-			/>
+								]
+							);
+						}
+					}}
+				/>
+			</Animated.View>
 		);
 	};
 
@@ -198,15 +205,18 @@ const Pomodoro = ({ navigation }) => {
 		);
 		const newArray = [pomodoro].concat(pomodoroPresetsList);
 		setPomodoroPresetsList(newArray);
+		AsyncStorage.setItem("pomodoro", JSON.stringify(pomodoroPresetsList)).then(
+			() => console.log("saved")
+		);
 		_INCREMENETPRESETNUMBER(1);
 	};
 
 	const toggleDetails = (details) => {
 		if (details) {
-			LayoutAnimation.configureNext(animation);
+			LayoutAnimation.easeInEaseOut();
 			setShowDetails(details);
 		} else {
-			LayoutAnimation.configureNext(animation);
+			LayoutAnimation.easeInEaseOut();
 			setShowDetails(null);
 		}
 	};
@@ -215,37 +225,58 @@ const Pomodoro = ({ navigation }) => {
 	}));
 	const { minutes, seconds } = dateParser(pomodoro.time);
 	return (
-		<View
+		<Animated.View
 			style={[
 				styles.container,
 				{
 					backgroundColor: !isAod ? colors.backgroundColor : "#000000",
 				},
 			]}
+			layout={Layout.duration(100)}
 		>
+			{!isAod ? (
+				<View style={{ zIndex: 0 }}>
+					<GradientBackground
+						height={Dimensions.get("screen").height}
+						width={Dimensions.get("screen").width}
+						cx={Dimensions.get("screen").width / 2}
+						cy={10}
+						accent={
+							!pomodoro.isFinished
+								? pomodoro.isRunning
+									? colors.accentColor
+									: colors.backgroundColor
+								: "orange"
+						}
+					/>
+				</View>
+			) : null}
 			{layout.width != 0 && !isAod ? (
-				<Svg
+				<Animated.View
 					style={{
 						position: "absolute",
 						right: 0,
 						left: 0,
 						top: 0,
 						bottom: 0,
-						// zIndex: 100,
 					}}
+					entering={FadeIn}
+					exiting={FadeOut}
 				>
-					<AnimatedCircle
-						cx={layout.width / 2}
-						cy={layout.height / 2}
-						r={R}
-						stroke={colors.levelThree}
-						strokeWidth={5}
-						strokeDasharray={CIRCLE_LENGTH}
-						animatedProps={animatedProp}
-						strokeLinecap={"round"}
-						transform={`rotate(-90 ${layout.width / 2} ${layout.height / 2})`}
-					/>
-				</Svg>
+					<Svg>
+						<AnimatedCircle
+							cx={layout.width / 2}
+							cy={layout.height / 2}
+							r={R}
+							stroke={colors.levelThree}
+							strokeWidth={5}
+							strokeDasharray={CIRCLE_LENGTH}
+							animatedProps={animatedProp}
+							strokeLinecap={"round"}
+							transform={`rotate(-90 ${layout.width / 2} ${layout.height / 2})`}
+						/>
+					</Svg>
+				</Animated.View>
 			) : null}
 
 			<BackButton navigation={navigation} color={colors} />
@@ -256,24 +287,29 @@ const Pomodoro = ({ navigation }) => {
 				]}
 			>
 				{pomodoro.isRunning ? (
-					<Pressable
-						onPress={() => {
-							isAod ? deactivateKeepAwake() : activateKeepAwake();
-
-							setisAod(!isAod);
-						}}
+					<Animated.View
 						style={[
 							styles.buttonStyles,
 							{ zIndex: 1000 },
 							{ backgroundColor: isAod ? "black" : "white" },
 						]}
+						entering={ZoomInRight}
+						exit={ZoomOutRight}
 					>
-						<MaterialIcons
-							name="settings-display"
-							size={30}
-							color={!isAod ? "black" : "white"}
-						/>
-					</Pressable>
+						<Pressable
+							onPress={() => {
+								isAod ? deactivateKeepAwake() : activateKeepAwake();
+								setisAod(!isAod);
+								console.log("pressed");
+							}}
+						>
+							<MaterialIcons
+								name="settings-display"
+								size={30}
+								color={!isAod ? "black" : "white"}
+							/>
+						</Pressable>
+					</Animated.View>
 				) : null}
 			</View>
 			{!isAod ? (
@@ -298,9 +334,9 @@ const Pomodoro = ({ navigation }) => {
 						ResetTimer={_RESETTIME}
 						minutes={minutes}
 						seconds={seconds}
-						layoutanimation={animation}
 						timerEndCallback={_SETNEWCYCLE}
 						backgroundColor={colors.backgroundColor}
+						timerFinishedPopupText={"Pomodoro Finished!"}
 					/>
 				</AnimatedRing>
 			) : (
@@ -316,11 +352,37 @@ const Pomodoro = ({ navigation }) => {
 					seconds={seconds}
 					timerEndCallback={_SETNEWCYCLE}
 					backgroundColor={colors.backgroundColor}
+					timerFinishedPopupText={"Pomodoro Finished!"}
 				/>
 			)}
+			{pomodoro.cycleData.length > 0 ? (
+				<View
+					style={{
+						justifyContent: "flex-start",
+						alignItems: "center",
+						flex: 1,
+					}}
+				>
+					<TouchableOpacity style={{ padding: 5 }} onPress={_SETNEWCYCLE}>
+						{/* <AntDesign name="forward" size={24} color="white" /> */}
+						{/* <Ionicons name="chevron-forward" size={27} color="white" /> */}
+						<Feather name="fast-forward" size={24} color="white" />
+					</TouchableOpacity>
+				</View>
+			) : null}
 
 			{!showDetails ? (
-				<View style={[styles.infobarHolder]}>
+				<View
+					style={[
+						styles.infobarHolder,
+						{
+							position: "absolute",
+							top: 25,
+							left: 0,
+							padding: 10,
+						},
+					]}
+				>
 					{!pomodoro.isSession ? (
 						<InfoBar customstyles={[styles.infobar]} info="Break"></InfoBar>
 					) : null}
@@ -332,11 +394,20 @@ const Pomodoro = ({ navigation }) => {
 							}
 						></InfoBar>
 					) : null}
+					{pomodoro.cycleData.length == 0 ? (
+						<InfoBar
+							customstyles={[styles.infobar]}
+							info={"Last session"}
+						></InfoBar>
+					) : null}
 				</View>
 			) : null}
 
 			{!isAod ? (
-				<View style={styles.listContainer}>
+				<Animated.View
+					style={styles.listContainer}
+					layout={Layout.duration(250)}
+				>
 					<ListHeader
 						extraStyle={{
 							padding: 10,
@@ -346,10 +417,9 @@ const Pomodoro = ({ navigation }) => {
 						}}
 						onPressCallback={createPomodoro}
 						text="Presets"
-						animation={animation}
 						iconName="pluscircle"
 					/>
-					<FlatList
+					{/* <FlatList
 						extraData={pomodoroPresetsList}
 						data={pomodoroPresetsList}
 						style={[styles.list, { backgroundColor: colors.levelOne }]}
@@ -359,19 +429,26 @@ const Pomodoro = ({ navigation }) => {
 						}}
 						horizontal
 						showsHorizontalScrollIndicator={false}
-					/>
-				</View>
+					/> */}
+					<ScrollView
+						style={[styles.listContainer, { backgroundColor: colors.levelOne }]}
+						horizontal={true}
+					>
+						{pomodoroPresetsList.map((item, index) => {
+							return renderItem({ item: item, index: index });
+						})}
+					</ScrollView>
+				</Animated.View>
 			) : null}
 			{showDetails ? (
 				<PresetContainerDetails
 					details={showDetails}
 					showDetailsSetter={toggleDetails}
-					animation={animation}
 					setPomodoroPresetsList={setPomodoroPresetsList}
 					pomodoroList={pomodoroPresetsList}
 				/>
 			) : null}
-		</View>
+		</Animated.View>
 	);
 };
 

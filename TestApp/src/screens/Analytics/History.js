@@ -69,10 +69,10 @@ const History = ({ navigation }) => {
 		"December",
 	];
 
-	useEffect(() => {
-		monthRef.current.scrollToIndex({ index: monthIndex });
-		// yearRef.current.scrollToIndex({ index: yearsIndex });
-	}, [monthRef]);
+	// useEffect(() => {
+	// 	monthRef.current.scrollToIndex({ index: monthIndex });
+	// 	// yearRef.current.scrollToIndex({ index: yearsIndex });
+	// }, [monthRef]);
 
 	const years = ["2021", "2022", "2023"];
 

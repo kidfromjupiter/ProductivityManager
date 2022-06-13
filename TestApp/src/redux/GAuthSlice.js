@@ -9,7 +9,7 @@ export const GSlice = createSlice({
 		issuedAt: null,
 		shouldRefresh: null,
 		isSignedIn: false,
-		IdToken: null,
+		idtoken: null,
 		shouldSync: false,
 		email: null,
 		profile_pic: null,
@@ -35,7 +35,7 @@ export const GSlice = createSlice({
 				: null;
 			localState.expiry = action.payload.expiry;
 			localState.state = action.payload.state;
-			localState.IdToken = action.payload.IdToken;
+			localState.idtoken = action.payload.idtoken;
 			return localState;
 		},
 		setGAuthMeta: (state, action) => {
@@ -61,9 +61,9 @@ export const GSlice = createSlice({
 			localState.isSignedIn = action.payload.isSignedIn;
 			return localState;
 		},
-		setIdToken: (state, action) => {
+		setidtoken: (state, action) => {
 			const localState = JSON.parse(JSON.stringify(state));
-			localState.IdToken = action.payload.IdToken;
+			localState.idtoken = action.payload.idtoken;
 			return localState;
 		},
 		setShouldSync: (state, action) => {
@@ -79,7 +79,7 @@ export const GSlice = createSlice({
 			localState.issuedAt = null;
 			localState.shouldRefresh = null;
 			localState.isSignedIn = false;
-			localState.IdToken = null;
+			localState.idtoken = null;
 			localState.shouldSync = false;
 			localState.email = null;
 			localState.profile_pic = null;
@@ -102,7 +102,7 @@ export const {
 	setCalID,
 	setRefreshNeeded,
 	setIsSignedIn,
-	setIdToken,
+	setidtoken,
 	setShouldSync,
 	resetGAuth,
 	setGAuthMeta,

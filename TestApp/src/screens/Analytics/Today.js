@@ -8,7 +8,7 @@ import {
 	Image,
 	FlatList,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Square from "../../components/square";
 import { Grid, PieChart } from "react-native-svg-charts";
 import { getTextColor } from "../../components/CustomReactComponent/ImprovedText";
@@ -21,11 +21,24 @@ import Svg, {
 } from "react-native-svg";
 import { LineChart, StackedBarChart } from "react-native-chart-kit";
 import { default as _ANALYTICS } from "../../extras/classes/AnalyticsClass";
-import { getDaily, post_analytics_data } from "../../extras/Analytics_backend";
+import {
+	getAllTime,
+	getDaily,
+	post_analytics_data,
+} from "../../extras/Analytics_backend";
 import Loading from "../../components/LottieLoading";
 import moment from "moment";
 import StackedBar from "../../components/analytics/graphs/StackedBar";
-
+import { resetTracker } from "../../redux/TrackerSlice";
+import {
+	VictoryPie,
+	VictoryLabel,
+	VictoryBar,
+	VictoryChart,
+	VictoryLegend,
+	VictoryAxis,
+} from "victory-native";
+import AnalyticsLoading from "../../components/analytics/AnalyticsLoading";
 const CIRCLE_MAX = 100;
 
 const TimeHolder = ({ hours, minutes, text }) => {
@@ -37,35 +50,53 @@ const TimeHolder = ({ hours, minutes, text }) => {
 				flex: 1,
 			}}
 		>
-			<Text style={{ fontSize: 30, fontWeight: "bold", color: "white" }}>
-				{Math.round(hours)} hr
-			</Text>
+			{hours > 0 ? (
+				<Text style={{ fontSize: 30, fontWeight: "bold", color: "white" }}>
+					{Math.round(hours)} hr
+				</Text>
+			) : null}
 			<Text style={{ fontSize: 30, fontWeight: "bold", color: "white" }}>
 				{Math.round(minutes)} min
 			</Text>
-			<Text style={styles.subText}>{text}</Text>
+			{text ? <Text style={styles.subText}>{text}</Text> : null}
 		</View>
 	);
 };
 
-const GradientBackground = ({ width, cx }) => {
+const GradientBackground = ({ width, cx, height, cy, accent, background }) => {
 	const colors = useSelector((state) => state.colors);
 	return (
-		<Svg height="400" width="500" style={{ position: "absolute", zIndex: -10 }}>
+		<Svg
+			height="1000"
+			width="500"
+			style={{ position: "absolute", zIndex: -10 }}
+		>
 			<Defs>
 				<RadialGradient
 					id="grad"
 					cx={`${cx ? cx : 100}`}
-					cy="0"
+					cy={`${cy ? cy : 0}`}
 					rx="130"
 					ry="130"
 					gradientUnits="userSpaceOnUse"
 				>
-					<Stop offset="0" stopColor={colors.accentColor} stopOpacity="0.15" />
-					<Stop offset="1" stopColor={colors.backgroundColor} stopOpacity="1" />
+					<Stop
+						offset="0"
+						stopColor={accent ? accent : colors.accentColor}
+						stopOpacity="0.15"
+					/>
+					<Stop
+						offset="1"
+						stopColor={background ? background : colors.backgroundColor}
+						stopOpacity="1"
+					/>
 				</RadialGradient>
 			</Defs>
-			<Rect width={`${width ? width : 300}`} height="550" fill="url(#grad)" />
+			<Rect
+				width={`${width ? width : 300}`}
+				height={`${height ? height : 500}`}
+				fill="url(#grad)"
+			/>
 		</Svg>
 	);
 };
@@ -94,12 +125,14 @@ const Today = ({}) => {
 	const gauth = useSelector((state) => state.gauth);
 	const colors = useSelector((state) => state.colors);
 	const tracker = useSelector((state) => state.tracker);
-	const idtoken = useSelector((state) => state.gauth.IdToken);
+	const idtoken = useSelector((state) => state.gauth.idtoken);
 	const finishedpomodoros = useSelector(
 		(state) => state.pomodoro.finishedPomodoros
 	);
 	const [analyticsData, setAnalyticsData] = useState(null);
 	const [meta, setMeta] = useState(null);
+
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		function createAnalyticsPayload() {
@@ -131,57 +164,69 @@ const Today = ({}) => {
 		const today = new Date().toISOString().substring(0, 10);
 		console.log("ran effect");
 		post_analytics_data(idtoken, createAnalyticsPayload()).then(() => {
+			dispatch(resetTracker());
 			console.log("Analytics data sent");
 			getDaily(idtoken, today).then((res) => {
 				console.log("Analytics data received");
 				setAnalyticsData(res.data.data);
 			});
 		});
-	}, [
-		tracker.breakTimeTot,
-		tracker.sessionTimeTot,
-		tracker.screenTime,
-		tracker.trackingData,
-		finishedpomodoros,
-	]);
+	}, []);
 
-	const data = [
+	const victoryData = [
 		{
-			value: analyticsData?.total_sessiontime
+			x: 1,
+			y: analyticsData?.total_sessiontime
 				? analyticsData?.total_sessiontime
 				: 1,
-			svg: { fill: colors.accentColor, opacity: 0.8 },
-			key: "Focus",
+			label: "Focus",
 		},
 		{
-			value: analyticsData?.total_breaktime
-				? analyticsData?.total_breaktime
-				: 1,
-			svg: { fill: colors.levelTwo, opacity: 0.8 },
-			key: "Break",
+			x: 2,
+			y: analyticsData?.total_breaktime ? analyticsData?.total_breaktime : 1,
+			label: "Break",
 		},
 	];
 
 	if (!analyticsData) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					backgroundColor: "black",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
-				<Loading />
-			</View>
-		);
+		return <AnalyticsLoading />;
 	}
 
 	return (
 		<View
 			style={[styles.container, { backgroundColor: colors.backgroundColor }]}
 		>
+			<Svg style={StyleSheet.absoluteFill}>
+				<Defs>
+					<RadialGradient
+						id="grad"
+						cx="50%"
+						cy="-30%"
+						gradientUnits="userSpaceOnUse"
+					>
+						<Stop offset={0} stopColor={colors.levelFour} stopOpacity="0.4" />
+						<Stop
+							offset={1}
+							stopColor={colors.backgroundColor}
+							stopOpacity="1"
+						/>
+					</RadialGradient>
+				</Defs>
+				<Rect
+					x="0"
+					y="0"
+					width={Dimensions.get("screen").width}
+					height={Dimensions.get("screen").height}
+					fill="url(#grad)"
+				/>
+			</Svg>
 			<View style={styles.accountInfo}>
+				<View>
+					<Image
+						style={styles.profile_pic}
+						source={{ uri: gauth.profile_pic }}
+					/>
+				</View>
 				<View>
 					<Text
 						style={[
@@ -206,13 +251,10 @@ const Today = ({}) => {
 						{gauth.email}
 					</Text>
 				</View>
-				<View>
-					<Image
-						style={styles.profile_pic}
-						source={{ uri: gauth.profile_pic }}
-					/>
-				</View>
 			</View>
+			<Text style={[styles.titleText, { fontSize: 25, textAlign: "center" }]}>
+				Today
+			</Text>
 			<View
 				style={{
 					marginBottom: 0,
@@ -220,22 +262,46 @@ const Today = ({}) => {
 					backgroundColor: colors.levelOne,
 					borderRadius: 20,
 					margin: 5,
+					overflow: "hidden",
 				}}
 			>
 				<View style={{ flex: 1 }}>
 					<View style={styles.subSection}>
-						<Square flex={1} customStyles={{ overflow: "hidden" }}>
-							<Text style={styles.titleText}>Percentage</Text>
-							<PieChart
-								style={{ height: 130 }}
-								data={data}
-								innerRadius="60%"
-								labelRadius={80}
+						<View
+							style={{
+								flex: 1,
+								overflow: "hidden",
+								justifyContent: "center",
+								alignItems: "center",
+								borderRadius: 20,
+								zIndex: 10,
+								margin: 10,
+								// elevation: 6,
+							}}
+						>
+							<View
+								style={{
+									flex: 1,
+								}}
+								onLayout={(e) => {
+									setMeta(e.nativeEvent.layout);
+								}}
 							>
-								<Labels />
-							</PieChart>
-							<GradientBackground />
-						</Square>
+								{meta ? (
+									<VictoryPie
+										data={victoryData}
+										colorScale="qualitative"
+										height={meta.height}
+										labelComponent={
+											<VictoryLabel style={{ fill: "white", fontSize: 18 }} />
+										}
+										innerRadius={200}
+										labelRadius={35}
+										radius={0}
+									/>
+								) : null}
+							</View>
+						</View>
 						<Square flex={1} customStyles={{ overflow: "hidden" }}>
 							<TimeHolder
 								hours={moment
@@ -283,7 +349,15 @@ const Today = ({}) => {
 					</View>
 					<View style={styles.subSection}>
 						<Square flex={1} customStyles={{ overflow: "hidden" }}>
-							<TimeHolder hours={3} minutes={20} text="Total time on app" />
+							<TimeHolder
+								hours={moment
+									.duration(analyticsData.totaltime, "seconds")
+									.hours()}
+								minutes={moment
+									.duration(analyticsData.totaltime, "seconds")
+									.minutes()}
+								text="Total time on app"
+							/>
 							<GradientBackground />
 						</Square>
 						<Square flex={1} customStyles={{ overflow: "hidden" }}>
@@ -325,8 +399,8 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 	},
 	accountInfo: {
-		minHeight: 90,
-		justifyContent: "space-between",
+		minHeight: 150,
+		justifyContent: "center",
 		flexDirection: "row",
 		alignItems: "center",
 		paddingHorizontal: 15,
@@ -335,6 +409,7 @@ const styles = StyleSheet.create({
 		width: 60,
 		height: 60,
 		borderRadius: 15,
+		marginRight: 15,
 	},
 	accountText: {
 		padding: 2,
@@ -342,7 +417,7 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 	},
 	name: {
-		fontSize: 30,
+		fontSize: 25,
 	},
 	titleText: {
 		fontSize: 20,
@@ -357,6 +432,6 @@ const styles = StyleSheet.create({
 		color: "grey",
 	},
 });
-
+export { TimeHolder };
 export default Today;
 export { GradientBackground };
